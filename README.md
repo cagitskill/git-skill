@@ -1,6 +1,6 @@
-# gitskill — notes from the field
+# git-skill — features & things
 
-A working notebook from my day-to-day as a Customer Success Architect. A storyteller of products and features associated with GitHub. Period.
+A working notebook for my experience with AI Tools. A storyteller of products and features associated with GitHub. Period.
 
 This repo is where I park the small stuff — things I figure out, things I try, and things I build while doing the job.
 
