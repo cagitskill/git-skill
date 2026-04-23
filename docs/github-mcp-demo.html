@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub MCP Server | cagitskill @GitHub</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:     #0d1117;
+  --s1:     #161b22;
+  --s2:     #21262d;
+  --s3:     #30363d;
+  --green:  #238636;
+  --green2: #2ea043;
+  --green3: #3fb950;
+  --blue:   #1f6feb;
+  --blue2:  #388bfd;
+  --muted:  #7d8590;
+  --muted2: #8b949e;
+  --text:   #e6edf3;
+  --border: #21262d;
+  --border2:#30363d;
+  --amber:  #d29922;
+  --red:    #da3633;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(46,160,67,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(46,160,67,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page { position: relative; z-index: 1; max-width: 920px; margin: 0 auto; padding: 48px 24px 80px; }
+
+/* ── TOP NAV ── */
+.topnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 48px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border2);
+}
+.gh-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.gh-octocat {
+  width: 32px; height: 32px;
+  background: var(--text);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.gh-handle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+.gh-role {
+  font-size: 11px;
+  color: var(--muted2);
+  font-family: 'Courier New', monospace;
+}
+.gh-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  color: var(--muted2);
+}
+.gh-badge-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ── HERO ── */
+.hero { margin-bottom: 36px; }
+.hero-eyebrow {
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green3);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 1px;
+  background: var(--green3);
+}
+h1 {
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
+}
+h1 span { color: var(--green3); }
+.hero-sub {
+  font-size: 13px;
+  color: var(--muted2);
+  line-height: 1.65;
+  max-width: 580px;
+  margin-bottom: 24px;
+  font-family: 'Courier New', monospace;
+}
+.hero-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.tag {
+  font-size: 10px;
+  font-family: 'Courier New', monospace;
+  padding: 3px 10px;
+  border-radius: 100px;
+  border: 1px solid;
+}
+.tag-g { border-color: rgba(63,185,80,0.35); color: var(--green3); background: rgba(63,185,80,0.06); }
+.tag-b { border-color: rgba(56,139,253,0.35); color: var(--blue2); background: rgba(56,139,253,0.06); }
+.tag-n { border-color: var(--border2); color: var(--muted2); }
+
+/* ── CONTROLS ── */
+.controls { display: flex; gap: 10px; margin-bottom: 28px; }
+.btn {
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-run   { background: var(--green2); color: #fff; border-color: rgba(240,246,252,0.1); }
+.btn-run:hover { background: var(--green3); }
+.btn-reset { background: var(--s2); color: var(--muted2); border-color: var(--border2); }
+.btn-reset:hover { color: var(--text); }
+
+/* ── PROGRESS ── */
+.progress-meta { display: flex; justify-content: space-between; font-size: 10px; font-family: 'Courier New', monospace; color: var(--muted); margin-bottom: 5px; }
+.progress-track { background: var(--s2); border-radius: 100px; height: 3px; margin-bottom: 32px; overflow: hidden; }
+.progress-fill  { height: 100%; background: linear-gradient(90deg, var(--green2), var(--green3)); width: 0%; transition: width 0.5s ease; border-radius: 100px; }
+
+/* ── METRICS ── */
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+.metric {
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 16px 14px;
+  text-align: center;
+}
+.metric-val { font-size: 28px; font-weight: 700; color: var(--green3); line-height: 1; margin-bottom: 5px; }
+.metric-label { font-size: 10px; font-family: 'Courier New', monospace; color: var(--muted); }
+
+/* ── MAIN GRID ── */
+.main-grid { display: grid; grid-template-columns: 1fr 320px; gap: 16px; margin-bottom: 16px; }
+
+/* ── PIPELINE ── */
+.card {
+  background: var(--s1);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 22px;
+}
+.card-label {
+  font-size: 10px;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pipeline { display: flex; flex-direction: column; }
+.p-step   { display: flex; align-items: stretch; }
+.p-connector { display: flex; flex-direction: column; align-items: center; width: 38px; flex-shrink: 0; }
+.p-node {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  background: var(--s2);
+  flex-shrink: 0;
+  transition: border-color 0.4s, background 0.4s, box-shadow 0.4s;
+  z-index: 1;
+}
+.p-node.active { border-color: var(--green3); background: rgba(63,185,80,0.1); box-shadow: 0 0 14px rgba(63,185,80,0.25); }
+.p-node.done   { border-color: var(--green2); background: rgba(46,160,67,0.12); }
+.p-line {
+  width: 2px; flex: 1; min-height: 20px;
+  background: var(--border2); margin: 0 auto;
+  position: relative; overflow: hidden;
+}
+.p-line::after {
+  content: '';
+  position: absolute; top: -100%; left: 0; right: 0; height: 100%;
+  background: linear-gradient(180deg, transparent, var(--green3));
+  transition: top 0.7s ease;
+}
+.p-line.flowing::after { top: 100%; }
+.p-content { flex: 1; padding: 4px 0 20px 14px; }
+.p-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; transition: color 0.3s; }
+.p-title.active { color: var(--green3); }
+.p-desc  { font-size: 11px; font-family: 'Courier New', monospace; color: var(--muted); line-height: 1.5; }
+.p-desc.active { color: var(--muted2); }
+.p-chip {
+  display: inline-block; margin-top: 5px;
+  font-size: 9px; font-family: 'Courier New', monospace;
+  padding: 2px 8px; border-radius: 100px; border: 1px solid;
+  opacity: 0; transition: opacity 0.4s;
+}
+.p-chip.show { opacity: 1; }
+.chip-g { border-color: rgba(63,185,80,0.4); color: var(--green3); background: rgba(63,185,80,0.07); }
+.chip-b { border-color: rgba(56,139,253,0.4); color: var(--blue2); background: rgba(56,139,253,0.07); }
+.chip-a { border-color: rgba(210,153,34,0.4); color: var(--amber); background: rgba(210,153,34,0.07); }
+
+/* ── TERMINAL ── */
+.term-wrap { background: var(--s1); border: 1px solid var(--border2); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+.term-bar  { background: var(--s2); padding: 8px 14px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.term-dots { display: flex; gap: 5px; }
+.term-dot  { width: 9px; height: 9px; border-radius: 50%; }
+.term-fname { font-family: 'Courier New', monospace; font-size: 10px; color: var(--muted); }
+.term-body  { padding: 14px 16px; font-family: 'Courier New', monospace; font-size: 11px; line-height: 1.85; flex: 1; overflow-y: auto; min-height: 300px; }
+.tl { opacity: 0; transform: translateX(-3px); transition: opacity 0.25s, transform 0.25s; }
+.tl.show { opacity: 1; transform: translateX(0); }
+.t-p  { color: var(--green3); }
+.t-c  { color: var(--text); }
+.t-o  { color: var(--muted2); }
+.t-ok { color: var(--green3); }
+.t-w  { color: var(--amber); }
+.t-i  { color: var(--blue2); }
+.cursor { display: inline-block; width: 7px; height: 12px; background: var(--green3); vertical-align: middle; animation: blink 1s step-end infinite; }
+
+/* ── CAPABILITIES GRID ── */
+.cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+.cap {
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 6px; padding: 14px 12px;
+  opacity: 0.25;
+  transition: opacity 0.5s, border-color 0.3s, transform 0.2s;
+}
+.cap.live { opacity: 1; border-color: rgba(63,185,80,0.25); }
+.cap.live:hover { transform: translateY(-2px); border-color: var(--green3); }
+.cap-icon  { font-size: 18px; margin-bottom: 7px; }
+.cap-name  { font-size: 11px; font-weight: 600; margin-bottom: 3px; }
+.cap-desc  { font-size: 10px; font-family: 'Courier New', monospace; color: var(--muted); line-height: 1.4; }
+
+/* ── TOOLS SECTION ── */
+.tools-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+.tool {
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 6px; padding: 13px;
+}
+.tool-tag { font-size: 9px; font-family: 'Courier New', monospace; color: var(--green3); margin-bottom: 4px; }
+.tool-name { font-size: 12px; font-weight: 600; margin-bottom: 3px; }
+.tool-desc { font-size: 10px; font-family: 'Courier New', monospace; color: var(--muted); line-height: 1.4; }
+
+/* ── IDE ROW ── */
+.ide-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+.ide {
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 6px; padding: 14px;
+  text-align: center;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.ide:hover { border-color: var(--border2); transform: translateY(-2px); }
+.ide-icon  { font-size: 22px; margin-bottom: 6px; }
+.ide-name  { font-size: 11px; font-weight: 600; margin-bottom: 3px; }
+.ide-note  { font-size: 9px; font-family: 'Courier New', monospace; color: var(--muted); line-height: 1.4; }
+
+/* ── FOOTER ── */
+.footer {
+  border-top: 1px solid var(--border2);
+  margin-top: 40px;
+  padding-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-left { font-size: 11px; font-family: 'Courier New', monospace; color: var(--muted); }
+.footer-right {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-family: 'Courier New', monospace; color: var(--muted2);
+}
+.footer-handle { color: var(--green3); font-weight: 600; }
+
+@keyframes blink  { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes pulse  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.75)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+.page > * { animation: fadeUp 0.45s ease both; }
+.page > *:nth-child(2) { animation-delay: 0.06s; }
+.page > *:nth-child(3) { animation-delay: 0.12s; }
+.page > *:nth-child(4) { animation-delay: 0.18s; }
+.page > *:nth-child(5) { animation-delay: 0.22s; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- NAV -->
+  <div class="topnav">
+    <div class="gh-identity">
+      <div class="gh-octocat">🐙</div>
+      <div>
+        <div class="gh-handle">cagitskill</div>
+        <div class="gh-role">@GitHub · MCP & Copilot</div>
+      </div>
+    </div>
+    <div class="gh-badge">
+      <div class="gh-badge-dot"></div>
+      GitHub MCP Server · Live
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Model Context Protocol</div>
+    <h1>GitHub's <span>MCP Server</span><br>How It Works</h1>
+    <p class="hero-sub">The GitHub MCP server gives Copilot direct access to your repositories, issues, pull requests, and code — all from your IDE, no context switching required. This is what that looks like end to end.</p>
+    <div class="hero-tags">
+      <span class="tag tag-g">GitHub Copilot</span>
+      <span class="tag tag-g">MCP Server</span>
+      <span class="tag tag-b">VS Code · Visual Studio · JetBrains</span>
+      <span class="tag tag-n">OAuth · PAT Auth</span>
+      <span class="tag tag-n">Agent Mode Required</span>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="btn btn-run" onclick="runDemo()">▶ Run Demo</button>
+    <button class="btn btn-reset" onclick="resetDemo(false)">↺ Reset</button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-meta">
+    <span id="progressLabel">Ready — click Run Demo</span>
+    <span id="progressPct">0%</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metric"><div class="metric-val" id="m-tools">0</div><div class="metric-label">MCP Tools Available</div></div>
+    <div class="metric"><div class="metric-val" id="m-ides">0</div><div class="metric-label">Supported IDEs</div></div>
+    <div class="metric"><div class="metric-val" id="m-auth">0</div><div class="metric-label">Auth Methods</div></div>
+    <div class="metric"><div class="metric-val" id="m-steps">0</div><div class="metric-label">Steps to Connect</div></div>
+  </div>
+
+  <!-- PIPELINE + TERMINAL -->
+  <div class="main-grid">
+
+    <div class="card">
+      <div class="card-label">Connection Pipeline — IDE to GitHub</div>
+      <div class="pipeline">
+
+        <div class="p-step">
+          <div class="p-connector">
+            <div class="p-node" id="n0">📄</div>
+            <div class="p-line" id="l0"></div>
+          </div>
+          <div class="p-content">
+            <div class="p-title" id="t0">Configure mcp.json</div>
+            <div class="p-desc"  id="d0">Add the GitHub MCP server URL to your IDE's config. Root key is "servers" — not "mcpServers".</div>
+            <span class="p-chip chip-b" id="c0">VS Code · Visual Studio · JetBrains</span>
+          </div>
+        </div>
+
+        <div class="p-step">
+          <div class="p-connector">
+            <div class="p-node" id="n1">🔑</div>
+            <div class="p-line" id="l1"></div>
+          </div>
+          <div class="p-content">
+            <div class="p-title" id="t1">Authenticate</div>
+            <div class="p-desc"  id="d1">OAuth one-click for GitHub.com. PAT with scoped permissions for GitHub Enterprise Cloud with data residency.</div>
+            <span class="p-chip chip-g" id="c1">OAuth recommended · PAT for GHE</span>
+          </div>
+        </div>
+
+        <div class="p-step">
+          <div class="p-connector">
+            <div class="p-node" id="n2">🤖</div>
+            <div class="p-line" id="l2"></div>
+          </div>
+          <div class="p-content">
+            <div class="p-title" id="t2">Switch to Agent Mode</div>
+            <div class="p-desc"  id="d2">MCP tools only appear in Agent mode. Select it from the Copilot Chat mode dropdown — tools are invisible in Ask or Edit mode.</div>
+            <span class="p-chip chip-a" id="c2">Agent mode · Tools icon visible</span>
+          </div>
+        </div>
+
+        <div class="p-step">
+          <div class="p-connector">
+            <div class="p-node" id="n3">💬</div>
+            <div class="p-line" id="l3"></div>
+          </div>
+          <div class="p-content">
+            <div class="p-title" id="t3">Prompt in Natural Language</div>
+            <div class="p-desc"  id="d3">Ask Copilot to create an issue, list open PRs, search code, or fetch commit history. No commands — just plain English.</div>
+            <span class="p-chip chip-g" id="c3">Natural language → GitHub action</span>
+          </div>
+        </div>
+
+        <div class="p-step">
+          <div class="p-connector">
+            <div class="p-node" id="n4">⚡</div>
+            <div class="p-line" id="l4"></div>
+          </div>
+          <div class="p-content">
+            <div class="p-title" id="t4">GitHub MCP Tool Called</div>
+            <div class="p-desc"  id="d4">Copilot selects the right tool automatically. A confirmation dialog appears before any write operation executes.</div>
+            <span class="p-chip chip-g" id="c4">Auto tool selection · Confirm writes</span>
+          </div>
+        </div>
+
+        <div class="p-step">
+          <div class="p-connector">
+            <div class="p-node" id="n5">✅</div>
+            <div class="p-line" id="l5" style="display:none"></div>
+          </div>
+          <div class="p-content">
+            <div class="p-title" id="t5">GitHub Data in Your IDE</div>
+            <div class="p-desc"  id="d5">Results surface directly in Copilot Chat. No browser tab switching. Your full GitHub context, right where you code.</div>
+            <span class="p-chip chip-g" id="c5">Zero context switching</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TERMINAL -->
+    <div class="term-wrap">
+      <div class="term-bar">
+        <div class="term-dots">
+          <div class="term-dot" style="background:#ff5f57"></div>
+          <div class="term-dot" style="background:#febc2e"></div>
+          <div class="term-dot" style="background:#28c840"></div>
+        </div>
+        <div class="term-fname">github-mcp-setup</div>
+      </div>
+      <div class="term-body" id="termBody">
+        <div class="tl show"><span class="t-o">// Click Run Demo to see the</span></div>
+        <div class="tl show"><span class="t-o">// GitHub MCP connection live</span></div>
+        <div class="tl show">&nbsp;</div>
+        <div class="tl show"><span class="cursor"></span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CAPABILITIES -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-label">What the GitHub MCP Server Gives Copilot Access To</div>
+    <div class="cap-grid">
+      <div class="cap" id="cap0">
+        <div class="cap-icon">📁</div>
+        <div class="cap-name">Repository Content</div>
+        <div class="cap-desc">Read files, search code, fetch commit history from any repo you have access to</div>
+      </div>
+      <div class="cap" id="cap1">
+        <div class="cap-icon">🐛</div>
+        <div class="cap-name">Issues</div>
+        <div class="cap-desc">Create, update, label, assign, and comment on issues without leaving your editor</div>
+      </div>
+      <div class="cap" id="cap2">
+        <div class="cap-icon">🔁</div>
+        <div class="cap-name">Pull Requests</div>
+        <div class="cap-desc">Open PRs, list reviews, add comments, and check merge status from Copilot Chat</div>
+      </div>
+      <div class="cap" id="cap3">
+        <div class="cap-icon">🔍</div>
+        <div class="cap-name">Code Search</div>
+        <div class="cap-desc">Search across all files in a repo or the entire GitHub index instantly</div>
+      </div>
+      <div class="cap" id="cap4">
+        <div class="cap-icon">📊</div>
+        <div class="cap-name">Commit History</div>
+        <div class="cap-desc">Fetch recent commits, diff specific changes, trace who changed what and when</div>
+      </div>
+      <div class="cap" id="cap5">
+        <div class="cap-icon">🌿</div>
+        <div class="cap-name">Branch Management</div>
+        <div class="cap-desc">List branches, check status, understand what's on each branch — all from chat</div>
+      </div>
+      <div class="cap" id="cap6">
+        <div class="cap-icon">👤</div>
+        <div class="cap-name">User & Org Context</div>
+        <div class="cap-desc">Access assigned issues, your open PRs, org-level repo lists with the right scopes</div>
+      </div>
+      <div class="cap" id="cap7">
+        <div class="cap-icon">🔔</div>
+        <div class="cap-name">Notifications</div>
+        <div class="cap-desc">Surface what needs your attention — reviews requested, mentions, CI failures</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MCP TOOLS + IDEs side by side -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+
+    <div class="card">
+      <div class="card-label">Key MCP Tools in the GitHub Server</div>
+      <div class="tools-grid">
+        <div class="tool">
+          <div class="tool-tag">READ</div>
+          <div class="tool-name">get_file_contents</div>
+          <div class="tool-desc">Read any file from a repo by path</div>
+        </div>
+        <div class="tool">
+          <div class="tool-tag">READ</div>
+          <div class="tool-name">search_code</div>
+          <div class="tool-desc">Search across repo content</div>
+        </div>
+        <div class="tool">
+          <div class="tool-tag">READ</div>
+          <div class="tool-name">list_commits</div>
+          <div class="tool-desc">Fetch commit history for a branch</div>
+        </div>
+        <div class="tool">
+          <div class="tool-tag">WRITE</div>
+          <div class="tool-name">create_issue</div>
+          <div class="tool-desc">Open a new issue with labels</div>
+        </div>
+        <div class="tool">
+          <div class="tool-tag">WRITE</div>
+          <div class="tool-name">create_pull_request</div>
+          <div class="tool-desc">Open a PR from a branch</div>
+        </div>
+        <div class="tool">
+          <div class="tool-tag">WRITE</div>
+          <div class="tool-name">add_issue_comment</div>
+          <div class="tool-desc">Post a comment on an issue or PR</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Supported IDEs</div>
+      <div class="ide-row" style="grid-template-columns: repeat(2,1fr);">
+        <div class="ide">
+          <div class="ide-icon">⬡</div>
+          <div class="ide-name">VS Code</div>
+          <div class="ide-note">v1.99+ · mcp.json<br>"servers" root key<br>MCP Registry view</div>
+        </div>
+        <div class="ide">
+          <div class="ide-icon">◈</div>
+          <div class="ide-name">Visual Studio</div>
+          <div class="ide-note">v17.14+ · UI config<br>HTTP/SSE type<br>Agent mode panel</div>
+        </div>
+        <div class="ide">
+          <div class="ide-icon">◇</div>
+          <div class="ide-name">JetBrains</div>
+          <div class="ide-note">All major IDEs<br>Latest Copilot plugin<br>Agent mode required</div>
+        </div>
+        <div class="ide">
+          <div class="ide-icon">$_</div>
+          <div class="ide-name">Copilot CLI</div>
+          <div class="ide-note">GH server built-in<br>/mcp add command<br>No install needed</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">github.com/github/github-mcp-server · Open Source · MIT License</div>
+    <div class="footer-right">
+      <span class="footer-handle">cagitskill</span> · @GitHub
+    </div>
+  </div>
+
+</div>
+
+<script>
+let running = false;
+
+const termLines = [
+  { html: '<span class="t-o">// Connecting to GitHub MCP Server...</span>',           delay: 200  },
+  { html: '<span class="t-p">$ </span><span class="t-c">cat .vscode/mcp.json</span>', delay: 800  },
+  { html: '<span class="t-i">  "servers": { "github": {</span>',                       delay: 1300 },
+  { html: '<span class="t-i">    "url": "https://api.githubcopilot.com/mcp/" }}</span>',delay: 1600 },
+  { html: '<span class="t-ok">✓ Server config valid</span>',                           delay: 2100 },
+  { html: '<span class="t-ok">✓ OAuth authenticated — github.com</span>',              delay: 2700 },
+  { html: '<span class="t-ok">✓ Agent mode active · 26 tools loaded</span>',           delay: 3300 },
+  { html: '<span class="t-p">$ </span><span class="t-c">copilot: "list open PRs assigned to me"</span>', delay: 4000 },
+  { html: '<span class="t-i">  → calling list_pull_requests...</span>',                delay: 4500 },
+  { html: '<span class="t-ok">✓ 3 open PRs returned · displayed in chat</span>',       delay: 5100 },
+  { html: '<span class="t-p">$ </span><span class="t-c">copilot: "create issue for the auth bug"</span>', delay: 5800 },
+  { html: '<span class="t-w">  ⚠ Write operation — confirm to proceed</span>',         delay: 6300 },
+  { html: '<span class="t-ok">✓ Issue #142 created · label: bug</span>',               delay: 7000 },
+  { html: '<span class="t-ok">✓ Zero context switching · done from IDE</span>',        delay: 7600 },
+];
+
+const pipelineDelays = [0, 1800, 3000, 3900, 4800, 6200];
+const capDelays      = [600, 1400, 2200, 3000, 3800, 4600, 5400, 6200];
+
+const metricTargets = { tools: 26, ides: 4, auth: 2, steps: 6 };
+
+function setProgress(pct, label) {
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressLabel').textContent = label;
+}
+
+function animCount(id, target) {
+  const el = document.getElementById(id);
+  const start = parseInt(el.textContent) || 0;
+  const dur = 700, t0 = performance.now();
+  const tick = now => {
+    const p = Math.min((now - t0) / dur, 1);
+    el.textContent = Math.round(start + (target - start) * p);
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function activateStep(i) {
+  ['n','t','d','c'].forEach(p => {
+    const el = document.getElementById(p + i);
+    if (el) el.classList.add('active');
+  });
+  const node = document.getElementById('n' + i);
+  if (node) node.classList.add('active');
+  const line = document.getElementById('l' + i);
+  if (line) setTimeout(() => line.classList.add('flowing'), 150);
+  const chip = document.getElementById('c' + i);
+  if (chip) chip.classList.add('show');
+}
+
+function doneStep(i) {
+  const n = document.getElementById('n' + i);
+  if (n) { n.classList.remove('active'); n.classList.add('done'); }
+  const t = document.getElementById('t' + i);
+  if (t) t.classList.remove('active');
+  const d = document.getElementById('d' + i);
+  if (d) d.classList.remove('active');
+}
+
+function addTermLine(html) {
+  const tb = document.getElementById('termBody');
+  tb.querySelectorAll('.cursor').forEach(c => c.parentElement.remove());
+  const div = document.createElement('div');
+  div.className = 'tl';
+  div.innerHTML = html;
+  tb.appendChild(div);
+  requestAnimationFrame(() => div.classList.add('show'));
+  tb.scrollTop = tb.scrollHeight;
+  const cur = document.createElement('div');
+  cur.className = 'tl show';
+  cur.innerHTML = '<span class="cursor"></span>';
+  tb.appendChild(cur);
+  tb.scrollTop = tb.scrollHeight;
+}
+
+const labels = [
+  'Configuring mcp.json...', 'Authenticating with GitHub...',
+  'Switching to Agent mode...', 'Sending prompt to Copilot...',
+  'GitHub MCP tool executing...', 'Results in your IDE — done!'
+];
+
+function runDemo() {
+  if (running) return;
+  running = true;
+  resetDemo(true);
+
+  document.getElementById('termBody').innerHTML = '';
+  setProgress(5, 'Starting GitHub MCP demo...');
+
+  termLines.forEach(({ html, delay }) => {
+    setTimeout(() => addTermLine(html), delay);
+  });
+
+  pipelineDelays.forEach((delay, i) => {
+    setTimeout(() => {
+      if (i > 0) doneStep(i - 1);
+      activateStep(i);
+      const pct = Math.round(((i + 1) / pipelineDelays.length) * 100);
+      setProgress(pct, labels[i]);
+    }, delay);
+  });
+
+  capDelays.forEach((delay, i) => {
+    setTimeout(() => {
+      document.getElementById('cap' + i)?.classList.add('live');
+    }, delay);
+  });
+
+  // count up metrics staggered
+  setTimeout(() => animCount('m-tools', metricTargets.tools), 1000);
+  setTimeout(() => animCount('m-ides',  metricTargets.ides),  2200);
+  setTimeout(() => animCount('m-auth',  metricTargets.auth),  3400);
+  setTimeout(() => animCount('m-steps', metricTargets.steps), 4600);
+
+  setTimeout(() => {
+    doneStep(5);
+    setProgress(100, 'GitHub MCP connected · Agent mode active · Zero context switching');
+    running = false;
+  }, 8200);
+}
+
+function resetDemo(silent) {
+  running = false;
+  if (!silent) {
+    setProgress(0, 'Ready — click Run Demo');
+    document.getElementById('termBody').innerHTML = `
+      <div class="tl show"><span class="t-o">// Click Run Demo to see the</span></div>
+      <div class="tl show"><span class="t-o">// GitHub MCP connection live</span></div>
+      <div class="tl show">&nbsp;</div>
+      <div class="tl show"><span class="cursor"></span></div>`;
+    ['m-tools','m-ides','m-auth','m-steps'].forEach(id => {
+      document.getElementById(id).textContent = '0';
+    });
+  }
+  for (let i = 0; i < 6; i++) {
+    ['n','t','d'].forEach(p => document.getElementById(p + i)?.classList.remove('active','done'));
+    document.getElementById('l' + i)?.classList.remove('flowing');
+    document.getElementById('c' + i)?.classList.remove('show');
+  }
+  for (let i = 0; i < 8; i++) {
+    document.getElementById('cap' + i)?.classList.remove('live');
+  }
+}
+</script>
+</body>
+</html>
