@@ -22,7 +22,7 @@ Also off-limits: anything tied to a specific customer, internal-only material, u
 
 ## Infographics (GitHub Pages)
 
-Visual, animated walk-throughs of technical concepts that come up in customer conversations. Live at **https://cagitskill.github.io/gitskill/** and built from the `/docs` folder.
+Visual, animated walk-throughs of technical concepts that come up in customer conversations. Live at **https://cagitskill.github.io/git-skill/** and built from the `/docs` folder.
 
 Current set:
 - **CI/CD Resiliency with Self-Hosted Runners** — what breaks, why it breaks, and how GitHub gives you the tools to fix it.
