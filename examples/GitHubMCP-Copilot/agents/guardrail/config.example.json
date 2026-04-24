@@ -1,0 +1,24 @@
+{
+  "pattern": "guardrail",
+  "mode": "alert",
+  "active": true,
+  "rules_source": "risk-scanner/output/risk-profile.json",
+  "alert_destination": "console",
+  "escalation_threshold": 5,
+  "escalation_window_minutes": 10,
+  "intervention_actions": ["block", "log", "notify"],
+  "baseline_rules": [
+    "log_all_tool_calls",
+    "alert_silent_failures",
+    "flag_repeated_failed_calls",
+    "alert_scope_violations",
+    "block_credential_in_output",
+    "alert_unexpected_tool_activation"
+  ],
+  "github_specific_rules": [
+    "block_hardcoded_pat",
+    "alert_write_scope_on_read_workflow",
+    "alert_admin_scope_on_standard_tool",
+    "alert_unlisted_endpoint_call"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "pattern": "issue-pr-management",
+  "mcp_server": {
+    "id": "github",
+    "url": "https://api.githubcopilot.com/mcp/",
+    "auth": {
+      "method": "oauth",
+      "note": "PAT requires issues:write and pull_requests:write scopes for full functionality"
+    }
+  },
+  "tools_enabled": [
+    "create_issue",
+    "update_issue",
+    "list_issues",
+    "add_issue_comment",
+    "create_pull_request",
+    "list_pull_requests",
+    "merge_pull_request"
+  ],
+  "guardrail_reporting": true,
+  "active": true
+}

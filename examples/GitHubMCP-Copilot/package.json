@@ -1,0 +1,24 @@
+{
+  "name": "github-mcp-copilot-field-guide",
+  "version": "1.0.0",
+  "description": "A practical, opinionated guide to setting up, configuring, and extending the GitHub MCP server with GitHub Copilot",
+  "type": "module",
+  "scripts": {
+    "onboard": "node admin-panel/onboarding.js",
+    "scan": "node risk-scanner/scanner.js",
+    "start": "node admin-panel/index.js"
+  },
+  "keywords": [
+    "github",
+    "copilot",
+    "mcp",
+    "model-context-protocol",
+    "github-mcp-server",
+    "guardrail",
+    "vscode"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  }
+}
