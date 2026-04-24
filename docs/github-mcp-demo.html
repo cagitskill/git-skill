@@ -173,18 +173,6 @@ h1 span { color: var(--green3); }
 .progress-track { background: var(--s2); border-radius: 100px; height: 3px; margin-bottom: 32px; overflow: hidden; }
 .progress-fill  { height: 100%; background: linear-gradient(90deg, var(--green2), var(--green3)); width: 0%; transition: width 0.5s ease; border-radius: 100px; }
 
-/* ── METRICS ── */
-.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-.metric {
-  background: var(--s1);
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  padding: 16px 14px;
-  text-align: center;
-}
-.metric-val { font-size: 28px; font-weight: 700; color: var(--green3); line-height: 1; margin-bottom: 5px; }
-.metric-label { font-size: 10px; font-family: 'Courier New', monospace; color: var(--muted); }
-
 /* ── MAIN GRID ── */
 .main-grid { display: grid; grid-template-columns: 1fr 320px; gap: 16px; margin-bottom: 16px; }
 
@@ -198,6 +186,7 @@ h1 span { color: var(--green3); }
 .card-label {
   font-size: 10px;
   font-family: 'Courier New', monospace;
+  font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--muted);
@@ -270,21 +259,42 @@ h1 span { color: var(--green3); }
 /* ── CAPABILITIES GRID ── */
 .cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
 .cap {
+  transform: translateY(10px);
   background: var(--s2);
   border: 1px solid var(--border2);
   border-radius: 6px; padding: 14px 12px;
-  opacity: 0.25;
-  transition: opacity 0.5s, border-color 0.3s, transform 0.2s;
+  opacity: 0.18;
+  cursor: pointer;
+  transition: opacity 0.4s, border-color 0.4s, transform 0.4s, box-shadow 0.4s, background 0.4s;
 }
-.cap.live { opacity: 1; border-color: rgba(63,185,80,0.25); }
-.cap.live:hover { transform: translateY(-2px); border-color: var(--green3); }
-.cap-icon  { font-size: 18px; margin-bottom: 7px; }
-.cap-name  { font-size: 11px; font-weight: 600; margin-bottom: 3px; }
+.cap.live {
+  opacity: 1;
+  border-color: rgba(63,185,80,0.4);
+  transform: translateY(0);
+  background: rgba(63,185,80,0.04);
+  box-shadow: 0 0 20px rgba(63,185,80,0.1);
+  animation: cardPop 0.4s ease;
+}
+.cap.live:hover { transform: translateY(-3px); border-color: var(--green3); box-shadow: 0 0 24px rgba(63,185,80,0.18); }
+.tool.live { opacity: 1; transform: translateY(0); border-color: rgba(56,139,253,0.35); background: rgba(56,139,253,0.04); box-shadow: 0 0 16px rgba(56,139,253,0.08); animation: cardPop 0.4s ease; }
+.tool.live:hover { border-color: var(--blue2); transform: translateY(-3px); }
+.ide.live { opacity: 1; transform: translateY(0); border-color: rgba(63,185,80,0.35); background: rgba(63,185,80,0.04); box-shadow: 0 0 16px rgba(63,185,80,0.1); animation: cardPop 0.4s ease; }
+.ide.live:hover { border-color: var(--green3); transform: translateY(-3px); box-shadow: 0 0 20px rgba(63,185,80,0.15); }
+@keyframes cardPop {
+  0%   { transform: translateY(10px) scale(0.97); opacity: 0; }
+  60%  { transform: translateY(-3px) scale(1.02); }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.cap-icon  { font-size: 20px; margin-bottom: 8px; }
+.cap-name  { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
 .cap-desc  { font-size: 10px; font-family: 'Courier New', monospace; color: var(--muted); line-height: 1.4; }
 
 /* ── TOOLS SECTION ── */
 .tools-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
 .tool {
+  opacity: 0.2;
+  transform: translateY(8px);
+  transition: opacity 0.5s, transform 0.5s, border-color 0.3s;
   background: var(--s2);
   border: 1px solid var(--border2);
   border-radius: 6px; padding: 13px;
@@ -296,6 +306,9 @@ h1 span { color: var(--green3); }
 /* ── IDE ROW ── */
 .ide-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
 .ide {
+  opacity: 0.2;
+  transform: translateY(8px);
+  transition: opacity 0.5s, transform 0.5s, border-color 0.3s, box-shadow 0.3s;
   background: var(--s2);
   border: 1px solid var(--border2);
   border-radius: 6px; padding: 14px;
@@ -378,14 +391,6 @@ h1 span { color: var(--green3); }
     <span id="progressPct">0%</span>
   </div>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-
-  <!-- METRICS -->
-  <div class="metrics">
-    <div class="metric"><div class="metric-val" id="m-tools">0</div><div class="metric-label">MCP Tools Available</div></div>
-    <div class="metric"><div class="metric-val" id="m-ides">0</div><div class="metric-label">Supported IDEs</div></div>
-    <div class="metric"><div class="metric-val" id="m-auth">0</div><div class="metric-label">Auth Methods</div></div>
-    <div class="metric"><div class="metric-val" id="m-steps">0</div><div class="metric-label">Steps to Connect</div></div>
-  </div>
 
   <!-- PIPELINE + TERMINAL -->
   <div class="main-grid">
@@ -493,42 +498,42 @@ h1 span { color: var(--green3); }
   <div class="card" style="margin-bottom:16px;">
     <div class="card-label">What the GitHub MCP Server Gives Copilot Access To</div>
     <div class="cap-grid">
-      <div class="cap" id="cap0">
+      <div class="cap" id="cap0" onclick="lightUpCards()">
         <div class="cap-icon">📁</div>
         <div class="cap-name">Repository Content</div>
         <div class="cap-desc">Read files, search code, fetch commit history from any repo you have access to</div>
       </div>
-      <div class="cap" id="cap1">
+      <div class="cap" id="cap1" onclick="lightUpCaps()">
         <div class="cap-icon">🐛</div>
         <div class="cap-name">Issues</div>
         <div class="cap-desc">Create, update, label, assign, and comment on issues without leaving your editor</div>
       </div>
-      <div class="cap" id="cap2">
+      <div class="cap" id="cap2" onclick="lightUpCaps()">
         <div class="cap-icon">🔁</div>
         <div class="cap-name">Pull Requests</div>
         <div class="cap-desc">Open PRs, list reviews, add comments, and check merge status from Copilot Chat</div>
       </div>
-      <div class="cap" id="cap3">
+      <div class="cap" id="cap3" onclick="lightUpCaps()">
         <div class="cap-icon">🔍</div>
         <div class="cap-name">Code Search</div>
         <div class="cap-desc">Search across all files in a repo or the entire GitHub index instantly</div>
       </div>
-      <div class="cap" id="cap4">
+      <div class="cap" id="cap4" onclick="lightUpCaps()">
         <div class="cap-icon">📊</div>
         <div class="cap-name">Commit History</div>
         <div class="cap-desc">Fetch recent commits, diff specific changes, trace who changed what and when</div>
       </div>
-      <div class="cap" id="cap5">
+      <div class="cap" id="cap5" onclick="lightUpCaps()">
         <div class="cap-icon">🌿</div>
         <div class="cap-name">Branch Management</div>
         <div class="cap-desc">List branches, check status, understand what's on each branch — all from chat</div>
       </div>
-      <div class="cap" id="cap6">
+      <div class="cap" id="cap6" onclick="lightUpCaps()">
         <div class="cap-icon">👤</div>
         <div class="cap-name">User & Org Context</div>
         <div class="cap-desc">Access assigned issues, your open PRs, org-level repo lists with the right scopes</div>
       </div>
-      <div class="cap" id="cap7">
+      <div class="cap" id="cap7" onclick="lightUpCaps()">
         <div class="cap-icon">🔔</div>
         <div class="cap-name">Notifications</div>
         <div class="cap-desc">Surface what needs your attention — reviews requested, mentions, CI failures</div>
@@ -542,32 +547,32 @@ h1 span { color: var(--green3); }
     <div class="card">
       <div class="card-label">Key MCP Tools in the GitHub Server</div>
       <div class="tools-grid">
-        <div class="tool">
+        <div class="tool" id="tool0" onclick="lightUpTools()">
           <div class="tool-tag">READ</div>
           <div class="tool-name">get_file_contents</div>
           <div class="tool-desc">Read any file from a repo by path</div>
         </div>
-        <div class="tool">
+        <div class="tool" id="tool1" onclick="lightUpTools()">
           <div class="tool-tag">READ</div>
           <div class="tool-name">search_code</div>
           <div class="tool-desc">Search across repo content</div>
         </div>
-        <div class="tool">
+        <div class="tool" id="tool2" onclick="lightUpTools()">
           <div class="tool-tag">READ</div>
           <div class="tool-name">list_commits</div>
           <div class="tool-desc">Fetch commit history for a branch</div>
         </div>
-        <div class="tool">
+        <div class="tool" id="tool3" onclick="lightUpTools()">
           <div class="tool-tag">WRITE</div>
           <div class="tool-name">create_issue</div>
           <div class="tool-desc">Open a new issue with labels</div>
         </div>
-        <div class="tool">
+        <div class="tool" id="tool4" onclick="lightUpTools()">
           <div class="tool-tag">WRITE</div>
           <div class="tool-name">create_pull_request</div>
           <div class="tool-desc">Open a PR from a branch</div>
         </div>
-        <div class="tool">
+        <div class="tool" id="tool5" onclick="lightUpTools()">
           <div class="tool-tag">WRITE</div>
           <div class="tool-name">add_issue_comment</div>
           <div class="tool-desc">Post a comment on an issue or PR</div>
@@ -578,22 +583,22 @@ h1 span { color: var(--green3); }
     <div class="card">
       <div class="card-label">Supported IDEs</div>
       <div class="ide-row" style="grid-template-columns: repeat(2,1fr);">
-        <div class="ide">
+        <div class="ide" id="ide0" onclick="lightUpIDEs()">
           <div class="ide-icon">⬡</div>
           <div class="ide-name">VS Code</div>
           <div class="ide-note">v1.99+ · mcp.json<br>"servers" root key<br>MCP Registry view</div>
         </div>
-        <div class="ide">
+        <div class="ide" id="ide1" onclick="lightUpIDEs()">
           <div class="ide-icon">◈</div>
           <div class="ide-name">Visual Studio</div>
           <div class="ide-note">v17.14+ · UI config<br>HTTP/SSE type<br>Agent mode panel</div>
         </div>
-        <div class="ide">
+        <div class="ide" id="ide2" onclick="lightUpIDEs()">
           <div class="ide-icon">◇</div>
           <div class="ide-name">JetBrains</div>
           <div class="ide-note">All major IDEs<br>Latest Copilot plugin<br>Agent mode required</div>
         </div>
-        <div class="ide">
+        <div class="ide" id="ide3" onclick="lightUpIDEs()">
           <div class="ide-icon">$_</div>
           <div class="ide-name">Copilot CLI</div>
           <div class="ide-note">GH server built-in<br>/mcp add command<br>No install needed</div>
@@ -614,6 +619,38 @@ h1 span { color: var(--green3); }
 </div>
 
 <script>
+let capsLit = false, toolsLit = false, idesLit = false;
+
+function lightUpCaps() {
+  if (capsLit) return;
+  capsLit = true;
+  [0,1,2,3,4,5,6,7].forEach((i, idx) => {
+    setTimeout(() => document.getElementById('cap' + i)?.classList.add('live'), idx * 150);
+  });
+}
+
+function lightUpTools() {
+  if (toolsLit) return;
+  toolsLit = true;
+  [0,1,2,3,4,5].forEach((i, idx) => {
+    setTimeout(() => document.getElementById('tool' + i)?.classList.add('live'), idx * 150);
+  });
+}
+
+function lightUpIDEs() {
+  if (idesLit) return;
+  idesLit = true;
+  [0,1,2,3].forEach((i, idx) => {
+    setTimeout(() => document.getElementById('ide' + i)?.classList.add('live'), idx * 150);
+  });
+}
+
+function lightUpCards() {
+  setTimeout(() => lightUpCaps(),  0);
+  setTimeout(() => lightUpTools(), 1300);
+  setTimeout(() => lightUpIDEs(),  2300);
+}
+
 let running = false;
 
 const termLines = [
@@ -635,8 +672,9 @@ const termLines = [
 
 const pipelineDelays = [0, 1800, 3000, 3900, 4800, 6200];
 const capDelays      = [600, 1400, 2200, 3000, 3800, 4600, 5400, 6200];
+const toolDelays     = [3200, 3600, 4000, 4800, 5200, 5600];
+const ideDelays      = [4200, 4600, 5000, 5400];
 
-const metricTargets = { tools: 26, ides: 4, auth: 2, steps: 6 };
 
 function setProgress(pct, label) {
   document.getElementById('progressFill').style.width = pct + '%';
@@ -644,17 +682,6 @@ function setProgress(pct, label) {
   document.getElementById('progressLabel').textContent = label;
 }
 
-function animCount(id, target) {
-  const el = document.getElementById(id);
-  const start = parseInt(el.textContent) || 0;
-  const dur = 700, t0 = performance.now();
-  const tick = now => {
-    const p = Math.min((now - t0) / dur, 1);
-    el.textContent = Math.round(start + (target - start) * p);
-    if (p < 1) requestAnimationFrame(tick);
-  };
-  requestAnimationFrame(tick);
-}
 
 function activateStep(i) {
   ['n','t','d','c'].forEach(p => {
@@ -727,21 +754,30 @@ function runDemo() {
     }, delay);
   });
 
-  // count up metrics staggered
-  setTimeout(() => animCount('m-tools', metricTargets.tools), 1000);
-  setTimeout(() => animCount('m-ides',  metricTargets.ides),  2200);
-  setTimeout(() => animCount('m-auth',  metricTargets.auth),  3400);
-  setTimeout(() => animCount('m-steps', metricTargets.steps), 4600);
+  toolDelays.forEach((delay, i) => {
+    setTimeout(() => {
+      document.getElementById('tool' + i)?.classList.add('live');
+    }, delay);
+  });
+
+  ideDelays.forEach((delay, i) => {
+    setTimeout(() => {
+      document.getElementById('ide' + i)?.classList.add('live');
+    }, delay);
+  });
+
 
   setTimeout(() => {
     doneStep(5);
     setProgress(100, 'GitHub MCP connected · Agent mode active · Zero context switching');
+    lightUpCards();
     running = false;
   }, 8200);
 }
 
 function resetDemo(silent) {
   running = false;
+  capsLit = false; toolsLit = false; idesLit = false;
   if (!silent) {
     setProgress(0, 'Ready — click Run Demo');
     document.getElementById('termBody').innerHTML = `
@@ -749,9 +785,6 @@ function resetDemo(silent) {
       <div class="tl show"><span class="t-o">// GitHub MCP connection live</span></div>
       <div class="tl show">&nbsp;</div>
       <div class="tl show"><span class="cursor"></span></div>`;
-    ['m-tools','m-ides','m-auth','m-steps'].forEach(id => {
-      document.getElementById(id).textContent = '0';
-    });
   }
   for (let i = 0; i < 6; i++) {
     ['n','t','d'].forEach(p => document.getElementById(p + i)?.classList.remove('active','done'));
@@ -760,6 +793,12 @@ function resetDemo(silent) {
   }
   for (let i = 0; i < 8; i++) {
     document.getElementById('cap' + i)?.classList.remove('live');
+  }
+  for (let i = 0; i < 6; i++) {
+    document.getElementById('tool' + i)?.classList.remove('live');
+  }
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('ide' + i)?.classList.remove('live');
   }
 }
 </script>
