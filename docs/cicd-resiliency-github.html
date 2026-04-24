@@ -3,52 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CI/CD Resiliency — Self-Hosted Runners | cagitskill @GitHub</title>
+<title>CI/CD Resiliency — Self-Hosted Runners</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0d1117;--surface:#161b22;--border:#21262d;--border2:#30363d;
-  --accent:#3fb950;--accent2:#388bfd;--success:#2ea043;
-  --danger:#da3633;--warn:#d29922;--purple:#8957e5;
-  --text:#e6edf3;--muted:#7d8590;--muted2:#8b949e;
-  --mono:'Courier New',monospace;
-  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --bg:#0a0e1a;--surface:#1a2235;--border:#2d4060;
+  --accent:#00e5ff;--accent2:#a78bfa;--success:#10b981;
+  --danger:#ef4444;--warn:#fbbf24;--text:#f1f5f9;--muted:#a3b3cc;
+  --mono:'JetBrains Mono',monospace;--sans:'DM Sans',sans-serif;
 }
 body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden;min-height:100vh;padding-bottom:80px}
 
-/* ── HEADER ── */
-header{padding:32px 40px 24px;border-bottom:1px solid var(--border2);position:relative;overflow:hidden;display:flex;align-items:flex-start;justify-content:space-between;gap:20px}
-header::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(63,185,80,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(63,185,80,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
-.header-main{position:relative;z-index:1}
-.header-label{font-family:var(--mono);font-size:10px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:10px;opacity:0;animation:slideUp 0.5s 0.1s ease forwards;display:flex;align-items:center;gap:8px}
-.header-label::before{content:'';width:16px;height:1px;background:var(--accent)}
-header h1{font-size:clamp(22px,4vw,40px);font-weight:700;line-height:1.1;letter-spacing:-0.5px;opacity:0;animation:slideUp 0.5s 0.2s ease forwards}
+/* HEADER */
+header{padding:40px 40px 28px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+header::before{content:'';position:absolute;top:-80px;left:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(0,229,255,0.07) 0%,transparent 70%);pointer-events:none}
+.header-label{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:10px;opacity:0;animation:slideUp 0.5s 0.1s ease forwards}
+header h1{font-size:clamp(24px,4.5vw,46px);font-weight:800;line-height:1.1;letter-spacing:-1px;opacity:0;animation:slideUp 0.5s 0.2s ease forwards}
 header h1 span{color:var(--accent)}
-header p{margin-top:8px;color:var(--muted2);font-size:12px;font-family:var(--mono);line-height:1.6;opacity:0;animation:slideUp 0.5s 0.35s ease forwards}
-.header-identity{position:relative;z-index:1;text-align:right;flex-shrink:0;opacity:0;animation:slideUp 0.5s 0.3s ease forwards}
-.gh-handle{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
-.gh-role{font-size:10px;font-family:var(--mono);color:var(--muted2);margin-bottom:8px}
-.gh-live{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-family:var(--mono);color:var(--accent);background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.25);padding:4px 10px;border-radius:100px}
-.gh-live-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s ease-in-out infinite}
+header p{margin-top:10px;color:#a3b3cc;font-size:13px;font-family:var(--mono);line-height:1.6;font-weight:500;opacity:0;animation:slideUp 0.5s 0.35s ease forwards}
 
-/* ── NAV DOTS ── */
-.nav-dots{display:flex;gap:8px;padding:14px 40px;border-bottom:1px solid var(--border2);flex-wrap:wrap}
-.nav-dot{width:10px;height:10px;border-radius:50%;background:var(--border2);cursor:pointer;transition:all 0.3s;border:none}
-.nav-dot.active{background:var(--accent);box-shadow:0 0 7px rgba(63,185,80,0.5)}
+/* NAV */
+.nav-dots{display:flex;gap:8px;padding:18px 40px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.nav-dot{width:10px;height:10px;border-radius:50%;background:var(--border);cursor:pointer;transition:all 0.3s;border:none}
+.nav-dot.active{background:var(--accent);box-shadow:0 0 8px var(--accent)}
 .nav-dot:hover{background:var(--muted)}
 
-/* ── SECTIONS ── */
-.section{display:none;padding:32px 40px 20px}
+/* SECTIONS */
+.section{display:none;padding:36px 40px 24px}
 .section.active{display:block}
-.slide-num{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:3px;margin-bottom:6px}
-.section h2{font-size:clamp(18px,3vw,30px);font-weight:700;letter-spacing:-0.5px;margin-bottom:20px;line-height:1.2}
+.slide-num{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:3px;margin-bottom:6px}
+.section h2{font-size:clamp(20px,3.5vw,34px);font-weight:800;letter-spacing:-0.5px;margin-bottom:24px;line-height:1.2}
 
-/* ── ANIMATIONS ── */
-@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-@keyframes slideLeft{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+/* KEYFRAMES */
+@keyframes slideUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideLeft{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes scaleIn{from{opacity:0;transform:scale(0.94)}to{opacity:1;transform:scale(1)}}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.7)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.93)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 6px rgba(0,229,255,0.3)}50%{box-shadow:0 0 18px rgba(0,229,255,0.7)}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 @keyframes flowR{0%{left:-100%}100%{left:100%}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
@@ -56,38 +48,38 @@ header p{margin-top:8px;color:var(--muted2);font-size:12px;font-family:var(--mon
 .ai{opacity:0}
 .ai.in{animation:slideUp 0.45s ease forwards}
 
-/* ── SHARED ── */
+/* SHARED COMPONENTS */
 .mono{font-family:var(--mono)}
 .tag{display:inline-block;padding:2px 9px;border-radius:4px;font-family:var(--mono);font-size:10px;border:1px solid}
-.tag-green{background:rgba(46,160,67,0.1);color:var(--accent);border-color:rgba(46,160,67,0.25)}
-.tag-red{background:rgba(218,54,51,0.1);color:var(--danger);border-color:rgba(218,54,51,0.25)}
-.tag-blue{background:rgba(56,139,253,0.1);color:var(--accent2);border-color:rgba(56,139,253,0.25)}
-.tag-warn{background:rgba(210,153,34,0.1);color:var(--warn);border-color:rgba(210,153,34,0.25)}
-.tag-purple{background:rgba(137,87,229,0.1);color:var(--purple);border-color:rgba(137,87,229,0.25)}
-.card{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:20px}
+.tag-green{background:rgba(16,185,129,0.1);color:var(--success);border-color:rgba(16,185,129,0.25)}
+.tag-red{background:rgba(239,68,68,0.1);color:var(--danger);border-color:rgba(239,68,68,0.25)}
+.tag-blue{background:rgba(0,229,255,0.1);color:var(--accent);border-color:rgba(0,229,255,0.25)}
+.tag-warn{background:rgba(245,158,11,0.1);color:var(--warn);border-color:rgba(245,158,11,0.25)}
+.tag-purple{background:rgba(124,58,237,0.1);color:#a78bfa;border-color:rgba(124,58,237,0.25)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
 
-/* ── PIPELINE ── */
-.pipe-row{display:flex;align-items:center;padding:16px 18px;background:var(--surface);border:1px solid var(--border2);border-radius:8px}
+/* PIPELINE SHARED */
+.pipe-row{display:flex;align-items:center;padding:18px 20px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
 .ps{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
-.pi{width:42px;height:42px;border-radius:8px;border:2px solid var(--border2);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:17px;transition:all 0.35s}
-.pi.running{border-color:var(--accent);box-shadow:0 0 0 3px rgba(63,185,80,0.1);animation:pulse 1.4s ease-in-out infinite}
-.pi.done{border-color:var(--success);background:rgba(46,160,67,0.08)}
-.pi.failed{border-color:var(--danger);background:rgba(218,54,51,0.08);animation:shake 0.5s ease}
-.pi.blocked{border-color:var(--warn);background:rgba(210,153,34,0.05)}
+.pi{width:44px;height:44px;border-radius:10px;border:2px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;transition:all 0.35s}
+.pi.running{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,229,255,0.12);animation:pulse 1.4s ease-in-out infinite}
+.pi.done{border-color:var(--success);background:rgba(16,185,129,0.1)}
+.pi.failed{border-color:var(--danger);background:rgba(239,68,68,0.1);animation:shake 0.5s ease}
+.pi.blocked{border-color:var(--warn);background:rgba(245,158,11,0.06)}
 .pl{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;transition:color 0.3s}
 .pl.running{color:var(--accent)}
 .pl.done{color:var(--success)}
 .pl.failed{color:var(--danger)}
 .pl.blocked{color:var(--warn)}
-.pc{flex:1;height:2px;background:var(--border2);position:relative;overflow:hidden;max-width:32px}
+.pc{flex:1;height:2px;background:var(--border);position:relative;overflow:hidden;max-width:36px}
 .pc.lit{background:var(--success)}
 .pc.flow::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:var(--accent);animation:flowR 0.5s linear forwards}
 
-/* ── RUNNER ROW ── */
-.runner-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;transition:all 0.35s}
-.runner-row.active{border-color:rgba(63,185,80,0.35);background:rgba(63,185,80,0.04)}
-.runner-row.dead{border-color:rgba(218,54,51,0.3);background:rgba(218,54,51,0.03);opacity:0.45}
-.runner-row.recovered{border-color:rgba(46,160,67,0.35);background:rgba(46,160,67,0.04)}
+/* RUNNER ROW */
+.runner-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;transition:all 0.35s}
+.runner-row.active{border-color:rgba(0,229,255,0.4);background:rgba(0,229,255,0.04)}
+.runner-row.dead{border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.03);opacity:0.45}
+.runner-row.recovered{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.04)}
 .rdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:all 0.35s}
 .rdot.online{background:var(--success);box-shadow:0 0 5px var(--success);animation:blink 2s infinite}
 .rdot.busy{background:var(--accent);box-shadow:0 0 5px var(--accent);animation:blink 0.7s infinite}
@@ -98,29 +90,29 @@ header p{margin-top:8px;color:var(--muted2);font-size:12px;font-family:var(--mon
 .rstatus.dead{color:var(--danger)}
 .rstatus.ok{color:var(--success)}
 
-/* ── OUTCOME ── */
-.outcome{display:none;border-radius:8px;padding:14px 18px;font-family:var(--mono);font-size:12px;line-height:1.9}
+/* OUTCOME */
+.outcome{display:none;border-radius:10px;padding:14px 18px;font-family:var(--mono);font-size:12px;line-height:1.9}
 .outcome.show{display:block;animation:slideUp 0.4s ease}
-.outcome.ok{background:rgba(46,160,67,0.06);border:1px solid rgba(46,160,67,0.25);color:var(--success)}
-.outcome.bad{background:rgba(218,54,51,0.06);border:1px solid rgba(218,54,51,0.25);color:var(--danger)}
+.outcome.ok{background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.3);color:var(--success)}
+.outcome.bad{background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.3);color:var(--danger)}
 .outcome-title{font-weight:700;font-size:13px;margin-bottom:6px}
 
-/* ── BUTTONS ── */
+/* ACTION BUTTONS */
 .btn-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px}
-.abtn{padding:8px 18px;border-radius:6px;font-family:var(--mono);font-size:12px;cursor:pointer;transition:all 0.2s;border:1px solid rgba(63,185,80,0.35);background:rgba(63,185,80,0.08);color:var(--accent)}
-.abtn:hover{background:rgba(63,185,80,0.15)}
-.abtn.red{border-color:rgba(218,54,51,0.35);background:rgba(218,54,51,0.08);color:var(--danger)}
-.abtn.red:hover{background:rgba(218,54,51,0.15)}
+.abtn{padding:9px 20px;border-radius:8px;font-family:var(--mono);font-size:12px;cursor:pointer;transition:all 0.2s;border:1px solid rgba(0,229,255,0.4);background:rgba(0,229,255,0.08);color:var(--accent)}
+.abtn:hover{background:rgba(0,229,255,0.16);box-shadow:0 0 10px rgba(0,229,255,0.2)}
+.abtn.red{border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.08);color:var(--danger)}
+.abtn.red:hover{background:rgba(239,68,68,0.16)}
 .abtn:disabled{opacity:0.3;pointer-events:none}
 .caption{font-family:var(--mono);font-size:11px;color:var(--muted)}
 .caption b{color:var(--accent)}
 
-/* ── BOTTOM NAV ── */
-.nav-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(13,17,23,0.96);backdrop-filter:blur(12px);border-top:1px solid var(--border2);padding:12px 40px;display:flex;justify-content:space-between;align-items:center;z-index:100}
-.nbtn{padding:8px 20px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text);font-family:var(--mono);font-size:12px;cursor:pointer;transition:all 0.2s}
+/* BOTTOM NAV */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(10,14,26,0.96);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:14px 40px;display:flex;justify-content:space-between;align-items:center;z-index:100}
+.nbtn{padding:10px 22px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:var(--mono);font-size:12px;cursor:pointer;transition:all 0.2s}
 .nbtn:hover{border-color:var(--accent);color:var(--accent)}
 .nbtn.primary{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:700}
-.nbtn.primary:hover{box-shadow:0 0 12px rgba(63,185,80,0.4)}
+.nbtn.primary:hover{box-shadow:0 0 14px rgba(0,229,255,0.4)}
 .nbtn:disabled{opacity:0.3;cursor:not-allowed}
 .nav-progress{font-family:var(--mono);font-size:11px;color:var(--muted)}
 .nav-progress span{color:var(--accent)}
@@ -128,18 +120,10 @@ header p{margin-top:8px;color:var(--muted2);font-size:12px;font-family:var(--mon
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
-  <div class="header-main">
-    <div class="header-label">GitHub Actions · Training</div>
-    <h1>CI/CD Resiliency with<br><span>Self-Hosted Runners</span></h1>
-    <p>// What breaks, why it breaks, and how GitHub gives you the tools to fix it</p>
-  </div>
-  <div class="header-identity">
-    <div class="gh-handle">cagitskill</div>
-    <div class="gh-role">@GitHub · Actions & CI/CD</div>
-    <div class="gh-live"><div class="gh-live-dot"></div>Interactive Demo</div>
-  </div>
+  <div class="header-label">GitHub Actions // Training</div>
+  <h1>CI/CD Resiliency with<br><span>Self-Hosted Runners</span></h1>
+  <p>// What breaks, why it breaks, and how GitHub gives you the tools to fix it</p>
 </header>
 
 <div class="nav-dots" id="navDots"></div>
@@ -150,6 +134,7 @@ header p{margin-top:8px;color:var(--muted2);font-size:12px;font-family:var(--mon
   <h2>The Problem</h2>
 
   <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px">
+
     <div class="pipe-row ai" id="s1pipe">
       <div class="ps"><div class="pi" id="p0">📦</div><div class="pl" id="l0">checkout</div></div>
       <div class="pc" id="c0"></div>
@@ -161,11 +146,13 @@ header p{margin-top:8px;color:var(--muted2);font-size:12px;font-family:var(--mon
       <div class="pc" id="c3"></div>
       <div class="ps"><div class="pi" id="p4">⬜</div><div class="pl" id="l4">done</div></div>
     </div>
+
     <div class="runner-row ai" id="r0">
       <div class="rdot online" id="rd0"></div>
       <div class="rname">runner-prod-01</div>
       <div class="rstatus" id="rs0">idle — waiting for jobs</div>
     </div>
+
     <div class="outcome" id="s1outcome"></div>
   </div>
 
@@ -186,9 +173,9 @@ header p{margin-top:8px;color:var(--muted2);font-size:12px;font-family:var(--mon
   <style>
   .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
   @media(max-width:620px){.two-col{grid-template-columns:1fr}}
-  .side{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:10px}
-  .side.gh-side{border-color:rgba(137,87,229,0.3)}
-  .side.sh-side{border-color:rgba(63,185,80,0.2)}
+  .side{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px}
+  .side.gh-side{border-color:rgba(124,58,237,0.35)}
+  .side.sh-side{border-color:rgba(0,229,255,0.25)}
   .side-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:2px}
   </style>
 
@@ -210,6 +197,7 @@ header p{margin-top:8px;color:var(--muted2);font-size:12px;font-family:var(--mon
       <div class="runner-row" id="gr1" style="display:none"><div class="rdot online" id="grd1"></div><div class="rname">New VM (auto-provisioned)</div><div class="rstatus ok">ready</div></div>
       <div class="outcome" id="gOutcome"></div>
     </div>
+
     <div class="side sh-side ai" style="animation-delay:0.1s">
       <div class="side-title">🖥️ Self-Hosted <span class="tag tag-blue">you manage it</span></div>
       <div class="pipe-row" style="padding:12px 14px">
@@ -241,44 +229,55 @@ header p{margin-top:8px;color:var(--muted2);font-size:12px;font-family:var(--mon
   <h2>How Self-Hosted Runners Actually Work</h2>
 
   <style>
-  .how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-bottom:20px}
-  .how-card{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:18px;opacity:0}
+  .how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:20px}
+  .how-card{background:#1e2d47;border:1px solid #3a5580;border-radius:12px;padding:20px;opacity:0;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden}
   .how-card.in{animation:scaleIn 0.4s ease forwards}
-  .how-num{font-family:var(--mono);font-size:26px;font-weight:700;color:rgba(63,185,80,0.35);margin-bottom:6px}
-  .how-card h4{font-size:13px;font-weight:700;margin-bottom:6px;color:var(--text)}
-  .how-card p{font-size:11px;color:var(--muted2);line-height:1.6;font-family:var(--mono)}
-  .code-snippet{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:16px;font-family:var(--mono);font-size:12px;color:var(--accent);line-height:1.9;opacity:0}
+  .how-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
+  .how-card:hover::before,.how-card.open::before{transform:scaleX(1)}
+  .how-card:hover{border-color:rgba(0,229,255,0.55);transform:translateY(-2px)}
+  .how-card.open{border-color:var(--accent);background:#243556;transform:translateY(-3px);box-shadow:0 0 0 1px var(--accent),0 12px 32px rgba(0,229,255,0.3),0 0 24px rgba(0,229,255,0.25)}
+  .how-card.open .how-num{color:var(--accent)}
+  .how-card.cascade{animation:cascadePulseAccent 0.6s ease}
+  @keyframes cascadePulseAccent{
+    0%{box-shadow:0 0 0 0 rgba(0,229,255,0)}
+    50%{box-shadow:0 0 0 2px rgba(0,229,255,0.6),0 0 24px rgba(0,229,255,0.4);border-color:rgba(0,229,255,0.7);transform:translateY(-2px)}
+    100%{box-shadow:0 0 0 0 rgba(0,229,255,0);transform:translateY(0)}
+  }
+  .how-num{font-family:var(--mono);font-size:28px;font-weight:700;color:rgba(0,229,255,0.4);margin-bottom:6px;transition:color 0.3s}
+  .how-card h4{font-size:14px;font-weight:800;margin-bottom:6px;color:#ffffff}
+  .how-card p{font-size:12.5px;color:#d4ddec;line-height:1.65;font-family:var(--mono);font-weight:500}
+  .code-snippet{background:#1e2d47;border:1px solid #3a5580;border-radius:10px;padding:16px;font-family:var(--mono);font-size:12px;color:var(--accent);line-height:1.9;opacity:0}
   .code-snippet.in{animation:fadeIn 0.5s ease forwards}
   .code-comment{color:var(--muted)}
-  .fact-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:9px;font-size:12px;color:var(--muted2)}
-  .fact-dot{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0}
+  .fact-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:13px;color:#cbd5e1}
+  .fact-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);margin-top:6px;flex-shrink:0}
   </style>
 
   <div class="how-grid">
-    <div class="how-card ai">
+    <div class="how-card ai" onclick="toggleHow(this)">
       <div class="how-num">01</div>
       <h4>Download the runner app</h4>
-      <p>GitHub provides a lightweight runner application. Download and configure it on any machine you control — server, VM, or container. Supports Linux, macOS, Windows.</p>
+      <p>GitHub provides a lightweight runner application. You download and configure it on any machine you control — server, VM, or container.</p>
     </div>
-    <div class="how-card ai" style="animation-delay:0.08s">
+    <div class="how-card ai" onclick="toggleHow(this)" style="animation-delay:0.08s">
       <div class="how-num">02</div>
       <h4>Register with GitHub</h4>
-      <p>The runner registers to a repo, org, or enterprise using a registration token from GitHub. It connects outbound over HTTPS — no inbound ports required.</p>
+      <p>The runner registers to a repo, org, or enterprise using a token from GitHub. It connects outbound over HTTPS — no inbound ports needed.</p>
     </div>
-    <div class="how-card ai" style="animation-delay:0.16s">
+    <div class="how-card ai" onclick="toggleHow(this)" style="animation-delay:0.16s">
       <div class="how-num">03</div>
       <h4>Runner polls for jobs</h4>
-      <p>Once registered, the runner polls GitHub Actions for queued jobs. When a job matches its labels, the runner picks it up and executes it locally on your machine.</p>
+      <p>Once registered, the runner polls GitHub for queued jobs. When a job matches its labels, the runner picks it up and executes it locally.</p>
     </div>
-    <div class="how-card ai" style="animation-delay:0.24s">
+    <div class="how-card ai" onclick="toggleHow(this)" style="animation-delay:0.24s">
       <div class="how-num">04</div>
       <h4>You route jobs with labels</h4>
-      <p>Assign custom labels to runners (e.g. <span style="color:var(--accent)">self-hosted, linux, prod</span>). Workflows use <span style="color:var(--accent)">runs-on</span> to target exactly the right runner.</p>
+      <p>Assign labels to runners (e.g. <span style="color:var(--accent)">self-hosted, linux, prod</span>). Workflows use <span style="color:var(--accent)">runs-on</span> to target the right runner.</p>
     </div>
   </div>
 
   <div class="code-snippet ai" style="animation-delay:0.3s">
-<span class="code-comment"># Route this job to your self-hosted runner pool</span>
+<span class="code-comment"># Route this job to your self-hosted runner</span>
 jobs:
   deploy:
     runs-on: [self-hosted, linux, prod]
@@ -287,31 +286,38 @@ jobs:
       - run: ./deploy.sh
   </div>
 
-  <div style="margin-top:14px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:16px" class="ai">
-    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:12px;text-transform:uppercase">// What GitHub does NOT handle automatically on self-hosted</div>
-    <div class="fact-row"><div class="fact-dot" style="background:var(--danger)"></div><div>Replace a runner that goes offline — it queues the job and waits indefinitely</div></div>
-    <div class="fact-row"><div class="fact-dot" style="background:var(--danger)"></div><div>Scale up when your queue backs up — autoscaling is your responsibility</div></div>
-    <div class="fact-row"><div class="fact-dot" style="background:var(--danger)"></div><div>Clean state between jobs — unless you use the <span class="mono" style="color:var(--accent);font-size:11px">--ephemeral</span> flag at registration</div></div>
+  <div style="margin-top:16px;background:#1e2d47;border:1px solid #3a5580;border-radius:12px;padding:18px" class="ai">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:2px;margin-bottom:12px;text-transform:uppercase">// What GitHub does NOT do automatically</div>
+    <div class="fact-row"><div class="fact-dot" style="background:var(--danger)"></div><div style="font-size:13px">Replace a runner that goes offline — it queues the job and waits</div></div>
+    <div class="fact-row"><div class="fact-dot" style="background:var(--danger)"></div><div style="font-size:13px">Scale up when your queue backs up — that's on you</div></div>
+    <div class="fact-row"><div class="fact-dot" style="background:var(--danger)"></div><div style="font-size:13px">Clean state between jobs — unless you use the <span class="mono" style="color:var(--accent);font-size:12px">--ephemeral</span> flag</div></div>
   </div>
 </div>
 
-<!-- ══ SLIDE 4: FAILURE POINTS ══ -->
+<!-- ══ SLIDE 4: THE FAILURE POINTS ══ -->
 <div class="section" id="section-3">
   <div class="slide-num">// 04 OF 07</div>
   <h2>Where Things Break</h2>
-  <p class="mono" style="font-size:12px;color:var(--muted);margin-bottom:20px">// tap each to expand</p>
+  <p class="mono" style="font-size:12px;color:var(--muted);margin-bottom:22px">// tap each to expand</p>
 
   <style>
-  .fail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-  .fail-card{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:18px;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;opacity:0}
+  .fail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+  .fail-card{background:#1e2d47;border:1px solid #3a5580;border-radius:12px;padding:20px;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;opacity:0}
   .fail-card.in{animation:slideUp 0.45s ease forwards}
-  .fail-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--danger);transform:scaleX(0);transform-origin:left;transition:transform 0.25s}
+  .fail-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--danger);transform:scaleX(0);transform-origin:left;transition:transform 0.3s}
   .fail-card:hover::before,.fail-card.open::before{transform:scaleX(1)}
-  .fail-card:hover,.fail-card.open{border-color:rgba(218,54,51,0.4);transform:translateY(-2px)}
-  .fn{font-family:var(--mono);font-size:26px;font-weight:700;color:rgba(218,54,51,0.4);margin-bottom:6px}
-  .fail-card h4{font-size:13px;font-weight:700;margin-bottom:5px}
-  .fail-card>p{font-size:11px;color:var(--muted);line-height:1.5;font-family:var(--mono)}
-  .fail-detail{display:none;margin-top:10px;padding:10px 12px;background:rgba(218,54,51,0.06);border-radius:6px;font-family:var(--mono);font-size:11px;color:rgba(218,54,51,0.85);line-height:1.9}
+  .fail-card:hover{border-color:rgba(239,68,68,0.55);transform:translateY(-2px)}
+  .fail-card.open{border-color:var(--danger);background:#2a3a5a;transform:translateY(-3px);box-shadow:0 0 0 1px var(--danger),0 12px 32px rgba(239,68,68,0.35),0 0 24px rgba(239,68,68,0.25)}
+  .fail-card.cascade{animation:cascadePulse 0.6s ease}
+  @keyframes cascadePulse{
+    0%{box-shadow:0 0 0 0 rgba(239,68,68,0)}
+    50%{box-shadow:0 0 0 2px rgba(239,68,68,0.6),0 0 24px rgba(239,68,68,0.4);border-color:rgba(239,68,68,0.7);transform:translateY(-2px)}
+    100%{box-shadow:0 0 0 0 rgba(239,68,68,0);transform:translateY(0)}
+  }
+  .fn{font-family:var(--mono);font-size:28px;font-weight:700;color:rgba(239,68,68,0.5);margin-bottom:6px}
+  .fail-card h4{font-size:14.5px;font-weight:800;margin-bottom:6px;color:#ffffff}
+  .fail-card>p{font-size:12.5px;color:#cdd7e8;line-height:1.55;font-family:var(--mono);font-weight:500}
+  .fail-detail{display:none;margin-top:12px;padding:12px 14px;background:rgba(239,68,68,0.12);border-left:3px solid var(--danger);border-radius:8px;font-family:var(--mono);font-size:12px;color:#fca5a5;line-height:1.9;font-weight:500}
   .fail-card.open .fail-detail{display:block;animation:slideUp 0.3s ease}
   </style>
 
@@ -319,46 +325,46 @@ jobs:
     <div class="fail-card ai" onclick="toggleFail(this)">
       <div class="fn">01</div>
       <h4>Runner goes offline</h4>
-      <p>Server crashes or agent stops. GitHub queues the job and waits — indefinitely. No timeout, no fallback.</p>
-      <div class="fail-detail">→ Job stays in "Queued" with no automatic timeout<br>→ No failover to another runner<br>→ Team must manually restart the runner agent<br>→ All jobs targeting that runner are completely blocked</div>
+      <p>Server crashes or agent stops. GitHub queues the job and waits — indefinitely.</p>
+      <div class="fail-detail">→ Job stays in "Queued" state with no timeout<br>→ No automatic recovery or failover<br>→ Team has to manually restart the runner agent<br>→ All jobs targeting that runner are blocked</div>
     </div>
     <div class="fail-card ai" onclick="toggleFail(this)" style="animation-delay:0.08s">
       <div class="fn">02</div>
       <h4>Only one runner registered</h4>
-      <p>One runner means one job at a time. Queue backs up. Everything waits. Time-sensitive deploys miss their window.</p>
-      <div class="fail-detail">→ Jobs execute serially, never in parallel<br>→ High-traffic pushes create an instant bottleneck<br>→ Fix: register multiple runners to the same repo or org<br>→ GitHub distributes jobs automatically — no YAML change needed</div>
+      <p>One runner means one job at a time. Queue backs up. Everything waits.</p>
+      <div class="fail-detail">→ Jobs execute serially, not in parallel<br>→ High-traffic moments create a bottleneck<br>→ Time-sensitive deploys miss their window<br>→ Fix: register more runners to the same repo or org</div>
     </div>
     <div class="fail-card ai" onclick="toggleFail(this)" style="animation-delay:0.16s">
       <div class="fn">03</div>
       <h4>State bleeds between jobs</h4>
-      <p>Runners persist by default. Old files, env vars, or packages from job A can silently break job B.</p>
-      <div class="fail-detail">→ Cached deps can mask a real broken dependency<br>→ Leftover env vars override workflow-defined values<br>→ Tests pass locally, fail unexpectedly in CI<br>→ Fix: register with --ephemeral — one clean job per runner</div>
+      <p>Runners persist by default. Old files, env vars, or packages from job A affect job B.</p>
+      <div class="fail-detail">→ Cached deps mask a real broken dependency<br>→ Leftover env vars override your workflow values<br>→ Tests pass locally, fail unexpectedly in CI<br>→ Fix: use --ephemeral flag when registering</div>
     </div>
     <div class="fail-card ai" onclick="toggleFail(this)" style="animation-delay:0.24s">
       <div class="fn">04</div>
-      <h4>No routing isolation</h4>
-      <p>Without labels and runner groups, any runner can pick up any job — including sensitive prod deploys.</p>
-      <div class="fail-detail">→ Dev workload lands on your prod runner accidentally<br>→ Sensitive secrets exposed to wrong workloads<br>→ No environment isolation by default<br>→ Fix: labels + runner groups enforce strict routing</div>
+      <h4>No way to route by environment</h4>
+      <p>Without labels and runner groups, any runner can pick up any job — including prod deploys.</p>
+      <div class="fail-detail">→ Dev job runs on your prod runner by accident<br>→ Sensitive secrets exposed to wrong workloads<br>→ No isolation between environments<br>→ Fix: use labels + runner groups to control routing</div>
     </div>
   </div>
 </div>
 
-<!-- ══ SLIDE 5: SOLUTIONS ══ -->
+<!-- ══ SLIDE 5: THE SOLUTIONS ══ -->
 <div class="section" id="section-4">
   <div class="slide-num">// 05 OF 07</div>
   <h2>What GitHub Gives You to Fix It</h2>
-  <p class="mono" style="font-size:12px;color:var(--muted);margin-bottom:20px">// native GitHub Actions features — no third-party tooling required</p>
+  <p class="mono" style="font-size:12px;color:var(--muted);margin-bottom:22px">// these are native GitHub Actions features — no third-party tooling required</p>
 
   <style>
   .sol-list{display:flex;flex-direction:column;gap:12px}
-  .sol-item{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:18px;display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;transition:all 0.25s;cursor:pointer;opacity:0}
+  .sol-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;transition:all 0.3s;cursor:pointer;opacity:0}
   .sol-item.in{animation:slideLeft 0.45s ease forwards}
-  .sol-item:hover,.sol-item.open{border-color:rgba(46,160,67,0.35);background:rgba(46,160,67,0.03)}
-  .sol-icon{width:42px;height:42px;border-radius:8px;background:rgba(46,160,67,0.08);border:1px solid rgba(46,160,67,0.2);display:flex;align-items:center;justify-content:center;font-size:19px}
-  .sol-item h4{font-size:13px;font-weight:700;margin-bottom:4px}
-  .sol-item p{font-size:12px;color:var(--muted2);line-height:1.6;font-family:var(--mono)}
-  .sol-tag{display:inline-block;margin-top:8px;padding:2px 10px;border-radius:100px;font-family:var(--mono);font-size:10px;background:rgba(46,160,67,0.08);color:var(--accent);border:1px solid rgba(46,160,67,0.2)}
-  .sol-extra{display:none;margin-top:10px;padding:10px 12px;background:rgba(46,160,67,0.05);border-radius:6px;font-family:var(--mono);font-size:11px;color:var(--accent);line-height:1.9}
+  .sol-item:hover,.sol-item.open{border-color:var(--success);background:rgba(16,185,129,0.04)}
+  .sol-icon{width:44px;height:44px;border-radius:10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:center;font-size:20px}
+  .sol-item h4{font-size:14px;font-weight:700;margin-bottom:5px}
+  .sol-item p{font-size:12px;color:var(--muted);line-height:1.6;font-family:var(--mono)}
+  .sol-tag{display:inline-block;margin-top:8px;padding:2px 10px;border-radius:20px;font-family:var(--mono);font-size:10px;background:rgba(16,185,129,0.1);color:var(--success);border:1px solid rgba(16,185,129,0.25)}
+  .sol-extra{display:none;margin-top:10px;padding:10px 12px;background:rgba(16,185,129,0.06);border-radius:8px;font-family:var(--mono);font-size:11px;color:var(--success);line-height:1.9}
   .sol-item.open .sol-extra{display:block;animation:slideUp 0.3s ease}
   </style>
 
@@ -367,36 +373,36 @@ jobs:
       <div class="sol-icon">👥</div>
       <div>
         <h4>Register multiple runners</h4>
-        <p>Add more than one runner to a repo or org. GitHub distributes jobs across all available runners automatically. If one is busy or offline, the others keep working.</p>
+        <p>Add more than one runner to a repo or org. GitHub distributes jobs across all available runners automatically. If one is busy or offline, others pick up the work.</p>
         <span class="sol-tag">Settings → Actions → Runners → New self-hosted runner</span>
-        <div class="sol-extra">→ No YAML change needed — GitHub dispatches automatically<br>→ Idle runners cost nothing, they just wait<br>→ Add as many as you need — there's no cap on runner count</div>
+        <div class="sol-extra">→ No config change needed in your workflow YAML<br>→ GitHub queues and dispatches jobs automatically<br>→ Idle runners cost nothing — they just wait</div>
       </div>
     </div>
     <div class="sol-item ai" onclick="toggleSol(this)" style="animation-delay:0.08s">
       <div class="sol-icon">🧹</div>
       <div>
         <h4>Ephemeral runners (--ephemeral)</h4>
-        <p>Register with the <span class="mono" style="color:var(--accent);font-size:11px">--ephemeral</span> flag. The runner handles exactly one job then exits. No state carries over. Every job gets a clean slate.</p>
+        <p>Register with the <span class="mono" style="color:var(--accent);font-size:11px">--ephemeral</span> flag. The runner handles one job then exits cleanly. No state carries over between runs.</p>
         <span class="sol-tag">./config.sh --ephemeral</span>
-        <div class="sol-extra">→ Each job gets a completely fresh environment<br>→ No leftover files, caches, or environment variables<br>→ Re-provision after each job using a loop script or systemd service</div>
+        <div class="sol-extra">→ Each job gets a clean environment<br>→ No leftover files, caches, or env vars<br>→ You re-provision the runner after each job (or use a script/systemd to loop it)</div>
       </div>
     </div>
     <div class="sol-item ai" onclick="toggleSol(this)" style="animation-delay:0.16s">
       <div class="sol-icon">🏷️</div>
       <div>
         <h4>Labels and runner groups</h4>
-        <p>Assign custom labels to runners. Use <span class="mono" style="color:var(--accent);font-size:11px">runs-on</span> to route jobs to runners with matching labels. Runner groups (org-level) control which repos can access which runners.</p>
+        <p>Assign custom labels to runners. Use <span class="mono" style="color:var(--accent);font-size:11px">runs-on</span> to route jobs only to runners with matching labels. Runner groups (org-level) control which repos can use which runners.</p>
         <span class="sol-tag">runs-on: [self-hosted, prod, linux]</span>
-        <div class="sol-extra">→ Keep prod runners fully isolated from dev and staging<br>→ Prevent sensitive jobs from landing on the wrong machine<br>→ Runner groups available on GitHub Team and Enterprise plans</div>
+        <div class="sol-extra">→ Keep prod runners isolated from dev/staging<br>→ Prevent sensitive jobs from landing on wrong machines<br>→ Runner groups available on GitHub Team and Enterprise</div>
       </div>
     </div>
     <div class="sol-item ai" onclick="toggleSol(this)" style="animation-delay:0.24s">
       <div class="sol-icon">🚦</div>
       <div>
-        <h4>Concurrency controls</h4>
-        <p>Use the <span class="mono" style="color:var(--accent);font-size:11px">concurrency</span> key in your workflow YAML to limit parallel runs and automatically cancel stale jobs when a newer commit pushes.</p>
-        <span class="sol-tag">concurrency: cancel-in-progress: true</span>
-        <div class="sol-extra">→ Prevents duplicate deploys stacking up<br>→ Cancels in-progress run when a newer push arrives<br>→ Works equally on GitHub-hosted and self-hosted runners</div>
+        <h4>Concurrency controls in workflow YAML</h4>
+        <p>Use the <span class="mono" style="color:var(--accent);font-size:11px">concurrency</span> key to limit parallel runs and cancel stale jobs automatically when a newer commit arrives.</p>
+        <span class="sol-tag">concurrency: cancel-in-progress</span>
+        <div class="sol-extra">→ Prevents duplicate deploys from piling up<br>→ Cancels in-progress run when a newer push comes in<br>→ Works on GitHub-hosted and self-hosted equally</div>
       </div>
     </div>
   </div>
@@ -406,17 +412,17 @@ jobs:
 <div class="section" id="section-5">
   <div class="slide-num">// 06 OF 07</div>
   <h2>Tools in Play</h2>
-  <p class="mono" style="font-size:12px;color:var(--muted);margin-bottom:20px">// all native to GitHub Actions — no third-party dependencies</p>
+  <p class="mono" style="font-size:12px;color:var(--muted);margin-bottom:22px">// what each one is and where it lives</p>
 
   <style>
-  .tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
-  .tool-card{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:18px;transition:all 0.25s;position:relative;opacity:0}
+  .tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+  .tool-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all 0.3s;position:relative;opacity:0}
   .tool-card.in{animation:scaleIn 0.45s ease forwards}
-  .tool-card:hover{border-color:rgba(63,185,80,0.3);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
-  .tool-icon{font-size:26px;margin-bottom:10px}
-  .tool-card h4{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--accent);margin-bottom:6px}
-  .tool-card p{font-size:11px;color:var(--muted2);line-height:1.6;font-family:var(--mono)}
-  .tool-badge{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:100px}
+  .tool-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.35)}
+  .tool-icon{font-size:28px;margin-bottom:10px}
+  .tool-card h4{font-family:var(--mono);font-size:12.5px;font-weight:800;color:var(--accent);margin-bottom:7px;letter-spacing:0.5px}
+  .tool-card p{font-size:12.5px;color:#cdd7e8;line-height:1.65;font-family:var(--mono);font-weight:500}
+  .tool-badge{position:absolute;top:14px;right:14px;font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:20px}
   </style>
 
   <div class="tools-grid">
@@ -424,59 +430,59 @@ jobs:
       <div class="tool-badge tag tag-blue">Native</div>
       <div class="tool-icon">🤖</div>
       <h4>Runner application</h4>
-      <p>The GitHub-provided agent you install on your machine. Polls for jobs over HTTPS. Supports Linux, macOS, Windows. No inbound ports needed.</p>
+      <p>The GitHub-provided agent you install on your machine. Polls GitHub for jobs over HTTPS and runs them locally. Supports Linux, macOS, Windows.</p>
     </div>
     <div class="tool-card ai" style="animation-delay:0.08s">
       <div class="tool-badge tag tag-blue">Native</div>
       <div class="tool-icon">🏷️</div>
       <h4>Runner labels</h4>
-      <p>Tags assigned to runners. Workflows use <span style="color:var(--accent)">runs-on</span> to target specific runners. Default labels: self-hosted, OS, and architecture.</p>
+      <p>Tags you assign to runners. Workflows use <span style="color:var(--accent)">runs-on</span> to target specific runners. Default labels: self-hosted, OS, and architecture.</p>
     </div>
     <div class="tool-card ai" style="animation-delay:0.16s">
       <div class="tool-badge tag tag-purple">Team / Enterprise</div>
       <div class="tool-icon">👥</div>
       <h4>Runner groups</h4>
-      <p>Org-level access control. Group runners and define which repositories can use them. Isolate prod runners from dev. Managed at org or enterprise level.</p>
+      <p>Org-level feature. Group runners and control which repositories can access them. Isolate prod runners from dev. Manage at the org or enterprise level.</p>
     </div>
     <div class="tool-card ai" style="animation-delay:0.24s">
       <div class="tool-badge tag tag-green">Workflow YAML</div>
       <div class="tool-icon">🚦</div>
       <h4>Concurrency key</h4>
-      <p>Defined in your workflow file. Limits parallel runs per branch or ref. Cancels stale in-progress runs when a newer push arrives. No runner config needed.</p>
+      <p>Defined in your workflow file. Limits parallel runs per branch or ref. Can cancel in-progress runs when a newer job starts. No runner config needed.</p>
     </div>
     <div class="tool-card ai" style="animation-delay:0.32s">
       <div class="tool-badge tag tag-blue">Native</div>
       <div class="tool-icon">📡</div>
       <h4>Runner API</h4>
-      <p>REST API to list, delete, and check status of registered runners. Build health dashboards or automate runner registration and cleanup.</p>
+      <p>REST API to list, delete, and check status of registered runners. Use it to build health dashboards or automate runner registration and cleanup.</p>
     </div>
     <div class="tool-card ai" style="animation-delay:0.4s">
       <div class="tool-badge tag tag-green">Flag</div>
       <div class="tool-icon">🧹</div>
       <h4>--ephemeral flag</h4>
-      <p>Pass during runner registration. Runner exits cleanly after one job. Combine with a loop script or systemd service to re-register for the next job.</p>
+      <p>Pass during runner registration. Runner exits cleanly after one job. Combine with a loop script or service manager to re-register for the next job.</p>
     </div>
   </div>
 </div>
 
-<!-- ══ SLIDE 7: QUICK REFERENCE ══ -->
+<!-- ══ SLIDE 7: CHEAT SHEET ══ -->
 <div class="section" id="section-6">
   <div class="slide-num">// 07 OF 07</div>
   <h2>Quick Reference</h2>
 
   <style>
-  .cheat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
-  .cheat-block{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:18px;opacity:0}
+  .cheat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  .cheat-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;opacity:0}
   .cheat-block.in{animation:scaleIn 0.4s ease forwards}
-  .cb-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border2)}
-  .cb-icon{font-size:16px}
+  .cb-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+  .cb-icon{font-size:18px}
   .cb-title{font-size:13px;font-weight:700}
   .cb-sub{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px}
-  .cr{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:11px;line-height:1.5;opacity:0}
+  .cr{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px;font-size:12px;line-height:1.5;opacity:0}
   .cr.in{animation:slideLeft 0.3s ease forwards}
-  .ck{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;flex-shrink:0;margin-top:1px;white-space:nowrap}
-  .cv{font-family:var(--mono);font-size:10px;color:var(--muted2)}
-  .code-block{background:var(--bg);border:1px solid var(--border2);border-radius:6px;padding:12px 14px;font-family:var(--mono);font-size:11px;color:var(--accent);line-height:1.9;opacity:0}
+  .ck{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:3px;flex-shrink:0;margin-top:1px;white-space:nowrap}
+  .cv{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .code-block{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:11px;color:var(--accent);line-height:1.9;opacity:0}
   .code-block.in{animation:fadeIn 0.5s ease forwards}
   .cc{color:var(--muted)}
   </style>
@@ -493,16 +499,16 @@ jobs:
 
     <div class="cheat-block ai" style="animation-delay:0.1s">
       <div class="cb-head"><div class="cb-icon">⚖️</div><div><div class="cb-title">GitHub-Hosted vs Self-Hosted</div><div class="cb-sub">when each makes sense</div></div></div>
-      <div class="cr ai"><span class="ck tag-blue">self-hosted</span><span class="cv">Need access to a private network or VPC</span></div>
-      <div class="cr ai"><span class="ck tag-blue">self-hosted</span><span class="cv">Compliance or data residency requirements</span></div>
+      <div class="cr ai"><span class="ck tag-blue">self-hosted</span><span class="cv">Need access to private network</span></div>
+      <div class="cr ai"><span class="ck tag-blue">self-hosted</span><span class="cv">Compliance / data residency requirements</span></div>
       <div class="cr ai"><span class="ck tag-blue">self-hosted</span><span class="cv">Specific hardware (GPU, custom OS, ARM)</span></div>
       <div class="cr ai"><span class="ck tag-blue">self-hosted</span><span class="cv">High job volume, cost control matters</span></div>
-      <div class="cr ai"><span class="ck tag-warn">gh-hosted</span><span class="cv">No infra team, simplicity is the priority</span></div>
+      <div class="cr ai"><span class="ck tag-warn">gh-hosted</span><span class="cv">No infra team, simplicity is priority</span></div>
       <div class="cr ai"><span class="ck tag-warn">gh-hosted</span><span class="cv">Low volume, no special requirements</span></div>
     </div>
 
     <div class="cheat-block ai" style="animation-delay:0.2s">
-      <div class="cb-head"><div class="cb-icon">📋</div><div><div class="cb-title">Workflow Snippet</div><div class="cb-sub">resilient self-hosted job pattern</div></div></div>
+      <div class="cb-head"><div class="cb-icon">📋</div><div><div class="cb-title">Workflow Snippet</div><div class="cb-sub">resilient self-hosted job</div></div></div>
       <div class="code-block ai">
 <span class="cc"># Target a specific runner pool</span>
 runs-on: [self-hosted, linux, prod]
@@ -512,8 +518,8 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
-<span class="cc"># Clean env per job:</span>
-<span class="cc"># Register with ./config.sh --ephemeral</span>
+<span class="cc"># Clean environment per job</span>
+<span class="cc"># Register runner with: ./config.sh --ephemeral</span>
       </div>
     </div>
 
@@ -540,6 +546,7 @@ concurrency:
 let cur=0;
 const total=7;
 
+// nav dots
 const dotsEl=document.getElementById('navDots');
 for(let i=0;i<total;i++){
   const d=document.createElement('button');
@@ -562,116 +569,113 @@ function goTo(i){
   nb.textContent=cur===total-1?'Done ✓':'Next →';
   setTimeout(()=>animSec(sec),60);
 }
-
-function navigate(dir){goTo(cur+dir);}
+function navigate(d){goTo(Math.max(0,Math.min(total-1,cur+d)));}
 
 function animSec(sec){
   sec.querySelectorAll('.ai').forEach((el,i)=>{
     el.classList.remove('in');
-    void el.offsetWidth;
-    setTimeout(()=>el.classList.add('in'), i*55);
+    setTimeout(()=>el.classList.add('in'),i*70);
+  });
+  sec.querySelectorAll('.cr,.code-block').forEach((el,i)=>{
+    el.classList.remove('in');
+    setTimeout(()=>el.classList.add('in'),160+i*50);
   });
 }
+setTimeout(()=>animSec(document.getElementById('section-0')),220);
 
-// init first slide
-setTimeout(()=>animSec(document.getElementById('section-0')),200);
-
-// ── SLIDE 1 ──
-let s1running=false, s1timers=[];
+// ── SLIDE 1 ─────────────────────────────────
+let s1running=false,s1timers=[];
+const steps=['p0','p1','p2','p3','p4'];
+const labels=['l0','l1','l2','l3','l4'];
 const conns=['c0','c1','c2','c3'];
+const durs=[700,900,800,750,800];
 
 function setPipe(i,state){
-  const icons=['📦','🔧','🧪','🚀','⬜'];
-  const lbls=['checkout','build','test','deploy','done'];
-  const ic=document.getElementById('p'+i);
-  const lb=document.getElementById('l'+i);
-  if(ic){ ic.className='pi '+(state||''); if(!state) ic.textContent=icons[i]; }
-  if(lb){ lb.className='pl '+(state||''); if(!state) lb.textContent=lbls[i]; }
+  document.getElementById(steps[i]).className='pi '+state;
+  document.getElementById(labels[i]).className='pl '+state;
 }
-
-function setRunnerS1(state,text){
+function litConn(i){
+  const c=document.getElementById(conns[i]);
+  c.classList.add('flow');
+  s1timers.push(setTimeout(()=>{c.classList.remove('flow');c.classList.add('lit');},500));
+}
+function setRunnerS1(state,label){
   const dot=document.getElementById('rd0');
-  const status=document.getElementById('rs0');
   const row=document.getElementById('r0');
+  const st=document.getElementById('rs0');
   dot.className='rdot '+state;
-  status.textContent=text;
-  status.className='rstatus '+(state==='dead'?'dead':state==='busy'?'busy':'');
   row.className='runner-row '+(state==='busy'?'active':state==='dead'?'dead':'');
+  st.className='rstatus '+state;
+  st.textContent=label;
 }
-
 function showS1Outcome(type,title,body){
   const el=document.getElementById('s1outcome');
   el.className='outcome '+type+' show';
   el.innerHTML='<div class="outcome-title">'+title+'</div>'+body;
 }
 
-function litConn(i){
-  const c=document.getElementById('c'+i);
-  c.classList.add('flow');
-  s1timers.push(setTimeout(()=>{c.classList.remove('flow');c.classList.add('lit');},500));
-}
-
 function s1Run(){
   if(s1running)return;
   s1running=true;
   document.getElementById('b1run').disabled=true;
-  document.getElementById('cap1').innerHTML='<b>Pipeline running</b> — watch the stages complete';
+  document.getElementById('cap1').innerHTML='<b>Watch:</b> runner picks up the job, all stages complete';
   setRunnerS1('busy','running job #1042');
-  const d=700;
-  [0,1,2,3].forEach(i=>{
+  let delay=0;
+  durs.forEach((d,i)=>{
     s1timers.push(setTimeout(()=>{
       setPipe(i,'running');
       s1timers.push(setTimeout(()=>{
         setPipe(i,'done');
-        litConn(i);
-        if(i===3){
-          s1timers.push(setTimeout(()=>{
-            setPipe(4,'done');
-            document.getElementById('p4').textContent='✅';
-            setRunnerS1('online','idle — job complete');
-            showS1Outcome('ok','✓ Deploy complete','Pipeline ran cleanly. All 4 stages passed. Runner is back to idle and ready for the next job.');
-            document.getElementById('b1fail').disabled=false;
-            document.getElementById('cap1').innerHTML='<b>Clean run.</b> Now click "Runner goes offline" to see what failure looks like.';
-          },600));
+        if(i<conns.length) litConn(i);
+        if(i===4){
+          document.getElementById('p4').textContent='✅';
+          setRunnerS1('online','idle — job complete');
+          showS1Outcome('ok','✓ Deploy complete','One runner, one job, clean run. Now see what happens when that runner goes offline.');
+          s1running=false;
+          document.getElementById('b1fail').disabled=false;
+          document.getElementById('b1reset').disabled=false;
+          document.getElementById('cap1').innerHTML='<b>Now click:</b> Runner goes offline';
         }
       },d));
-    },i*(d+100)));
+    },delay));
+    delay+=d+100;
   });
 }
 
 function s1Fail(){
+  if(s1running)return;
+  s1running=true;
   document.getElementById('b1fail').disabled=true;
-  document.getElementById('cap1').innerHTML='<b>Runner going offline</b> during deploy...';
-  const delay=500;
-  s1timers.push(setTimeout(()=>{
-    document.getElementById('s1outcome').className='outcome';
-    for(let i=0;i<5;i++) setPipe(i,'');
-    document.getElementById('p4').textContent='⬜';
-    conns.forEach(id=>{const c=document.getElementById(id);c.classList.remove('lit','flow');});
-    setRunnerS1('busy','running job #1043');
-    [0,1].forEach(i=>{
-      s1timers.push(setTimeout(()=>{
-        setPipe(i,'running');
-        s1timers.push(setTimeout(()=>{setPipe(i,'done');litConn(i);},700));
-      },i*800));
-    });
+  document.getElementById('b1reset').disabled=true;
+  for(let i=0;i<5;i++) setPipe(i,'');
+  document.getElementById('p4').textContent='⬜';
+  conns.forEach(id=>{const c=document.getElementById(id);c.classList.remove('lit','flow');});
+  document.getElementById('s1outcome').className='outcome';
+  document.getElementById('cap1').innerHTML='<b>Watch:</b> runner dies mid-deploy — GitHub queues the job and waits';
+  setRunnerS1('busy','running job #1043');
+  let delay=0;
+  [0,1,2].forEach(i=>{
     s1timers.push(setTimeout(()=>{
-      setPipe(2,'running');
+      setPipe(i,'running');
       s1timers.push(setTimeout(()=>{
-        setPipe(2,'done');litConn(2);
-        setPipe(3,'running');
-        s1timers.push(setTimeout(()=>{
-          setPipe(3,'failed');
-          setPipe(4,'blocked');
-          document.getElementById('p4').textContent='⏸';
-          setRunnerS1('dead','offline — agent stopped');
-          showS1Outcome('bad','✗ Job queued — no runner available','GitHub queued job #1043 and is waiting for a runner to come back online. It will wait indefinitely. No automatic recovery or timeout.');
-          s1running=false;
-          document.getElementById('b1reset').disabled=false;
-          document.getElementById('cap1').innerHTML='<b>That\'s the problem.</b> GitHub waits. Your team waits. Nothing moves until someone fixes the runner.';
-        },850));
-      },700));
-    },1600));
+        setPipe(i,'done');
+        if(i<conns.length) litConn(i);
+      },durs[i]));
+    },delay));
+    delay+=durs[i]+100;
+  });
+  s1timers.push(setTimeout(()=>{
+    setPipe(3,'running');
+    s1timers.push(setTimeout(()=>{
+      setPipe(3,'failed');
+      setPipe(4,'blocked');
+      document.getElementById('p4').textContent='⏸';
+      setRunnerS1('dead','offline — agent stopped');
+      showS1Outcome('bad','✗ Job queued — no runner available','GitHub queued job #1043 and is waiting for a runner to come back online. It will wait indefinitely. No automatic recovery.');
+      s1running=false;
+      document.getElementById('b1reset').disabled=false;
+      document.getElementById('cap1').innerHTML='<b>That\'s the problem.</b> GitHub waits. Your team waits. Nothing moves.';
+    },850));
   },delay));
 }
 
@@ -689,25 +693,21 @@ function s1Reset(){
   document.getElementById('cap1').innerHTML='<b>Click Run pipeline</b> to see a normal deploy';
 }
 
-// ── SLIDE 2 ──
+// ── SLIDE 2 ─────────────────────────────────
 let s2timers=[];
 
 function setMini(pre,i,state){
-  const icons=['📦','🔧','🧪','🚀','⬜'];
-  const lbls=['checkout','build','test','deploy','done'];
-  const ic=document.getElementById(pre+'p'+i);
-  const lb=document.getElementById(pre+'l'+i);
-  if(ic){ic.className='pi '+state; if(!state) ic.textContent=icons[i];}
-  if(lb){lb.className='pl '+state; if(!state) lb.textContent=lbls[i];}
+  const icon=document.getElementById(pre+'p'+i);
+  const lbl=document.getElementById(pre+'l'+i);
+  if(icon) icon.className='pi '+state;
+  if(lbl) lbl.className='pl '+state;
 }
-
 function litMini(pre,i){
   const c=document.getElementById(pre+'c'+i);
   if(!c)return;
   c.classList.add('flow');
   s2timers.push(setTimeout(()=>{c.classList.remove('flow');c.classList.add('lit');},500));
 }
-
 function showSideOutcome(id,type,title,body){
   const el=document.getElementById(id);
   el.className='outcome '+type+' show';
@@ -718,6 +718,8 @@ function s2Run(){
   document.getElementById('b2run').disabled=true;
   document.getElementById('b2reset').disabled=true;
   document.getElementById('cap2').innerHTML='<b>Both running clean</b> — runner failure hits during deploy...';
+
+  // set both runners busy
   ['grd0','srd0'].forEach(id=>{document.getElementById(id).className='rdot busy';});
   document.getElementById('gr0').className='runner-row active';
   document.getElementById('sr0').className='runner-row active';
@@ -725,7 +727,9 @@ function s2Run(){
   document.getElementById('grs0').className='rstatus busy';
   document.getElementById('srs0').textContent='running job';
   document.getElementById('srs0').className='rstatus busy';
+
   const d=680;
+  // steps 0-2 both succeed
   [0,1,2].forEach(i=>{
     s2timers.push(setTimeout(()=>{
       setMini('g',i,'running'); setMini('s',i,'running');
@@ -735,31 +739,43 @@ function s2Run(){
       },d));
     },i*(d+80)));
   });
+
+  // deploy step — runner dies
   s2timers.push(setTimeout(()=>{
     setMini('g',3,'running'); setMini('s',3,'running');
     document.getElementById('cap2').innerHTML='<b>Runner goes offline now</b> — watch what each side does';
+
     s2timers.push(setTimeout(()=>{
+      // self-hosted: fails, blocked
       setMini('s',3,'failed'); setMini('s',4,'blocked');
       document.getElementById('sp4').textContent='⏸';
       document.getElementById('sr0').className='runner-row dead';
       document.getElementById('srd0').className='rdot dead';
       document.getElementById('srs0').className='rstatus dead';
       document.getElementById('srs0').textContent='offline — agent stopped';
+
+      // github-hosted: spins a new VM, resumes
       document.getElementById('gr0').className='runner-row dead';
       document.getElementById('grd0').className='rdot dead';
       document.getElementById('grs0').textContent='VM terminated';
+
       s2timers.push(setTimeout(()=>{
         document.getElementById('gr1').style.display='flex';
         document.getElementById('gr1').style.animation='slideUp 0.3s ease';
         setMini('g',3,'running');
         document.getElementById('cap2').innerHTML='<b>GitHub provisions a new VM automatically.</b> Self-hosted has no fallback — it just waits.';
       },700));
-      s2timers.push(setTimeout(()=>{setMini('g',3,'done');litMini('g',3);setMini('g',4,'running');},1700));
+
+      s2timers.push(setTimeout(()=>{
+        setMini('g',3,'done'); litMini('g',3);
+        setMini('g',4,'running');
+      },1700));
+
       s2timers.push(setTimeout(()=>{
         setMini('g',4,'done');
         document.getElementById('gp4').textContent='✅';
         showSideOutcome('gOutcome','ok','✓ Recovered automatically','GitHub terminated the failed VM and provisioned a new one. The deploy completed without any manual action.');
-        showSideOutcome('sOutcome','bad','✗ Waiting indefinitely','GitHub queued the job. It will stay queued until someone manually brings runner-prod-01 back online.');
+        showSideOutcome('sOutcome','bad','✗ Waiting indefinitely','GitHub queued the job. It will stay queued until someone brings runner-prod-01 back online manually.');
         document.getElementById('b2reset').disabled=false;
         document.getElementById('cap2').innerHTML='<b>Key takeaway:</b> when you use self-hosted runners, runner health is your responsibility.';
       },2600));
@@ -778,7 +794,7 @@ function s2Reset(){
       if(ic){ic.className='pi';ic.textContent=icons[i];}
       if(lb){lb.className='pl';lb.textContent=lbls[i];}
       const cn=document.getElementById(pre+'c'+i);
-      if(cn)cn.className='pc';
+      if(cn) cn.className='pc';
     }
   });
   document.getElementById('gr0').className='runner-row';
@@ -799,10 +815,39 @@ function s2Reset(){
 
 function toggleFail(c){
   const was=c.classList.contains('open');
-  document.querySelectorAll('.fail-card').forEach(x=>x.classList.remove('open'));
-  if(!was)c.classList.add('open');
+  const all=Array.from(document.querySelectorAll('.fail-card'));
+  all.forEach(x=>x.classList.remove('open'));
+  if(!was){
+    c.classList.add('open');
+    // cascading ripple across the other cards
+    const idx=all.indexOf(c);
+    all.forEach((card,i)=>{
+      if(card===c) return;
+      const distance=Math.abs(i-idx);
+      setTimeout(()=>{
+        card.classList.add('cascade');
+        setTimeout(()=>card.classList.remove('cascade'),650);
+      },distance*120);
+    });
+  }
 }
-
+function toggleHow(c){
+  const was=c.classList.contains('open');
+  const all=Array.from(document.querySelectorAll('.how-card'));
+  all.forEach(x=>x.classList.remove('open'));
+  if(!was){
+    c.classList.add('open');
+    const idx=all.indexOf(c);
+    all.forEach((card,i)=>{
+      if(card===c) return;
+      const distance=Math.abs(i-idx);
+      setTimeout(()=>{
+        card.classList.add('cascade');
+        setTimeout(()=>card.classList.remove('cascade'),650);
+      },distance*120);
+    });
+  }
+}
 function toggleSol(s){s.classList.toggle('open');}
 </script>
 </body>
