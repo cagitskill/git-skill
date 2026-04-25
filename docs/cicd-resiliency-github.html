@@ -132,7 +132,7 @@ header p{margin-top:10px;color:#a3b3cc;font-size:13px;font-family:var(--mono);li
 
 <!-- ══ SLIDE 1: THE PROBLEM ══ -->
 <div class="section active" id="section-0">
-  <div class="slide-num">// 01 OF 07</div>
+  <div class="slide-num">// 01 OF 08</div>
   <h2>The Problem</h2>
 
   <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px">
@@ -166,9 +166,160 @@ header p{margin-top:10px;color:#a3b3cc;font-size:13px;font-family:var(--mono);li
   </div>
 </div>
 
-<!-- ══ SLIDE 2: GITHUB-HOSTED VS SELF-HOSTED ══ -->
+<!-- ══ SLIDE 2: WHAT IS A RUNNER ══ -->
 <div class="section" id="section-1">
-  <div class="slide-num">// 02 OF 07</div>
+  <div class="slide-num">// 02 OF 08</div>
+  <h2>What Is a Runner &amp; How to Set One Up</h2>
+  <p class="mono" style="font-size:12px;color:var(--muted);margin-bottom:20px">// a runner is just a machine that listens for jobs and runs them</p>
+
+  <style>
+  .s2-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media(max-width:620px){.s2-grid{grid-template-columns:1fr}}
+  .s2-what{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;opacity:0}
+  .s2-what.in{animation:scaleIn 0.4s ease forwards}
+  .s2-what h4{font-size:14px;font-weight:800;margin-bottom:10px;color:#fff}
+  .s2-what p{font-size:12px;color:#d4ddec;line-height:1.7;font-family:var(--mono);font-weight:500;margin-bottom:10px}
+  .s2-term{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;opacity:0}
+  .s2-term.in{animation:scaleIn 0.4s ease forwards}
+  .s2-term-bar{background:#1e2d47;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:10px;color:var(--muted)}
+  .s2-term-dots{display:flex;gap:5px}
+  .s2-term-dot{width:8px;height:8px;border-radius:50%}
+  .s2-term-body{padding:14px 16px;font-family:var(--mono);font-size:11px;line-height:2;color:var(--accent)}
+  .s2-term-body .cmd{color:var(--text)}
+  .s2-term-body .cmt{color:var(--muted)}
+
+  /* ── RUNNER ANIMATION STAGE ── */
+  .stage{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 20px 16px;margin-bottom:4px;position:relative;overflow:hidden}
+  .stage-label{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+  .track-area{position:relative;height:230px}
+
+  /* Zone labels */
+  .zone-label{position:absolute;font-family:var(--mono);font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border-radius:3px;white-space:nowrap;z-index:3}
+  .zone-gh{top:0;left:0;color:var(--muted);border:1px solid var(--border);background:var(--bg)}
+  .zone-infra{top:0;right:0;color:var(--accent);border:1px solid rgba(0,229,255,0.3);background:rgba(0,229,255,0.06)}
+
+  /* GitHub cloud */
+  .gh-cloud{position:absolute;left:0;top:69px;width:80px;height:60px;background:var(--bg);border:2px solid var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:20px;z-index:2}
+  .gh-cloud-label{font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:2px}
+  .gh-cloud.active{border-color:var(--accent);box-shadow:0 0 12px rgba(0,229,255,0.3)}
+
+  /* Machines — absolute positioned to match tracks */
+  .machine{position:absolute;right:0;width:110px;height:40px;background:var(--bg);border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--muted);opacity:0;transform:scale(0.8);transition:all 0.4s ease}
+  .machine.show{opacity:1;transform:scale(1)}
+  .machine.active{border-color:var(--success);box-shadow:0 0 8px rgba(16,185,129,0.3)}
+  .machine.busy{border-color:var(--accent);box-shadow:0 0 8px rgba(0,229,255,0.2)}
+  .machine-dot{width:6px;height:6px;border-radius:50%;background:var(--border);transition:background 0.3s;flex-shrink:0}
+  .machine.active .machine-dot,.machine.busy .machine-dot{background:var(--success);box-shadow:0 0 4px var(--success)}
+  .machine-loc{font-family:var(--mono);font-size:7px;color:var(--muted);margin-top:1px;letter-spacing:0.5px}
+
+  /* Track lines */
+  .track-line{position:absolute;left:85px;right:118px;height:2px;background:var(--border);opacity:0;transition:opacity 0.4s}
+  .track-line.show{opacity:1}
+  .track-line.lit{background:linear-gradient(90deg,var(--accent),var(--success));box-shadow:0 0 6px rgba(0,229,255,0.3)}
+
+  /* Runner figures */
+  .runner-fig{position:absolute;left:80px;width:24px;height:24px;opacity:0;z-index:5;transition:opacity 0.3s}
+  .runner-fig.go{opacity:1;animation:runAcross 1.8s ease-in-out forwards}
+  .runner-fig.go2{opacity:1;animation:runAcross 1.5s ease-in-out forwards}
+  .runner-fig.go3{opacity:1;animation:runAcross 2.0s ease-in-out forwards}
+  .runner-fig.go4{opacity:1;animation:runAcross 1.6s ease-in-out forwards}
+  .runner-body{font-size:18px;animation:bobble 0.35s ease-in-out infinite}
+  .job-bubble{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:7px;color:var(--accent);background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);border-radius:4px;padding:1px 5px;white-space:nowrap}
+
+  @keyframes runAcross{
+    0%{left:85px}
+    15%{left:85px;transform:scaleX(1.1)}
+    100%{left:calc(100% - 160px);transform:scaleX(1)}
+  }
+  @keyframes bobble{
+    0%,100%{transform:translateY(0) rotate(-3deg)}
+    50%{transform:translateY(-3px) rotate(3deg)}
+  }
+
+  /* Status bar */
+  .stage-status{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;min-height:28px}
+  .stage-chip{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid;opacity:0;transform:translateY(6px);transition:all 0.3s ease}
+  .stage-chip.show{opacity:1;transform:translateY(0)}
+  .stage-chip.ok{border-color:rgba(16,185,129,0.4);color:var(--success);background:rgba(16,185,129,0.08)}
+  .stage-chip.info{border-color:rgba(0,229,255,0.4);color:var(--accent);background:rgba(0,229,255,0.06)}
+  .stage-chip.warn{border-color:rgba(251,191,36,0.4);color:var(--warn);background:rgba(251,191,36,0.08)}
+  </style>
+
+  <div class="s2-grid">
+    <div class="s2-what ai">
+      <h4>What is a runner?</h4>
+      <p>A runner is any machine — a server, VM, laptop, or container — that runs the GitHub Actions runner application. It connects to GitHub, listens for jobs, and executes your workflow steps locally.</p>
+      <p>GitHub-hosted runners are VMs that GitHub provides. Self-hosted runners are machines <span style="color:var(--accent)">you</span> set up and maintain.</p>
+      <p style="margin-bottom:0">Think of it like this: GitHub Actions is the brain. The runner is the hands.</p>
+    </div>
+    <div class="s2-term ai" style="animation-delay:0.1s">
+      <div class="s2-term-bar">
+        <div class="s2-term-dots">
+          <div class="s2-term-dot" style="background:var(--danger)"></div>
+          <div class="s2-term-dot" style="background:var(--warn)"></div>
+          <div class="s2-term-dot" style="background:var(--success)"></div>
+        </div>
+        runner-setup
+      </div>
+      <div class="s2-term-body">
+<span class="cmt"># 1. Download the runner application</span>
+<span class="cmd">$ curl -o actions-runner.tar.gz -L \</span>
+<span class="cmd">  https://github.com/actions/runner/releases/...</span>
+
+<span class="cmt"># 2. Extract it</span>
+<span class="cmd">$ tar xzf actions-runner.tar.gz</span>
+
+<span class="cmt"># 3. Configure — register with your repo</span>
+<span class="cmd">$ ./config.sh --url https://github.com/org/repo \</span>
+<span class="cmd">  --token YOUR_REGISTRATION_TOKEN</span>
+
+<span class="cmt"># 4. Start listening for jobs</span>
+<span class="cmd">$ ./run.sh</span>
+<span style="color:var(--success)">✓ Connected to GitHub · Listening for jobs</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stage ai" style="animation-delay:0.2s">
+    <div class="stage-label">// Watch: how runners pick up and execute jobs</div>
+    <div class="track-area" id="trackArea">
+      <div class="zone-label zone-gh">GitHub Cloud</div>
+      <div class="zone-label zone-infra">Your Infrastructure</div>
+
+      <div class="gh-cloud" id="ghCloud">
+        <span>☁️</span>
+        <span class="gh-cloud-label">GitHub</span>
+      </div>
+
+      <div class="track-line" id="track0" style="top:44px"></div>
+      <div class="track-line" id="track1" style="top:80px"></div>
+      <div class="track-line" id="track2" style="top:118px"></div>
+      <div class="track-line" id="track3" style="top:154px"></div>
+
+      <div class="runner-fig" id="fig0" style="top:33px"><div class="runner-body">🏃</div><div class="job-bubble">job #101</div></div>
+      <div class="runner-fig" id="fig1" style="top:69px"><div class="runner-body">🏃</div><div class="job-bubble">job #102</div></div>
+      <div class="runner-fig" id="fig2" style="top:107px"><div class="runner-body">🏃</div><div class="job-bubble">job #103</div></div>
+      <div class="runner-fig" id="fig3" style="top:143px"><div class="runner-body">🏃</div><div class="job-bubble">job #104</div></div>
+
+      <div class="machine" id="m0" style="top:24px"><div class="machine-dot"></div><div><div>prod-01</div><div class="machine-loc">AWS EC2</div></div></div>
+        <div class="machine" id="m1" style="top:60px"><div class="machine-dot"></div><div><div>prod-02</div><div class="machine-loc">on-prem server</div></div></div>
+        <div class="machine" id="m2" style="top:98px"><div class="machine-dot"></div><div><div>staging</div><div class="machine-loc">Azure VM</div></div></div>
+        <div class="machine" id="m3" style="top:134px"><div class="machine-dot"></div><div><div>arm64</div><div class="machine-loc">Docker container</div></div></div>
+    </div>
+    <div class="stage-status" id="stageStatus"></div>
+  </div>
+
+  <div class="btn-row ai" style="animation-delay:0.25s">
+    <button class="abtn" id="rvRun1" onclick="rvRunOne()">▶ Register &amp; run one job</button>
+    <button class="abtn" id="rvRunAll" onclick="rvRunAll()" disabled>⚡ Scale to 4 runners</button>
+    <button class="abtn" id="rvReset" onclick="rvReset()" disabled>↺ Reset</button>
+    <span class="caption" id="rvCap"><b>Click Register</b> to set up your first runner and watch it work</span>
+  </div>
+</div>
+
+<!-- ══ SLIDE 3: GITHUB-HOSTED VS SELF-HOSTED ══ -->
+<div class="section" id="section-2">
+  <div class="slide-num">// 03 OF 08</div>
   <h2>Same Failure. Two Different Outcomes.</h2>
   <p class="mono" style="font-size:12px;color:var(--muted);margin-bottom:20px">// GitHub-hosted: GitHub handles it. Self-hosted: you handle it.</p>
 
@@ -226,8 +377,8 @@ header p{margin-top:10px;color:#a3b3cc;font-size:13px;font-family:var(--mono);li
 </div>
 
 <!-- ══ SLIDE 3: HOW SELF-HOSTED RUNNERS WORK ══ -->
-<div class="section" id="section-2">
-  <div class="slide-num">// 03 OF 07</div>
+<div class="section" id="section-3">
+  <div class="slide-num">// 04 OF 08</div>
   <h2>How Self-Hosted Runners Actually Work</h2>
 
   <style>
@@ -297,8 +448,8 @@ jobs:
 </div>
 
 <!-- ══ SLIDE 4: THE FAILURE POINTS ══ -->
-<div class="section" id="section-3">
-  <div class="slide-num">// 04 OF 07</div>
+<div class="section" id="section-4">
+  <div class="slide-num">// 05 OF 08</div>
   <h2>Where Things Break</h2>
   <p class="mono" style="font-size:12px;color:var(--muted);margin-bottom:22px">// tap each to expand</p>
 
@@ -352,8 +503,8 @@ jobs:
 </div>
 
 <!-- ══ SLIDE 5: THE SOLUTIONS ══ -->
-<div class="section" id="section-4">
-  <div class="slide-num">// 05 OF 07</div>
+<div class="section" id="section-5">
+  <div class="slide-num">// 06 OF 08</div>
   <h2>What GitHub Gives You to Fix It</h2>
   <p class="mono" style="font-size:12px;color:var(--muted);margin-bottom:22px">// these are native GitHub Actions features — no third-party tooling required</p>
 
@@ -411,8 +562,8 @@ jobs:
 </div>
 
 <!-- ══ SLIDE 6: TOOLS ══ -->
-<div class="section" id="section-5">
-  <div class="slide-num">// 06 OF 07</div>
+<div class="section" id="section-6">
+  <div class="slide-num">// 07 OF 08</div>
   <h2>Tools in Play</h2>
   <p class="mono" style="font-size:12px;color:var(--muted);margin-bottom:22px">// what each one is and where it lives</p>
 
@@ -468,8 +619,8 @@ jobs:
 </div>
 
 <!-- ══ SLIDE 7: CHEAT SHEET ══ -->
-<div class="section" id="section-6">
-  <div class="slide-num">// 07 OF 07</div>
+<div class="section" id="section-7">
+  <div class="slide-num">// 08 OF 08</div>
   <h2>Quick Reference</h2>
 
   <style>
@@ -540,13 +691,13 @@ concurrency:
 <!-- NAV BAR -->
 <div class="nav-bar">
   <button class="nbtn" id="prevBtn" onclick="navigate(-1)" disabled>← Prev</button>
-  <div class="nav-progress">Slide <span id="curSlide">1</span> of 7</div>
+  <div class="nav-progress">Slide <span id="curSlide">1</span> of 8</div>
   <button class="nbtn primary" id="nextBtn" onclick="navigate(1)">Next →</button>
 </div>
 
 <script>
 let cur=0;
-const total=7;
+const total=8;
 
 // nav dots
 const dotsEl=document.getElementById('navDots');
@@ -822,6 +973,125 @@ function toggleHow(c){
   c.classList.toggle('open');
 }
 function toggleSol(s){s.classList.toggle('open');}
+
+// ── SLIDE 2: RUNNER ANIMATION ──────────────
+let rvTimers=[];
+
+function addChip(text,cls){
+  const s=document.getElementById('stageStatus');
+  const c=document.createElement('span');
+  c.className='stage-chip '+cls;
+  c.textContent=text;
+  s.appendChild(c);
+  requestAnimationFrame(()=>c.classList.add('show'));
+}
+
+function rvRunOne(){
+  document.getElementById('rvRun1').disabled=true;
+  document.getElementById('rvCap').innerHTML='<b>Registering runner...</b> connecting to GitHub';
+  document.getElementById('ghCloud').classList.add('active');
+
+  // show first machine
+  rvTimers.push(setTimeout(()=>{
+    document.getElementById('m0').classList.add('show');
+    addChip('✓ runner-prod-01 registered','ok');
+    document.getElementById('rvCap').innerHTML='<b>Runner online.</b> Sending a job...';
+  },500));
+
+  // show track
+  rvTimers.push(setTimeout(()=>{
+    document.getElementById('track0').classList.add('show');
+  },900));
+
+  // runner figure goes
+  rvTimers.push(setTimeout(()=>{
+    document.getElementById('track0').classList.add('lit');
+    document.getElementById('fig0').classList.add('go');
+    document.getElementById('m0').classList.add('busy');
+    addChip('job #101 dispatched','info');
+  },1200));
+
+  // job arrives
+  rvTimers.push(setTimeout(()=>{
+    document.getElementById('m0').classList.remove('busy');
+    document.getElementById('m0').classList.add('active');
+    addChip('✓ job #101 complete','ok');
+    document.getElementById('rvCap').innerHTML='<b>One runner = one job at a time.</b> Want to see what four runners look like?';
+    document.getElementById('rvRunAll').disabled=false;
+    document.getElementById('rvReset').disabled=false;
+  },3200));
+}
+
+function rvRunAll(){
+  document.getElementById('rvRunAll').disabled=true;
+  document.getElementById('rvCap').innerHTML='<b>Scaling up...</b> registering 3 more runners';
+
+  // reset first runner state
+  document.getElementById('fig0').classList.remove('go');
+  document.getElementById('m0').classList.remove('active');
+  document.getElementById('m0').classList.add('show');
+  document.getElementById('stageStatus').innerHTML='';
+
+  // show machines one by one
+  [1,2,3].forEach((i,idx)=>{
+    rvTimers.push(setTimeout(()=>{
+      document.getElementById('m'+i).classList.add('show');
+      const names=['runner-prod-02','runner-staging','runner-arm64'];
+      addChip('✓ '+names[idx]+' registered','ok');
+    },(idx+1)*400));
+  });
+
+  // show all tracks
+  rvTimers.push(setTimeout(()=>{
+    [0,1,2,3].forEach(i=>{
+      document.getElementById('track'+i).classList.add('show');
+    });
+    document.getElementById('rvCap').innerHTML='<b>4 runners ready.</b> Dispatching 4 jobs simultaneously...';
+  },1800));
+
+  // all runners go at once
+  rvTimers.push(setTimeout(()=>{
+    const classes=['go','go2','go3','go4'];
+    [0,1,2,3].forEach(i=>{
+      document.getElementById('track'+i).classList.add('lit');
+      document.getElementById('fig'+i).classList.add(classes[i]);
+      document.getElementById('m'+i).classList.add('busy');
+    });
+    addChip('4 jobs dispatched in parallel','info');
+  },2400));
+
+  // all complete
+  const completeTimes=[4000,4300,4600,4200];
+  completeTimes.forEach((t,i)=>{
+    rvTimers.push(setTimeout(()=>{
+      document.getElementById('m'+i).classList.remove('busy');
+      document.getElementById('m'+i).classList.add('active');
+    },2400+t));
+  });
+
+  rvTimers.push(setTimeout(()=>{
+    addChip('✓ all 4 jobs complete','ok');
+    addChip('4x throughput · zero queuing','warn');
+    document.getElementById('rvCap').innerHTML='<b>Same setup commands, different machines.</b> Each runner polls GitHub independently. One goes down, three keep working.';
+  },7200));
+}
+
+function rvReset(){
+  rvTimers.forEach(t=>clearTimeout(t)); rvTimers=[];
+  document.getElementById('stageStatus').innerHTML='';
+  document.getElementById('ghCloud').classList.remove('active');
+  [0,1,2,3].forEach(i=>{
+    document.getElementById('fig'+i).className='runner-fig';
+    document.getElementById('fig'+i).style.top=['33px','69px','107px','143px'][i];
+    document.getElementById('track'+i).className='track-line';
+    document.getElementById('track'+i).style.top=['44px','80px','118px','154px'][i];
+    document.getElementById('m'+i).className='machine';
+  });
+  document.getElementById('rvRun1').disabled=false;
+  document.getElementById('rvRunAll').disabled=true;
+  document.getElementById('rvReset').disabled=true;
+  document.getElementById('rvCap').innerHTML='<b>Click Register</b> to set up your first runner and watch it work';
+}
 </script>
 </body>
 </html>
