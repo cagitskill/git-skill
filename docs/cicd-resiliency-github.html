@@ -237,8 +237,8 @@ header p{margin-top:10px;color:#a3b3cc;font-size:13px;font-family:var(--mono);li
     100%{left:calc(100% - 160px);transform:scaleX(1)}
   }
   @keyframes bobble{
-    0%,100%{transform:translateY(0) rotate(-3deg)}
-    50%{transform:translateY(-3px) rotate(3deg)}
+    0%,100%{transform:translateY(0) rotate(-3deg) scaleX(-1)}
+    50%{transform:translateY(-3px) rotate(3deg) scaleX(-1)}
   }
 
   /* Status bar */
@@ -1037,7 +1037,7 @@ function rvRunOne(){
     addChip('job #101 dispatched','info');
   },1200));
 
-  // job arrives
+  // job arrives — result pulses back
   rvTimers.push(setTimeout(()=>{
     document.getElementById('m0').classList.remove('busy');
     document.getElementById('m0').classList.add('active');
@@ -1086,7 +1086,7 @@ function rvRunAll(){
     addChip('4 jobs dispatched in parallel','info');
   },2400));
 
-  // all complete
+  // all complete — results pulse back
   const completeTimes=[4000,4300,4600,4200];
   completeTimes.forEach((t,i)=>{
     rvTimers.push(setTimeout(()=>{
