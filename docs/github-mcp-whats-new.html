@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What's New | GitHub MCP Server</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:#0a0e1a;--surface:#1a2235;--s2:#1e2d47;
+  --border:#2d4060;--border2:#3a5580;
+  --accent:#00e5ff;--accent2:#a78bfa;
+  --green:#10b981;--green2:#34d399;
+  --blue:#60a5fa;--amber:#fbbf24;--red:#ef4444;
+  --muted:#7d8590;--muted2:#a3b3cc;--text:#f1f5f9;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'DM Sans',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.page{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:48px 24px 80px}
+
+/* NAV */
+.topnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:48px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.nav-id{display:flex;align-items:center;gap:12px}
+.nav-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 0 12px rgba(0,229,255,0.25)}
+.nav-title{font-size:14px;font-weight:700}
+.nav-sub{font-size:11px;color:var(--muted2);font-family:var(--mono)}
+.nav-badge{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:11px;font-family:var(--mono);color:var(--muted2)}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s ease-in-out infinite}
+
+/* HERO */
+.hero{margin-bottom:40px;position:relative}
+.hero::before{content:'';position:absolute;top:-60px;left:-60px;width:350px;height:350px;background:radial-gradient(circle,rgba(0,229,255,0.07) 0%,transparent 70%);pointer-events:none}
+.hero-eyebrow{font-size:11px;font-family:var(--mono);letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.hero-eyebrow::before{content:'';display:inline-block;width:24px;height:2px;background:var(--accent);box-shadow:0 0 6px var(--accent)}
+h1{font-size:clamp(28px,4.5vw,42px);font-weight:800;line-height:1.1;letter-spacing:-1px;margin-bottom:14px}
+h1 span{color:var(--accent)}
+.hero-sub{font-size:13px;color:var(--muted2);line-height:1.65;max-width:600px;margin-bottom:24px;font-family:var(--mono);font-weight:500}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:32px;margin-bottom:28px}
+.timeline::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-item{position:relative;margin-bottom:28px;opacity:0;transform:translateY(16px);transition:opacity 0.5s ease,transform 0.5s ease}
+.tl-item.show{opacity:1;transform:translateY(0)}
+.tl-dot{position:absolute;left:-32px;top:4px;width:22px;height:22px;border-radius:50%;border:2px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:10px;z-index:2;transition:border-color 0.4s,box-shadow 0.4s,background 0.4s}
+.tl-item.show .tl-dot{border-color:var(--accent);box-shadow:0 0 10px rgba(0,229,255,0.3);background:rgba(0,229,255,0.08)}
+.tl-item.show .tl-dot.dot-p{border-color:var(--accent2);box-shadow:0 0 10px rgba(167,139,250,0.3);background:rgba(167,139,250,0.08)}
+.tl-item.show .tl-dot.dot-g{border-color:var(--green);box-shadow:0 0 10px rgba(16,185,129,0.3);background:rgba(16,185,129,0.08)}
+.tl-item.show .tl-dot.dot-a{border-color:var(--amber);box-shadow:0 0 10px rgba(251,191,36,0.3);background:rgba(251,191,36,0.08)}
+.tl-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;transition:border-color 0.3s,box-shadow 0.3s,transform 0.2s}
+.tl-item.show .tl-card{border-color:rgba(0,229,255,0.2)}
+.tl-item.show .tl-card:hover{border-color:rgba(0,229,255,0.4);box-shadow:0 0 20px rgba(0,229,255,0.1);transform:translateX(4px)}
+.tl-tag{font-size:9px;font-family:var(--mono);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;display:inline-block;padding:2px 8px;border-radius:4px;border:1px solid}
+.tag-new{color:var(--accent);border-color:rgba(0,229,255,0.3);background:rgba(0,229,255,0.06)}
+.tag-exp{color:var(--accent2);border-color:rgba(167,139,250,0.3);background:rgba(167,139,250,0.06)}
+.tag-sec{color:var(--green2);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.06)}
+.tag-cfg{color:var(--amber);border-color:rgba(251,191,36,0.3);background:rgba(251,191,36,0.06)}
+.tl-title{font-size:15px;font-weight:800;margin-bottom:6px}
+.tl-desc{font-size:12px;font-family:var(--mono);font-weight:500;color:var(--muted2);line-height:1.7}
+.tl-code{margin-top:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:var(--mono);font-size:11px;line-height:1.8;color:var(--text);overflow-x:auto;white-space:pre}
+.tl-code .k{color:var(--accent)}
+.tl-code .v{color:var(--green2)}
+.tl-code .c{color:var(--muted)}
+
+/* BEFORE/AFTER */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:620px){.compare{grid-template-columns:1fr}}
+.compare-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;opacity:0;transform:translateY(16px);transition:opacity 0.5s ease,transform 0.5s ease}
+.compare-card.show{opacity:1;transform:translateY(0)}
+.compare-label{font-size:10px;font-family:var(--mono);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.compare-label.old{color:var(--muted)}
+.compare-label.new{color:var(--accent)}
+.compare-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;font-size:12px;font-family:var(--mono);font-weight:500;color:var(--muted2);line-height:1.5}
+.compare-item .ci{flex-shrink:0;margin-top:2px}
+
+/* FOOTER */
+.footer{border-top:1px solid var(--border);margin-top:40px;padding-top:18px;display:flex;justify-content:space-between;align-items:center}
+.footer-left{font-size:11px;font-family:var(--mono);color:var(--muted2);font-weight:500}
+.footer-right{display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--mono);color:var(--muted2)}
+.footer-handle{color:var(--accent);font-weight:700}
+.back-link{display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;font-family:var(--mono);font-size:11px;color:var(--muted2);text-decoration:none;transition:color 0.2s}
+.back-link:hover{color:var(--accent)}
+
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.75)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.page>*{animation:fadeUp 0.45s ease both}
+.page>*:nth-child(2){animation-delay:0.06s}
+.page>*:nth-child(3){animation-delay:0.12s}
+.page>*:nth-child(4){animation-delay:0.18s}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a href="index.html" class="back-link">← Back to Demos</a>
+
+  <!-- NAV -->
+  <div class="topnav">
+    <div class="nav-id">
+      <div class="nav-icon">🐙</div>
+      <div>
+        <div class="nav-title">cagitskill</div>
+        <div class="nav-sub">@GitHub · MCP Server Updates</div>
+      </div>
+    </div>
+    <div class="nav-badge">
+      <div class="nav-dot"></div>
+      Latest Changes
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">What's New</div>
+    <h1>GitHub MCP Server<br><span>Latest Updates</span></h1>
+    <p class="hero-sub">The GitHub MCP Server has evolved fast since launch. Here's what changed — native HTTP transport, MCP Apps, tool filtering, expanded capabilities, and broader IDE support.</p>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline" id="timeline">
+
+    <div class="tl-item" id="tl0">
+      <div class="tl-dot">⚡</div>
+      <div class="tl-card">
+        <span class="tl-tag tag-new">New Transport</span>
+        <div class="tl-title">Native Streamable HTTP</div>
+        <div class="tl-desc">The server now includes native Streamable HTTP support via a new <code>http</code> command. The HTTP functionality previously hosted at api.githubcopilot.com/mcp now ships directly in the repo. Local stdio still works — this adds a remote option without a proxy.</div>
+        <div class="tl-code"><span class="c">// remote server — streamable HTTP</span>
+<span class="k">"servers"</span>: {
+  <span class="k">"github"</span>: {
+    <span class="k">"type"</span>: <span class="v">"http"</span>,
+    <span class="k">"url"</span>: <span class="v">"https://api.githubcopilot.com/mcp/"</span>
+  }
+}</div>
+      </div>
+    </div>
+
+    <div class="tl-item" id="tl1">
+      <div class="tl-dot dot-p">🧪</div>
+      <div class="tl-card">
+        <span class="tl-tag tag-exp">Experimental</span>
+        <div class="tl-title">MCP Apps via Insiders Mode</div>
+        <div class="tl-desc">A new opt-in mode for experimental tooling and features. MCP Apps was the first experiment — now migrated from insiders-only to a feature flag anyone can enable. Access the insiders channel for early features before they go stable.</div>
+        <div class="tl-code"><span class="c">// insiders channel — early access</span>
+<span class="k">"url"</span>: <span class="v">"https://api.githubcopilot.com/mcp/insiders"</span></div>
+      </div>
+    </div>
+
+    <div class="tl-item" id="tl2">
+      <div class="tl-dot dot-a">🔧</div>
+      <div class="tl-card">
+        <span class="tl-tag tag-cfg">Configuration</span>
+        <div class="tl-title">Tool Filtering with --exclude-tools</div>
+        <div class="tl-desc">New <code>--exclude-tools</code> flag and <code>X-MCP-Exclude-Tools</code> header let you shut off specific tools at the server level. Useful when you want Copilot to focus on issues and PRs but skip code search, or any combination that fits your workflow.</div>
+        <div class="tl-code"><span class="c">// disable specific tools</span>
+<span class="k">$</span> github-mcp-server --exclude-tools search_code,list_commits
+
+<span class="c">// or via header (remote)</span>
+<span class="k">X-MCP-Exclude-Tools</span>: <span class="v">search_code,list_commits</span></div>
+      </div>
+    </div>
+
+    <div class="tl-item" id="tl3">
+      <div class="tl-dot dot-g">📊</div>
+      <div class="tl-card">
+        <span class="tl-tag tag-sec">Expanded</span>
+        <div class="tl-title">CI/CD & Workflow Intelligence</div>
+        <div class="tl-desc">The server now exposes tools for monitoring GitHub Actions workflow runs, analyzing build failures, managing releases, and getting pipeline insights. Previously you could manage code and issues — now you can manage your entire dev pipeline from Copilot Chat.</div>
+      </div>
+    </div>
+
+    <div class="tl-item" id="tl4">
+      <div class="tl-dot dot-g">🔒</div>
+      <div class="tl-card">
+        <span class="tl-tag tag-sec">Security</span>
+        <div class="tl-title">Code Analysis & Security Findings</div>
+        <div class="tl-desc">New tools for examining security findings, reviewing Dependabot alerts, understanding code patterns, and getting comprehensive codebase insights. The model can now surface vulnerabilities and suggest fixes without leaving the IDE.</div>
+      </div>
+    </div>
+
+    <div class="tl-item" id="tl5">
+      <div class="tl-dot">💻</div>
+      <div class="tl-card">
+        <span class="tl-tag tag-new">Client Support</span>
+        <div class="tl-title">Broader IDE & Client Compatibility</div>
+        <div class="tl-desc">The remote server now works with VS Code 1.101+, Claude Desktop, Cursor, Windsurf, and other MCP-compatible hosts. Each handles config slightly differently but the same server URL works across all of them. PAT auth is universally supported; OAuth varies by host.</div>
+      </div>
+    </div>
+
+    <div class="tl-item" id="tl6">
+      <div class="tl-dot dot-a">🐳</div>
+      <div class="tl-card">
+        <span class="tl-tag tag-cfg">Infrastructure</span>
+        <div class="tl-title">Docker & Enterprise Improvements</div>
+        <div class="tl-desc">Docker base images pinned to SHA256 digests for reproducible builds. Custom middleware support added. GitHub Enterprise Cloud with data residency supported via <code>--gh-host</code> flag. Stricter URL matching for github.com and ghe.com domains.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BEFORE / AFTER -->
+  <div class="compare">
+    <div class="compare-card" id="cmpOld">
+      <div class="compare-label old">// Before</div>
+      <div class="compare-item"><span class="ci">○</span> stdio transport only (local)</div>
+      <div class="compare-item"><span class="ci">○</span> Code, issues, PRs, branches</div>
+      <div class="compare-item"><span class="ci">○</span> VS Code + JetBrains + Visual Studio</div>
+      <div class="compare-item"><span class="ci">○</span> All tools always on</div>
+      <div class="compare-item"><span class="ci">○</span> No experimental channel</div>
+    </div>
+    <div class="compare-card" id="cmpNew">
+      <div class="compare-label new">// Now</div>
+      <div class="compare-item"><span class="ci" style="color:var(--accent)">●</span> <span style="color:var(--text)">stdio + native Streamable HTTP (local or remote)</span></div>
+      <div class="compare-item"><span class="ci" style="color:var(--accent)">●</span> <span style="color:var(--text)">Code, issues, PRs + CI/CD + security + releases</span></div>
+      <div class="compare-item"><span class="ci" style="color:var(--accent)">●</span> <span style="color:var(--text)">VS Code, JetBrains, Claude, Cursor, Windsurf</span></div>
+      <div class="compare-item"><span class="ci" style="color:var(--accent)">●</span> <span style="color:var(--text)">--exclude-tools flag for granular control</span></div>
+      <div class="compare-item"><span class="ci" style="color:var(--accent)">●</span> <span style="color:var(--text)">Insiders channel + MCP Apps experiments</span></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">github.com/github/github-mcp-server · Open Source · MIT License</div>
+    <div class="footer-right">
+      <span class="footer-handle">cagitskill</span> · @GitHub
+    </div>
+  </div>
+
+</div>
+<script>
+// Scroll-triggered timeline animation
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('show');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.tl-item, .compare-card').forEach((el, i) => {
+  el.style.transitionDelay = (i * 80) + 'ms';
+  observer.observe(el);
+});
+
+// Auto-play for items already in view on load
+setTimeout(() => {
+  document.querySelectorAll('.tl-item, .compare-card').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.85) {
+      el.classList.add('show');
+    }
+  });
+}, 300);
+</script>
+</body>
+</html>
