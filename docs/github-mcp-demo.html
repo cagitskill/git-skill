@@ -437,6 +437,9 @@ h1 span { color: var(--accent); }
     </div>
   </div>
 
+  <!-- WHAT'S NEW BADGE -->
+  <a href="github-mcp-whats-new.html" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:20px;padding:5px 14px;border-radius:100px;border:1px solid rgba(167,139,250,0.3);background:rgba(167,139,250,0.06);font-family:var(--mono);font-size:10px;font-weight:700;color:var(--accent2);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent2)';this.style.boxShadow='0 0 10px rgba(167,139,250,0.2)'" onmouseout="this.style.borderColor='rgba(167,139,250,0.3)';this.style.boxShadow='none'">⚡ What's New in GitHub MCP Server →</a>
+
   <!-- HERO -->
   <div class="hero">
     <div class="hero-eyebrow">Model Context Protocol</div>
@@ -567,7 +570,7 @@ h1 span { color: var(--accent); }
   </div>
 
   <!-- CAPABILITIES -->
-  <div class="card" style="margin-bottom:16px;">
+  <div class="card" id="secCaps" style="margin-bottom:16px;">
     <div class="card-label">What the GitHub MCP Server Gives Copilot Access To</div>
     <div class="cap-grid">
       <div class="cap" id="cap0" onclick="lightUpCards()">
@@ -614,7 +617,7 @@ h1 span { color: var(--accent); }
   </div>
 
   <!-- MCP TOOLS + IDEs side by side -->
-  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+  <div id="secToolsIDEs" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
 
     <div class="card">
       <div class="card-label">Key MCP Tools in the GitHub Server</div>
@@ -679,6 +682,9 @@ h1 span { color: var(--accent); }
     </div>
 
   </div>
+
+  <!-- WHAT'S NEW LINK -->
+  <a href="github-mcp-whats-new.html" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;margin-bottom:16px;border-radius:10px;border:1px solid rgba(0,229,255,0.25);background:rgba(0,229,255,0.04);color:var(--accent);font-family:var(--mono);font-size:12px;font-weight:700;text-decoration:none;transition:all 0.2s;" onmouseover="this.style.background='rgba(0,229,255,0.1)';this.style.borderColor='rgba(0,229,255,0.5)';this.style.boxShadow='0 0 14px rgba(0,229,255,0.15)'" onmouseout="this.style.background='rgba(0,229,255,0.04)';this.style.borderColor='rgba(0,229,255,0.25)';this.style.boxShadow='none'">⚡ See What's New in GitHub MCP Server →</a>
 
   <!-- FOOTER -->
   <div class="footer">
@@ -873,6 +879,24 @@ function resetDemo(silent) {
     document.getElementById('ide' + i)?.classList.remove('live');
   }
 }
+
+// ── SCROLL-TRIGGERED CARD ACTIVATION ──
+const scrollObs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      if (id === 'secCaps') {
+        setTimeout(() => lightUpCaps(), 300);
+      } else if (id === 'secToolsIDEs') {
+        setTimeout(() => lightUpTools(), 300);
+        setTimeout(() => lightUpIDEs(), 800);
+      }
+      scrollObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.2 });
+
+document.querySelectorAll('#secCaps, #secToolsIDEs').forEach(el => scrollObs.observe(el));
 </script>
 </body>
 </html>
