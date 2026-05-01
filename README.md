@@ -29,7 +29,7 @@ Current set:
 - **GitHub's MCP Server — How It Works** — how Copilot connects to your repos, issues, and PRs from the IDE, end to end.
 
 Examples
-**https://github.com/cagitskill/git-skill/tree/main/examples/GitHubMCP-Copilot**
+A practical, opinionated guide to setting up, configuring, and extending the GitHub MCP server with GitHub Copilot — across every supported IDE, for individuals and organizations alike **https://github.com/cagitskill/git-skill/tree/main/examples/GitHubMCP-Copilot**
 
 ## Why it's public
 
