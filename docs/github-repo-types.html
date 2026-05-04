@@ -1,0 +1,1996 @@
+<!-- FILE PATH: repo-types.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GitHub Repositories — Visibility, Access & Enterprise Controls</title>
+<meta name="description" content="A clean, animated infographic explaining GitHub repository types — Public, Private, Internal, Org, EMU — and the enterprise security rules that govern them." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f6f8fa;
+    --bg-tint: #faf8ff;
+    --bg-dark: #0d1117;
+    --fg: #1f2328;
+    --fg-muted: #59636e;
+    --fg-subtle: #818b98;
+    --border: #d1d9e0;
+    --border-soft: #e6ebf0;
+    --purple: #8250df;
+    --purple-deep: #6639ba;
+    --purple-soft: #efeafe;
+    --purple-tint: #f5f1ff;
+    --green: #1a7f37;
+    --green-soft: #dafbe1;
+    --red: #cf222e;
+    --red-soft: #ffe5e7;
+    --amber: #9a6700;
+    --amber-soft: #fff8c5;
+    --blue: #0969da;
+    --blue-soft: #ddf4ff;
+    --shadow-sm: 0 1px 2px rgba(31, 35, 40, 0.04), 0 0 0 1px var(--border-soft);
+    --shadow-md: 0 4px 16px rgba(130, 80, 223, 0.08), 0 1px 3px rgba(31, 35, 40, 0.04);
+    --shadow-purple: 0 8px 32px rgba(130, 80, 223, 0.18);
+    --radius-sm: 6px;
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Mona Sans', -apple-system, system-ui, sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* ============ HERO ============ */
+  .hero { position: relative; padding: 88px 0 72px; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+
+  .blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: 0.6;
+    animation: float 14s ease-in-out infinite;
+  }
+  .blob-1 { width: 420px; height: 420px; background: radial-gradient(circle, #c7b3ff 0%, transparent 70%); top: -120px; right: -80px; }
+  .blob-2 { width: 360px; height: 360px; background: radial-gradient(circle, #efeafe 0%, transparent 70%); top: 80px; left: -100px; animation-delay: -7s; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, -20px) scale(1.05); }
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--border-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, black 30%, transparent 80%);
+    opacity: 0.5;
+  }
+
+  .hero-inner { position: relative; z-index: 1; text-align: center; }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: var(--purple-deep); background: var(--purple-soft);
+    border: 1px solid #d8c9f7;
+    padding: 6px 12px; border-radius: 999px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+
+  .pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--purple);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(130, 80, 223, 0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(130, 80, 223, 0); }
+  }
+
+  h1 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 800; font-stretch: 125%;
+    font-size: clamp(38px, 6.5vw, 72px);
+    line-height: 1.02; letter-spacing: -0.03em;
+    margin-top: 24px;
+  }
+
+  h1 .accent {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+
+  .tagline {
+    font-size: clamp(17px, 2vw, 20px);
+    color: var(--fg-muted);
+    max-width: 640px; margin: 24px auto 0;
+    line-height: 1.5;
+  }
+
+  .hero-stats {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 8px; margin-top: 36px;
+  }
+
+  .pill {
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 500;
+    color: var(--fg-muted);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .pill strong { color: var(--fg); font-weight: 600; }
+
+  /* ============ SECTIONS ============ */
+  section { padding: 80px 0; position: relative; }
+
+  .section-header { margin-bottom: 56px; max-width: 680px; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: var(--purple);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 12px; display: block;
+  }
+
+  h2 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 700; font-stretch: 115%;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.1; letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+
+  .section-sub {
+    font-size: 17px; color: var(--fg-muted);
+    margin-top: 16px; max-width: 620px;
+  }
+
+  .section-sub code, .what-text code, .narrative code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: var(--purple-soft);
+    padding: 2px 6px; border-radius: 4px;
+    color: var(--purple-deep);
+  }
+
+  /* "NEW" badge — used to flag stuff that's new/recently GA'd */
+  .new-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
+    padding: 3px 8px; border-radius: 4px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    vertical-align: middle;
+    margin-left: 8px;
+    box-shadow: 0 2px 6px rgba(130, 80, 223, 0.3);
+  }
+
+  /* ============ MENTAL MODEL ============ */
+  .model {
+    background: var(--bg-soft);
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .model-grid {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .model-text p {
+    font-size: 16px;
+    color: var(--fg);
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+
+  .model-text p:last-child { margin-bottom: 0; }
+
+  .model-text p strong { color: var(--purple-deep); font-weight: 600; }
+
+  .model-text .lede {
+    font-family: 'Mona Sans', sans-serif;
+    font-stretch: 115%;
+    font-weight: 600;
+    font-size: 19px;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+    margin-bottom: 18px;
+    line-height: 1.45;
+  }
+
+  /* The org chart visualization */
+  .org-chart {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .org-chart::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 140px; height: 140px;
+    background: radial-gradient(circle at top right, var(--purple-soft) 0%, transparent 70%);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* Enterprise tier (top) */
+  .tier-enterprise {
+    text-align: center;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .ent-card {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
+    color: white;
+    padding: 14px 28px;
+    border-radius: var(--radius);
+    box-shadow: 0 6px 20px rgba(130, 80, 223, 0.35);
+    position: relative;
+    z-index: 2;
+  }
+
+  .ent-card .ent-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.85;
+    margin-bottom: 4px;
+  }
+
+  .ent-card .ent-name {
+    font-family: 'Mona Sans', sans-serif;
+    font-stretch: 115%;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+
+  .ent-policies {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .ent-policies .policy-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    background: var(--purple-soft);
+    color: var(--purple-deep);
+    border: 1px solid #d8c9f7;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-weight: 500;
+  }
+
+  /* Connector lines from enterprise down to orgs */
+  .tier-connector {
+    height: 36px;
+    position: relative;
+    margin: 0 auto;
+  }
+
+  .tier-connector svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Org tier (middle) */
+  .tier-orgs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .org-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 10px;
+    text-align: center;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    position: relative;
+  }
+
+  .org-card:hover {
+    border-color: var(--purple);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .org-card .org-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--fg-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 3px;
+  }
+
+  .org-card .org-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--fg);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  /* Repo chips inside each org */
+  .repo-chips {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    flex-wrap: wrap;
+  }
+
+  .repo-chip {
+    width: 16px; height: 16px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .repo-chip.public { background: var(--blue-soft); border: 1px solid var(--blue); }
+  .repo-chip.private { background: var(--bg-soft); border: 1px solid var(--fg-subtle); }
+  .repo-chip.internal { background: var(--purple-soft); border: 1px solid var(--purple); }
+
+  /* The "shared internal" bridge between GitHub and MS Eng */
+  .shared-bridge {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--purple-tint);
+    border: 1px dashed var(--purple);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    color: var(--purple-deep);
+    text-align: center;
+    line-height: 1.45;
+  }
+
+  .shared-bridge strong { font-weight: 600; }
+
+  .shared-bridge .bridge-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--bg);
+    border: 1px solid #d8c9f7;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin: 0 4px;
+    font-weight: 500;
+  }
+
+  /* Legend below */
+  .chart-legend {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--border);
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-muted);
+  }
+
+  .legend-item .repo-chip {
+    width: 12px; height: 12px;
+  }
+
+  /* ============ THE FIVE FLAVORS ============ */
+  .flavors-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .flavor {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .flavor.in-view { opacity: 1; transform: translateY(0); }
+
+  .flavor:hover {
+    border-color: var(--purple);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+  }
+
+  .flavor-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px; font-weight: 600;
+  }
+
+  .flavor.public .flavor-icon { background: var(--blue-soft); color: var(--blue); }
+  .flavor.private .flavor-icon { background: var(--bg-soft); color: var(--fg-muted); }
+  .flavor.internal .flavor-icon { background: var(--purple-soft); color: var(--purple-deep); }
+  .flavor.org .flavor-icon { background: var(--green-soft); color: var(--green); }
+  .flavor.emu .flavor-icon { background: var(--amber-soft); color: var(--amber); }
+  .flavor.user .flavor-icon { background: #fff0e6; color: #bc4c00; }
+
+  .flavor h3 {
+    font-size: 18px; font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .flavor .who {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--fg-subtle);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .flavor p {
+    font-size: 14px;
+    color: var(--fg-muted);
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+
+  .flavor .quick-fact {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--purple-deep);
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    display: block;
+  }
+
+  /* ============ MATRIX TABLE ============ */
+  .matrix-section { background: var(--bg-soft); border-top: 1px solid var(--border-soft); border-bottom: 1px solid var(--border-soft); }
+
+  .matrix-wrap {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .matrix-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table.matrix {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 720px;
+    font-size: 14px;
+  }
+
+  table.matrix th, table.matrix td {
+    text-align: left;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-soft);
+    vertical-align: middle;
+  }
+
+  table.matrix thead th {
+    background: var(--bg-soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--fg-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+
+  table.matrix thead th.col-public { color: var(--blue); }
+  table.matrix thead th.col-private { color: var(--fg-muted); }
+  table.matrix thead th.col-internal { color: var(--purple-deep); }
+  table.matrix thead th.col-emu { color: var(--amber); }
+
+  table.matrix tbody tr:hover { background: var(--bg-tint); }
+
+  table.matrix td.row-label {
+    font-weight: 600;
+    color: var(--fg);
+    background: var(--bg-soft);
+    border-right: 1px solid var(--border-soft);
+    width: 32%;
+  }
+
+  table.matrix td.row-label small {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--fg-subtle);
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  .cell-icon {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+
+  .cell-icon.yes { color: var(--green); }
+  .cell-icon.no { color: var(--red); }
+  .cell-icon.maybe { color: var(--amber); }
+
+  .cell-icon::before {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 11px;
+    flex-shrink: 0;
+  }
+
+  .cell-icon.yes::before { content: '✓'; background: var(--green-soft); color: var(--green); }
+  .cell-icon.no::before { content: '✕'; background: var(--red-soft); color: var(--red); }
+  .cell-icon.maybe::before { content: '!'; background: var(--amber-soft); color: var(--amber); }
+
+  /* ============ INTERNAL REPOS DEEP DIVE ============ */
+  .internal-callout {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--purple);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 28px;
+    font-family: 'Mona Sans', sans-serif;
+    font-stretch: 115%;
+    font-weight: 600;
+    font-size: clamp(18px, 2.2vw, 24px);
+    color: var(--fg);
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+
+  .internal-callout strong { color: var(--purple-deep); font-weight: 700; }
+
+  .internal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .internal-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+  }
+
+  .internal-card.in-view { opacity: 1; transform: translateY(0); }
+
+  .internal-card:hover { box-shadow: var(--shadow-md); }
+
+  .internal-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--purple);
+    background: var(--purple-soft);
+    padding: 3px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 12px;
+  }
+
+  .internal-card h3 {
+    font-size: 17px; font-weight: 600;
+    margin-bottom: 8px; letter-spacing: -0.01em;
+  }
+
+  .internal-card p {
+    font-size: 14.5px; color: var(--fg-muted);
+    line-height: 1.6;
+  }
+
+  .internal-card code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    background: var(--purple-soft);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--purple-deep);
+  }
+
+  /* ============ EMU DEEP DIVE ============ */
+  .emu {
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-tint) 100%);
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .emu-narrative {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .emu-narrative h3 {
+    font-size: 20px; font-weight: 700;
+    margin-bottom: 14px; letter-spacing: -0.01em;
+  }
+
+  .emu-narrative p {
+    font-size: 15.5px; color: var(--fg);
+    line-height: 1.65; margin-bottom: 12px;
+  }
+
+  .emu-narrative p:last-child { margin-bottom: 0; }
+
+  .emu-narrative p strong { color: var(--purple-deep); font-weight: 600; }
+
+  .can-cant {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .cc-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .cc-card.can { border-top: 4px solid var(--green); }
+  .cc-card.cant { border-top: 4px solid var(--red); }
+
+  .cc-card h4 {
+    font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 18px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .cc-card.can h4 { color: var(--green); }
+  .cc-card.cant h4 { color: var(--red); }
+
+  .cc-card ul { list-style: none; }
+
+  .cc-card li {
+    padding: 10px 0;
+    font-size: 14.5px;
+    border-bottom: 1px dashed var(--border-soft);
+    display: flex; gap: 12px; align-items: flex-start;
+    color: var(--fg);
+    line-height: 1.5;
+  }
+
+  .cc-card li:last-child { border-bottom: none; }
+
+  .cc-card.can li::before {
+    content: '✓';
+    color: var(--green); font-weight: 700;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  .cc-card.cant li::before {
+    content: '✕';
+    color: var(--red); font-weight: 700;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  .cc-card li code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    background: var(--purple-soft);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--purple-deep);
+  }
+
+  /* ============ ENTERPRISE ACCESS RESTRICTIONS ============ */
+  .access-restrictions {
+    background: var(--bg-soft);
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .ar-flow {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 32px;
+  }
+
+  .ar-diagram {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .ar-node {
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 18px;
+    text-align: center;
+  }
+
+  .ar-node.proxy { border-color: var(--purple); background: var(--purple-tint); }
+  .ar-node.github { border-color: var(--purple-deep); }
+
+  .ar-node-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .ar-node strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+
+  .ar-node small {
+    font-size: 12px;
+    color: var(--fg-muted);
+    line-height: 1.4;
+    display: block;
+  }
+
+  .ar-arrow {
+    color: var(--purple);
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .ar-arrow small {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--fg-subtle);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-align: center;
+    max-width: 90px;
+    line-height: 1.3;
+  }
+
+  .ar-header-code {
+    background: var(--bg-dark);
+    color: #c9d1d9;
+    padding: 18px 22px;
+    border-radius: var(--radius-sm);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    margin-top: 24px;
+    overflow-x: auto;
+  }
+
+  .ar-header-code .label {
+    color: #8b949e;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .ar-header-code .key { color: #79c0ff; }
+  .ar-header-code .val { color: #a5d6ff; }
+
+  .ar-facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .ar-fact {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+  }
+
+  .ar-fact strong {
+    display: block;
+    font-family: 'Mona Sans', sans-serif;
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--purple-deep);
+    margin-bottom: 6px;
+  }
+
+  .ar-fact span {
+    font-size: 13px;
+    color: var(--fg-muted);
+    line-height: 1.5;
+  }
+
+  /* ============ DATA RESIDENCY ============ */
+  .residency-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+    align-items: start;
+  }
+
+  .url-compare {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+
+  .url-row {
+    padding: 22px 24px;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .url-row:last-child { border-bottom: none; }
+
+  .url-row.standard { background: var(--bg-soft); }
+  .url-row.residency { background: var(--purple-tint); }
+
+  .url-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+
+  .url-row.standard .url-tag { color: var(--fg-subtle); }
+  .url-row.residency .url-tag { color: var(--purple-deep); }
+
+  .url-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+
+  .url-row.residency .url-value { color: var(--purple-deep); }
+
+  .url-note {
+    font-size: 13px;
+    color: var(--fg-muted);
+    margin-top: 4px;
+  }
+
+  .residency-text h3 {
+    font-size: 22px; font-weight: 700;
+    margin-bottom: 14px; letter-spacing: -0.01em;
+  }
+
+  .residency-text p {
+    font-size: 15.5px; color: var(--fg);
+    line-height: 1.65; margin-bottom: 14px;
+  }
+
+  .residency-text p strong { color: var(--purple-deep); font-weight: 600; }
+
+  .residency-regions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .region {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 999px;
+    color: var(--fg-muted);
+    font-weight: 500;
+  }
+
+  .region.live {
+    background: var(--purple-soft);
+    border-color: #d8c9f7;
+    color: var(--purple-deep);
+  }
+
+  .region.live::before {
+    content: '●';
+    color: var(--purple);
+    margin-right: 4px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  /* ============ POLICIES & RULESETS ============ */
+  .policies {
+    background: linear-gradient(180deg, var(--bg-tint) 0%, var(--bg) 100%);
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .policy-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .policy {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    position: relative;
+  }
+
+  .policy.in-view { opacity: 1; transform: translateY(0); }
+
+  .policy:hover {
+    border-color: var(--purple);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+  }
+
+  .policy-icon {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    background: var(--purple-soft);
+    color: var(--purple-deep);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .policy h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .policy p {
+    font-size: 14px;
+    color: var(--fg-muted);
+    line-height: 1.55;
+  }
+
+  .policy p code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--purple-soft);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--purple-deep);
+  }
+
+  /* ============ SECURITY MATRIX ============ */
+  .security {
+    background: var(--bg-soft);
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .sec-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .sec-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+  }
+
+  .sec-card.in-view { opacity: 1; transform: translateY(0); }
+
+  .sec-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .sec-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--purple-soft);
+    color: var(--purple-deep);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  .sec-icon svg { width: 18px; height: 18px; }
+
+  .sec-card h3 {
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 6px; letter-spacing: -0.01em;
+  }
+
+  .sec-card p {
+    font-size: 13.5px;
+    color: var(--fg-muted);
+    line-height: 1.55;
+  }
+
+  .sec-card .scope {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--purple);
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ============ FACTS ============ */
+  .facts { border-top: 1px solid var(--border-soft); }
+
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border-soft);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border-soft);
+  }
+
+  .fact { background: var(--bg); padding: 28px 24px; text-align: center; }
+
+  .fact-num {
+    font-family: 'Mona Sans', sans-serif;
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: 36px;
+    line-height: 1; letter-spacing: -0.03em;
+    color: var(--purple-deep);
+  }
+
+  .fact-num small {
+    font-size: 16px; font-weight: 600;
+    color: var(--purple);
+    margin-left: 2px;
+  }
+
+  .fact-label {
+    font-size: 13px; color: var(--fg-muted);
+    margin-top: 8px; line-height: 1.4;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border-soft);
+    padding: 48px 0 60px;
+    text-align: center;
+    color: var(--fg-muted);
+    font-size: 14px;
+  }
+
+  footer a {
+    color: var(--purple-deep);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  footer a:hover { border-bottom-color: var(--purple-deep); }
+
+  .footer-mark {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-subtle);
+    margin-top: 12px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 880px) {
+    .model-grid { grid-template-columns: 1fr; gap: 32px; }
+    .tier-orgs { grid-template-columns: repeat(2, 1fr); }
+    .flavors-grid { grid-template-columns: repeat(2, 1fr); }
+    .residency-grid { grid-template-columns: 1fr; gap: 32px; }
+    .can-cant { grid-template-columns: 1fr; }
+    .internal-grid { grid-template-columns: 1fr; }
+    .ar-diagram { grid-template-columns: 1fr; }
+    .ar-arrow { transform: rotate(90deg); }
+    .ar-facts { grid-template-columns: 1fr; }
+    .policy-grid { grid-template-columns: repeat(2, 1fr); }
+    .sec-grid { grid-template-columns: repeat(2, 1fr); }
+    .fact-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 560px) {
+    .hero { padding: 64px 0 48px; }
+    section { padding: 60px 0; }
+    .flavors-grid { grid-template-columns: 1fr; }
+    .policy-grid { grid-template-columns: 1fr; }
+    .sec-grid { grid-template-columns: 1fr; }
+    .fact-grid { grid-template-columns: 1fr; }
+    .ar-flow { padding: 24px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+  <div class="wrap hero-inner">
+    <span class="eyebrow"><span class="pulse-dot"></span>Repos · Visibility · Enterprise controls</span>
+    <h1>GitHub <span class="accent">repositories</span><br/>explained.</h1>
+    <p class="tagline">From a public open-source repo to a locked-down EMU enterprise — a tour of the five flavors, who can do what in each, and the new enterprise controls that govern them all.</p>
+    <div class="hero-stats">
+      <span class="pill"><strong>5 repo flavors</strong> · public, private, internal, org, EMU</span>
+      <span class="pill"><strong>3 visibility levels</strong> · public, private, internal</span>
+      <span class="pill"><strong>1 source of truth</strong> · the org policy page</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ MENTAL MODEL ============ -->
+<section class="model">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// The mental model</span>
+      <h2>Think of it like a parent company.</h2>
+      <p class="section-sub">Before diving into repo types, the easiest way to picture the hierarchy is as a corporate structure: a parent company, its divisions, and the projects each one runs.</p>
+    </div>
+
+    <div class="model-grid">
+      <div class="model-text">
+        <p class="lede">Microsoft is the <strong>Enterprise account</strong>. Xbox, LinkedIn, GitHub, and Microsoft Engineering are <strong>orgs</strong> under it. Each org has its own <strong>repos</strong>.</p>
+
+        <p>The orgs are independent — Xbox is a gaming division, LinkedIn is a social platform, GitHub is dev tools, MS Engineering is the broader internal engineering org. They mostly run their own show.</p>
+
+        <p>But Microsoft as a parent still wants to push policies down to all of them: branch protection, who can create public repos, IP allow lists, audit log streaming. That's <strong>set at the enterprise level</strong> and inherited by every org underneath.</p>
+
+        <p>At the repo level, each org runs the mix that makes sense for them. Xbox shares very little with GitHub. But <strong>GitHub and MS Engineering co-develop products</strong> like Copilot and Actions — so they keep some <strong>internal repos</strong> that both can read across the org boundary, while still keeping their own <strong>private repos</strong> for things only their team should touch. And every org has a few <strong>public repos</strong> for open source.</p>
+      </div>
+
+      <div class="org-chart">
+        <!-- Enterprise tier -->
+        <div class="tier-enterprise">
+          <div class="ent-card">
+            <span class="ent-tag">Enterprise account</span>
+            <span class="ent-name">Microsoft</span>
+          </div>
+          <div class="ent-policies">
+            <span class="policy-chip">branch protection</span>
+            <span class="policy-chip">SSO</span>
+            <span class="policy-chip">audit log</span>
+            <span class="policy-chip">IP allow list</span>
+          </div>
+        </div>
+
+        <!-- Connector: enterprise down to 4 orgs -->
+        <div class="tier-connector">
+          <svg viewBox="0 0 400 36" preserveAspectRatio="none" aria-hidden="true">
+            <line x1="200" y1="0" x2="200" y2="14" stroke="#d1d9e0" stroke-width="1.5"/>
+            <line x1="50" y1="14" x2="350" y2="14" stroke="#d1d9e0" stroke-width="1.5"/>
+            <line x1="50" y1="14" x2="50" y2="34" stroke="#d1d9e0" stroke-width="1.5"/>
+            <line x1="150" y1="14" x2="150" y2="34" stroke="#d1d9e0" stroke-width="1.5"/>
+            <line x1="250" y1="14" x2="250" y2="34" stroke="#d1d9e0" stroke-width="1.5"/>
+            <line x1="350" y1="14" x2="350" y2="34" stroke="#d1d9e0" stroke-width="1.5"/>
+          </svg>
+        </div>
+
+        <!-- Org tier -->
+        <div class="tier-orgs">
+          <div class="org-card">
+            <div class="org-tag">Org</div>
+            <div class="org-name">Xbox</div>
+            <div class="repo-chips">
+              <span class="repo-chip private" title="private"></span>
+              <span class="repo-chip private" title="private"></span>
+              <span class="repo-chip private" title="private"></span>
+              <span class="repo-chip public" title="public"></span>
+            </div>
+          </div>
+
+          <div class="org-card">
+            <div class="org-tag">Org</div>
+            <div class="org-name">LinkedIn</div>
+            <div class="repo-chips">
+              <span class="repo-chip private" title="private"></span>
+              <span class="repo-chip private" title="private"></span>
+              <span class="repo-chip public" title="public"></span>
+            </div>
+          </div>
+
+          <div class="org-card">
+            <div class="org-tag">Org</div>
+            <div class="org-name">GitHub</div>
+            <div class="repo-chips">
+              <span class="repo-chip private" title="private"></span>
+              <span class="repo-chip internal" title="internal"></span>
+              <span class="repo-chip internal" title="internal"></span>
+              <span class="repo-chip public" title="public"></span>
+            </div>
+          </div>
+
+          <div class="org-card">
+            <div class="org-tag">Org</div>
+            <div class="org-name">MS Engineering</div>
+            <div class="repo-chips">
+              <span class="repo-chip private" title="private"></span>
+              <span class="repo-chip internal" title="internal"></span>
+              <span class="repo-chip internal" title="internal"></span>
+              <span class="repo-chip public" title="public"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- The shared internal callout -->
+        <div class="shared-bridge">
+          <span class="bridge-icon">GitHub</span> ⇄ <span class="bridge-icon">MS Engineering</span><br/>
+          Co-develop Copilot &amp; Actions — <strong>internal repos let both orgs read across the boundary</strong>, while private repos stay scoped to each team.
+        </div>
+
+        <!-- Legend -->
+        <div class="chart-legend">
+          <span class="legend-item"><span class="repo-chip public"></span> public</span>
+          <span class="legend-item"><span class="repo-chip private"></span> private</span>
+          <span class="legend-item"><span class="repo-chip internal"></span> internal</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE FIVE FLAVORS ============ -->
+<section>
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// The five flavors</span>
+      <h2>Same Git underneath, very different rules on top.</h2>
+      <p class="section-sub">A repo's behavior depends on two things: <strong>who owns it</strong> (a personal account, an org, an enterprise) and <strong>its visibility</strong> (public, private, internal). Combine those and you get the five flavors below.</p>
+    </div>
+
+    <div class="flavors-grid" id="flavors">
+
+      <div class="flavor public">
+        <div class="flavor-icon">🌐</div>
+        <h3>Public repo</h3>
+        <div class="who">Anyone on the internet</div>
+        <p>Open to the world. Read by anyone, contributed to by anyone with permission. The default for OSS.</p>
+        <span class="quick-fact">→ Visibility: public · Owner: any</span>
+      </div>
+
+      <div class="flavor user">
+        <div class="flavor-icon">👤</div>
+        <h3>User-owned private</h3>
+        <div class="who">A personal account</div>
+        <p>Lives under your GitHub handle. Can invite outside collaborators directly. Can be made public anytime.</p>
+        <span class="quick-fact">→ Visibility: private · Owner: user</span>
+      </div>
+
+      <div class="flavor private">
+        <div class="flavor-icon">🔒</div>
+        <h3>Org-owned private</h3>
+        <div class="who">An organization</div>
+        <p>Owned by the org. Access goes through teams, base permissions, and per-repo collaborators. The standard team repo.</p>
+        <span class="quick-fact">→ Visibility: private · Owner: org</span>
+      </div>
+
+      <div class="flavor internal">
+        <div class="flavor-icon">🏢</div>
+        <h3>Internal repo<span class="new-badge">Enterprise only</span></h3>
+        <div class="who">An org inside an enterprise</div>
+        <p>Visible to <strong>everyone in the enterprise</strong>, invisible to everyone outside. Powers "innersource" — share across the company without going public.</p>
+        <span class="quick-fact">→ Visibility: internal · Owner: enterprise org</span>
+      </div>
+
+      <div class="flavor org">
+        <div class="flavor-icon">⚙️</div>
+        <h3>Enterprise org repo</h3>
+        <div class="who">An org governed by an enterprise</div>
+        <p>An org's repos when the org sits under an enterprise account. Can be public, private, or internal — with policies set at the enterprise level.</p>
+        <span class="quick-fact">→ Owner: org · Governed by: enterprise</span>
+      </div>
+
+      <div class="flavor emu">
+        <div class="flavor-icon">🛡️</div>
+        <h3>EMU-owned repo<span class="new-badge">Locked down</span></h3>
+        <div class="who">An Enterprise Managed Users tenant</div>
+        <p>Lives inside an EMU enterprise. Only private or internal — <strong>no public</strong>. Users provisioned by your IdP, no outside collaboration.</p>
+        <span class="quick-fact">→ Identity: SCIM · External access: blocked</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE BIG MATRIX ============ -->
+<section class="matrix-section">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// What you can do where</span>
+      <h2>One matrix, every meaningful "can I…?"</h2>
+      <p class="section-sub">The questions that actually come up in practice — fork it, invite an outsider, run Actions, change visibility — answered for each repo type.</p>
+    </div>
+
+    <div class="matrix-wrap">
+      <div class="matrix-scroll">
+        <table class="matrix">
+          <thead>
+            <tr>
+              <th>Capability</th>
+              <th class="col-public">Public</th>
+              <th class="col-private">Private</th>
+              <th class="col-internal">Internal</th>
+              <th class="col-emu">EMU repos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="row-label">Indexed by Google<small>shows up in search engines</small></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon no">No</span></td>
+              <td><span class="cell-icon no">No</span></td>
+              <td><span class="cell-icon no">No</span></td>
+            </tr>
+            <tr>
+              <td class="row-label">Anonymous clone<small>git clone with no auth</small></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon no">No</span></td>
+              <td><span class="cell-icon no">No</span></td>
+              <td><span class="cell-icon no">No</span></td>
+            </tr>
+            <tr>
+              <td class="row-label">Visible to all enterprise members<small>read access by default, even across orgs</small></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon no">No</span></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon maybe">Internal only</span></td>
+            </tr>
+            <tr>
+              <td class="row-label">Outside collaborators<small>users from outside the org/enterprise</small></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon no">No</span></td>
+              <td><span class="cell-icon no">Blocked</span></td>
+            </tr>
+            <tr>
+              <td class="row-label">Forking<small>into user account or another org</small></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon maybe">If allowed</span></td>
+              <td><span class="cell-icon maybe">1 level only</span></td>
+              <td><span class="cell-icon maybe">Inside enterprise</span></td>
+            </tr>
+            <tr>
+              <td class="row-label">Change visibility freely<small>private → public, etc.</small></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon maybe">If org allows</span></td>
+              <td><span class="cell-icon maybe">Wipes stars/watchers</span></td>
+              <td><span class="cell-icon no">No public option</span></td>
+            </tr>
+            <tr>
+              <td class="row-label">GitHub-hosted Actions runners<small>free or org-billed compute</small></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon maybe">Org repos only</span></td>
+            </tr>
+            <tr>
+              <td class="row-label">Codespaces<small>cloud dev environments</small></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon maybe">Org-owned only</span></td>
+            </tr>
+            <tr>
+              <td class="row-label">GitHub Pages, public site<small>publish a static site</small></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon maybe">Paid plans</span></td>
+              <td><span class="cell-icon maybe">Paid plans</span></td>
+              <td><span class="cell-icon no">Limited</span></td>
+            </tr>
+            <tr>
+              <td class="row-label">Branch protection &amp; rulesets<small>required reviews, status checks</small></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+              <td><span class="cell-icon yes">Yes</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INTERNAL REPOS DEEP DIVE ============ -->
+<section>
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Deep dive · internal repos</span>
+      <h2>The hidden third visibility most teams forget exists.</h2>
+      <p class="section-sub">Internal is the default for new repos in any org owned by an enterprise. It's the "innersource" sweet spot — but the rules are non-obvious.</p>
+    </div>
+
+    <div class="internal-callout">
+      Every member of the enterprise gets <strong>read access</strong> to every internal repo — across <strong>every org</strong>, even ones they don't belong to.
+    </div>
+
+    <div class="internal-grid" id="internalGrid">
+
+      <div class="internal-card">
+        <span class="internal-tag">Default behavior</span>
+        <h3>The new-repo default</h3>
+        <p>For any org owned by an enterprise, internal is the default visibility for new repos. You can change it at the enterprise policy level — set the default to private if you want to discourage accidental cross-org sharing.</p>
+      </div>
+
+      <div class="internal-card">
+        <span class="internal-tag">Read access</span>
+        <h3>Read floor, not ceiling</h3>
+        <p>Internal repos have a <strong>minimum visibility of read</strong> for enterprise members — even if your org-level base permission is set to <code>none</code>. The base permission floor doesn't apply.</p>
+      </div>
+
+      <div class="internal-card">
+        <span class="internal-tag">Forking</span>
+        <h3>Single-level forks only</h3>
+        <p>You can fork an internal repo, but you <strong>cannot fork the fork</strong>. This is intentional — it keeps access management sane when every enterprise member already has a default read.</p>
+      </div>
+
+      <div class="internal-card">
+        <span class="internal-tag">Outside collaborators</span>
+        <h3>Mostly invisible to outsiders</h3>
+        <p>Outside collaborators on an org's other repos cannot see internal repos. You can add an outside collaborator to a <strong>fork</strong> of an internal repo, but only if they also have access to the upstream.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ EMU DEEP DIVE ============ -->
+<section class="emu">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Deep dive · Enterprise Managed Users</span>
+      <h2>EMU is GitHub with a perimeter wall.</h2>
+      <p class="section-sub">Enterprise Managed Users replaces personal GitHub accounts with corporate-issued ones, provisioned by your IdP. The trade is reach for control.</p>
+    </div>
+
+    <div class="emu-narrative">
+      <h3>What changes when an enterprise turns on EMU</h3>
+      <p>Users no longer create their own accounts. <strong>Your IdP provisions them via SCIM</strong>, with usernames in the format <code>handle_shortcode</code>. Authentication is enforced through SAML or OIDC — there's no password or 2FA stored on GitHub itself.</p>
+      <p>The accounts that result can <strong>only see and contribute to repositories inside your enterprise</strong>. They can read public repos on github.com, but they cannot star, fork, comment, follow, sponsor, or open issues outside the enterprise. Their content is invisible to anyone outside the enterprise.</p>
+      <p>Public repos, public gists, and outside collaboration are <strong>off the table</strong>. Repos can only be private or internal. This is the design — EMU is for organizations whose security or compliance posture cannot tolerate the public surface area of standard GitHub.</p>
+    </div>
+
+    <div class="can-cant">
+
+      <div class="cc-card can">
+        <h4>EMU users can…</h4>
+        <ul>
+          <li>Contribute to private and internal repos inside the enterprise</li>
+          <li>Create their own private user repos (if enterprise policy allows)</li>
+          <li>Fork private/internal repos into their user namespace or another enterprise org</li>
+          <li>Use <code>Copilot Business</code> or <code>Copilot Enterprise</code> if licensed</li>
+          <li>Read public repos on github.com (but only read)</li>
+          <li>Use Codespaces, but only the ones owned by the enterprise</li>
+          <li>Be added as <code>repository collaborators</code> (the EMU equivalent of outside collaborators) to enterprise org repos</li>
+        </ul>
+      </div>
+
+      <div class="cc-card cant">
+        <h4>EMU users cannot…</h4>
+        <ul>
+          <li>Create public repos or public gists</li>
+          <li>Be invited to repos or orgs outside the enterprise</li>
+          <li>Fork repos from outside the enterprise</li>
+          <li>Star, watch, follow, comment, or open issues on outside repos</li>
+          <li>Sign up for <code>Copilot Free</code> or <code>Copilot Pro</code></li>
+          <li>Use GitHub-hosted runners on personal user-owned repos</li>
+          <li>Create workflow templates for Actions</li>
+          <li>Install non-privileged GitHub Apps on their user account</li>
+          <li>See the sudo prompt for sensitive actions (auth happens at the IdP)</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ ENTERPRISE ACCESS RESTRICTIONS ============ -->
+<section class="access-restrictions">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// New · enterprise access restrictions</span>
+      <h2>Block personal accounts at the network edge.<span class="new-badge">GA Sept 2025</span></h2>
+      <p class="section-sub">EMU controls who exists inside your enterprise. Access restrictions controls what your <strong>corporate network</strong> can talk to on github.com — even from a personal browser tab.</p>
+    </div>
+
+    <div class="ar-flow">
+      <div class="ar-diagram">
+        <div class="ar-node">
+          <div class="ar-node-icon">01 · User</div>
+          <strong>Corporate device</strong>
+          <small>Browser, IDE, git CLI</small>
+        </div>
+        <div class="ar-arrow">
+          →
+          <small>Traffic to github.com</small>
+        </div>
+        <div class="ar-node proxy">
+          <div class="ar-node-icon">02 · Proxy</div>
+          <strong>Corporate proxy / firewall</strong>
+          <small>Injects a header into every request</small>
+        </div>
+        <div class="ar-arrow">
+          →
+          <small>Header attached</small>
+        </div>
+        <div class="ar-node github">
+          <div class="ar-node-icon">03 · GitHub</div>
+          <strong>github.com</strong>
+          <small>Allow if member of one of the listed enterprise IDs · block otherwise</small>
+        </div>
+      </div>
+
+      <div class="ar-header-code">
+        <span class="label">The header your proxy injects</span>
+        <span class="key">sec-GitHub-allowed-enterprise:</span> <span class="val">ENTERPRISE-1-ID, ENTERPRISE-2-ID, …</span>
+      </div>
+    </div>
+
+    <div class="ar-facts">
+      <div class="ar-fact">
+        <strong>20</strong>
+        <span>Max enterprise IDs in one header — for orgs that own multiple EMU tenants</span>
+      </div>
+      <div class="ar-fact">
+        <strong>API + UI + git</strong>
+        <span>The restriction covers everything that goes to github.com</span>
+      </div>
+      <div class="ar-fact">
+        <strong>Copilot</strong>
+        <span>Has its own separate network policy — managed independently</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DATA RESIDENCY · GHE.com ============ -->
+<section>
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// New · data residency on GHE.com</span>
+      <h2>Your enterprise on its own subdomain.<span class="new-badge">GA</span></h2>
+      <p class="section-sub">A separately hosted Enterprise Cloud instance — same product, different URL, with your code stored in your chosen region. Built on Azure, isolated from public github.com.</p>
+    </div>
+
+    <div class="residency-grid">
+
+      <div class="url-compare">
+        <div class="url-row standard">
+          <span class="url-tag">Standard Enterprise Cloud</span>
+          <span class="url-value">github.com/your-enterprise</span>
+          <span class="url-note">Shared platform · data stored in the US by default</span>
+        </div>
+        <div class="url-row residency">
+          <span class="url-tag">Enterprise Cloud with data residency</span>
+          <span class="url-value">octocorp.ghe.com</span>
+          <span class="url-note">Dedicated subdomain · code stored in your chosen region · Azure-hosted</span>
+        </div>
+      </div>
+
+      <div class="residency-text">
+        <h3>What it actually buys you</h3>
+        <p><strong>Region-locked storage</strong> for code and core repository data. Useful when GDPR, Schrems II, or sector regulators require code to stay in-region.</p>
+        <p><strong>Built-in EMU.</strong> All GHE.com enterprises use Enterprise Managed Users by design — there's no "non-EMU" option.</p>
+        <p><strong>Different network footprint.</strong> SSH key fingerprints and IP ranges differ from github.com. Integrations have to be updated.</p>
+        <p><strong>Action namespaces retire on first use.</strong> When a workflow first uses an Action from github.com, that namespace is locked in your tenant — you can't create an org or repo with the same name. (You can release a name back if you need it.)</p>
+
+        <div class="residency-regions">
+          <span class="region live">EU</span>
+          <span class="region live">US</span>
+          <span class="region live">Australia</span>
+          <span class="region live">Japan</span>
+          <span class="region">More regions planned</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ POLICIES & RULESETS ============ -->
+<section class="policies">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// New · governance at scale</span>
+      <h2>Enterprise repository policies &amp; rulesets.<span class="new-badge">2024–2025</span></h2>
+      <p class="section-sub">A growing set of controls that let an enterprise govern repository lifecycle and content — not just permissions, but what can be created, named, deleted, transferred, and pushed.</p>
+    </div>
+
+    <div class="policy-grid" id="policyGrid">
+
+      <div class="policy">
+        <div class="policy-icon">👁️</div>
+        <h3>Restrict visibility</h3>
+        <p>Block specific visibility levels at creation, or restrict who can change visibility on existing repos.</p>
+      </div>
+
+      <div class="policy">
+        <div class="policy-icon">+</div>
+        <h3>Restrict creation</h3>
+        <p>Control who can create repos, which visibilities they can pick, and (for EMU) whether user namespaces are allowed at all.</p>
+      </div>
+
+      <div class="policy">
+        <div class="policy-icon">🗑</div>
+        <h3>Restrict deletions</h3>
+        <p>Stop accidental — or malicious — deletion of repos that contain compliance-relevant history.</p>
+      </div>
+
+      <div class="policy">
+        <div class="policy-icon">⇄</div>
+        <h3>Restrict transfers</h3>
+        <p>Prevent code from being transferred out of organizations or out of the enterprise entirely.</p>
+      </div>
+
+      <div class="policy">
+        <div class="policy-icon">Aa</div>
+        <h3>Restrict names</h3>
+        <p>Enforce naming conventions at creation time — useful with custom repository properties for discoverability.</p>
+      </div>
+
+      <div class="policy">
+        <div class="policy-icon">⤴</div>
+        <h3>Push rules</h3>
+        <p>A new ruleset type that limits what can land in a repo. Block pushes that touch sensitive paths like <code>.github/workflows/</code>, or files over a size threshold.</p>
+      </div>
+
+      <div class="policy">
+        <div class="policy-icon">{}</div>
+        <h3>Custom repo properties</h3>
+        <p>Tag repos with structured metadata at the enterprise level — then target rulesets and policies based on those properties.</p>
+      </div>
+
+      <div class="policy">
+        <div class="policy-icon">↪</div>
+        <h3>Bypass actors</h3>
+        <p>Enterprise owners can bypass rulesets when needed — and the bypass is logged. Your most privileged role isn't blocked by your own rules.</p>
+      </div>
+
+      <div class="policy">
+        <div class="policy-icon">🪟</div>
+        <h3>Rule insights</h3>
+        <p>See how rules are actually applied across your fleet — which repos are covered, which are not, where exceptions are firing.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECURITY MATRIX ============ -->
+<section class="security">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Security &amp; identity</span>
+      <h2>What protects the code, and where it's configured.</h2>
+      <p class="section-sub">A grab-bag of controls that span repo, org, and enterprise. Each one has a scope — that's where you go to turn it on.</p>
+    </div>
+
+    <div class="sec-grid" id="secGrid">
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3>Encrypted secrets</h3>
+        <p>User, repo, org, and environment scopes. Encrypted at rest, injected into Actions and Codespaces at runtime, never logged.</p>
+        <span class="scope">Scope · user / repo / org / env</span>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        </div>
+        <h3>Secret scanning &amp; push protection</h3>
+        <p>Detects committed secrets and blocks pushes that contain them. Public repos covered free; private repos covered through Code Security.</p>
+        <span class="scope">Scope · repo / org</span>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3>Branch protection &amp; rulesets</h3>
+        <p>Required reviews, required status checks, signed commits, linear history. Rulesets stack and target multiple branches at once.</p>
+        <span class="scope">Scope · repo / org / enterprise</span>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>IP allow lists</h3>
+        <p>Restrict where the API and git can be hit from — corporate VPN ranges, office IPs, known cloud egress. Org and enterprise scope.</p>
+        <span class="scope">Scope · org / enterprise</span>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <h3>SSO &amp; SAML enforcement</h3>
+        <p>Require SSO for org access; force SSO authorization on personal access tokens. EMU goes further — SSO is the only auth path.</p>
+        <span class="scope">Scope · org / enterprise</span>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <h3>Audit log + streaming</h3>
+        <p>Every meaningful event recorded. Enterprise plans can stream the log to Splunk, Azure Event Hub, S3, Datadog — for retention beyond GitHub's window.</p>
+        <span class="scope">Scope · enterprise · streaming</span>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <h3>Base permissions</h3>
+        <p>Org-wide default — none, read, write, or admin — applied to every member on every org repo. Internal repos override the floor to read.</p>
+        <span class="scope">Scope · org</span>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        </div>
+        <h3>Forking policy</h3>
+        <p>Allow, block, or restrict where forks can land. Per-org, with enterprise override. EMU users can never fork outside the enterprise.</p>
+        <span class="scope">Scope · org / enterprise</span>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Code Security (Advanced Security)</h3>
+        <p>The umbrella for code scanning (CodeQL), secret scanning on private repos, dependency review, and Dependabot custom rules. Per-repo activation; org-billed.</p>
+        <span class="scope">Scope · per repo, billed at org</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUICK FACTS ============ -->
+<section class="facts">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Numbers worth remembering</span>
+      <h2>The cheat sheet.</h2>
+      <p class="section-sub">Limits, defaults, and small facts that come up enough to be worth pinning to memory.</p>
+    </div>
+
+    <div class="fact-grid">
+      <div class="fact">
+        <div class="fact-num">3</div>
+        <div class="fact-label">Visibility levels: public · private · internal</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">5</div>
+        <div class="fact-label">Repo policy types: visibility, creation, deletion, transfer, names</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">1<small>level</small></div>
+        <div class="fact-label">Max forking depth on internal repos</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">20</div>
+        <div class="fact-label">Max enterprise IDs in one access-restriction header</div>
+      </div>
+
+      <div class="fact">
+        <div class="fact-num">4</div>
+        <div class="fact-label">Data residency regions live: EU · US · Australia · Japan</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">SCIM</div>
+        <div class="fact-label">How EMU users get provisioned and deprovisioned</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">read</div>
+        <div class="fact-label">Internal repo floor — even if base permission is none</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">0<small>public</small></div>
+        <div class="fact-label">Public repos allowed inside an EMU enterprise</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <p>Want the source of truth? <a href="https://docs.github.com/en/enterprise-cloud@latest" target="_blank" rel="noopener">GitHub Enterprise Cloud docs</a> · <a href="https://docs.github.com/en/enterprise-cloud@latest/admin/identity-and-access-management/understanding-iam-for-enterprises/about-enterprise-managed-users" target="_blank" rel="noopener">EMU docs</a> · <a href="https://docs.github.com/en/enterprise-cloud@latest/admin/data-residency" target="_blank" rel="noopener">Data residency docs</a></p>
+    <p class="footer-mark">// INFOGRAPHIC · GITHUB REPOS, VISIBILITY &amp; ENTERPRISE CONTROLS</p>
+  </div>
+</footer>
+
+<script>
+  // Generic intersection observer
+  const observe = (selector, options = {}) => {
+    const els = document.querySelectorAll(selector);
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2, ...options });
+    els.forEach((el) => io.observe(el));
+  };
+
+  // Stagger flavors
+  const flavors = document.querySelectorAll('#flavors .flavor');
+  const flavorIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(flavors).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 90);
+        flavorIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  flavors.forEach((f) => flavorIO.observe(f));
+
+  // Stagger internal cards
+  const internalCards = document.querySelectorAll('#internalGrid .internal-card');
+  const internalIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(internalCards).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 90);
+        internalIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  internalCards.forEach((c) => internalIO.observe(c));
+
+  // Stagger policy cards
+  const policies = document.querySelectorAll('#policyGrid .policy');
+  const policyIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(policies).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 80);
+        policyIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  policies.forEach((p) => policyIO.observe(p));
+
+  // Stagger security cards
+  const secCards = document.querySelectorAll('#secGrid .sec-card');
+  const secIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(secCards).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 80);
+        secIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  secCards.forEach((s) => secIO.observe(s));
+</script>
+
+</body>
+</html>

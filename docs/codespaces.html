@@ -1,0 +1,1681 @@
+<!-- FILE PATH: index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GitHub Codespaces — What it is & how it works</title>
+<meta name="description" content="A clean, animated infographic explaining GitHub Codespaces for developers." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f6f8fa;
+    --bg-tint: #faf8ff;
+    --bg-dark: #0d1117;
+    --fg: #1f2328;
+    --fg-muted: #59636e;
+    --fg-subtle: #818b98;
+    --border: #d1d9e0;
+    --border-soft: #e6ebf0;
+    --purple: #8250df;
+    --purple-deep: #6639ba;
+    --purple-soft: #efeafe;
+    --purple-tint: #f5f1ff;
+    --green: #1a7f37;
+    --red: #cf222e;
+    --amber: #9a6700;
+    --shadow-sm: 0 1px 2px rgba(31, 35, 40, 0.04), 0 0 0 1px var(--border-soft);
+    --shadow-md: 0 4px 16px rgba(130, 80, 223, 0.08), 0 1px 3px rgba(31, 35, 40, 0.04);
+    --shadow-purple: 0 8px 32px rgba(130, 80, 223, 0.18);
+    --radius-sm: 6px;
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Mona Sans', -apple-system, system-ui, sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* ============ HERO ============ */
+  .hero { position: relative; padding: 88px 0 72px; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+
+  .blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: 0.6;
+    animation: float 14s ease-in-out infinite;
+  }
+  .blob-1 { width: 420px; height: 420px; background: radial-gradient(circle, #c7b3ff 0%, transparent 70%); top: -120px; right: -80px; }
+  .blob-2 { width: 360px; height: 360px; background: radial-gradient(circle, #efeafe 0%, transparent 70%); top: 80px; left: -100px; animation-delay: -7s; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, -20px) scale(1.05); }
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--border-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, black 30%, transparent 80%);
+    opacity: 0.5;
+  }
+
+  .hero-inner { position: relative; z-index: 1; text-align: center; }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: var(--purple-deep); background: var(--purple-soft);
+    border: 1px solid #d8c9f7;
+    padding: 6px 12px; border-radius: 999px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+
+  .pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--purple);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(130, 80, 223, 0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(130, 80, 223, 0); }
+  }
+
+  h1 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 800; font-stretch: 125%;
+    font-size: clamp(40px, 7vw, 76px);
+    line-height: 1.02; letter-spacing: -0.03em;
+    margin-top: 24px;
+  }
+
+  h1 .accent {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+
+  .tagline {
+    font-size: clamp(17px, 2vw, 20px);
+    color: var(--fg-muted);
+    max-width: 560px; margin: 24px auto 0;
+    line-height: 1.5;
+  }
+
+  .hero-stats {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 8px; margin-top: 36px;
+  }
+
+  .pill {
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 500;
+    color: var(--fg-muted);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .pill strong { color: var(--fg); font-weight: 600; }
+
+  /* ============ SECTIONS ============ */
+  section { padding: 80px 0; position: relative; }
+
+  .section-header { margin-bottom: 56px; max-width: 640px; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: var(--purple);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 12px; display: block;
+  }
+
+  h2 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 700; font-stretch: 115%;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.1; letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+
+  .section-sub {
+    font-size: 17px; color: var(--fg-muted);
+    margin-top: 16px; max-width: 580px;
+  }
+
+  .section-sub code, .what-text code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    background: var(--purple-soft);
+    padding: 2px 6px; border-radius: 4px;
+    color: var(--purple-deep);
+  }
+
+  /* ============ THE PROBLEM ============ */
+  .problem .quote-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--purple);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-sm);
+    font-family: 'Mona Sans', sans-serif;
+    font-stretch: 115%;
+    font-weight: 600;
+    font-size: clamp(20px, 2.6vw, 28px);
+    color: var(--fg);
+    letter-spacing: -0.01em;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .problem .quote-block::before {
+    content: '"';
+    position: absolute;
+    top: -20px; left: 14px;
+    font-size: 120px;
+    color: var(--purple-soft);
+    line-height: 1;
+    font-family: Georgia, serif;
+    z-index: 0;
+  }
+
+  .problem .quote-block span { position: relative; z-index: 1; }
+
+  .pain-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .pain {
+    background: var(--bg);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex; align-items: flex-start; gap: 14px;
+    opacity: 0;
+    transform: translateX(-12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+
+  .pain.in-view { opacity: 1; transform: translateX(0); }
+
+  .pain-mark {
+    width: 24px; height: 24px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #ffe5e7;
+    color: var(--red);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+    margin-top: 1px;
+  }
+
+  .pain p { font-size: 15px; color: var(--fg); line-height: 1.5; }
+  .pain p strong { color: var(--purple-deep); font-weight: 600; }
+
+  /* ============ WHAT IS IT ============ */
+  .what {
+    background: var(--bg-soft);
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .what-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 56px; align-items: center;
+  }
+
+  .what-text p {
+    font-size: 17px; color: var(--fg);
+    line-height: 1.65; margin-bottom: 16px;
+  }
+
+  .what-text p strong { color: var(--purple-deep); font-weight: 600; }
+
+  .vm-illo {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+
+  .vm-illo .layer {
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    border: 1px solid var(--border);
+  }
+
+  .vm-illo .layer:last-child { margin-bottom: 0; }
+  .layer-vm { background: #fafafa; color: var(--fg-muted); }
+  .layer-container { background: var(--purple-tint); border-color: #d8c9f7; color: var(--purple-deep); margin-left: 16px; }
+  .layer-code { background: var(--bg); border: 1px dashed var(--purple); color: var(--fg); margin-left: 32px; }
+  .layer-tag { font-size: 11px; color: var(--fg-subtle); font-weight: 500; }
+
+  /* ============ BEFORE / AFTER ============ */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    position: relative;
+  }
+
+  .compare-grid::after {
+    content: 'vs';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--purple); color: white;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600; font-size: 13px;
+    z-index: 2;
+    box-shadow: 0 4px 16px rgba(130, 80, 223, 0.3);
+  }
+
+  .compare-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .compare-card.before { background: var(--bg-soft); }
+  .compare-card.after {
+    border-color: var(--purple);
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-tint) 100%);
+    box-shadow: var(--shadow-md);
+  }
+
+  .compare-card h3 {
+    font-size: 14px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 20px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .compare-card.before h3 { color: var(--fg-muted); }
+  .compare-card.after h3 { color: var(--purple-deep); }
+
+  .compare-list { list-style: none; margin-bottom: 24px; }
+
+  .compare-list li {
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--border-soft);
+    font-size: 14.5px; color: var(--fg);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .compare-list li:last-child { border-bottom: none; }
+
+  .compare-card.before li::before {
+    content: '✕';
+    color: var(--red); font-weight: 700; font-size: 12px;
+  }
+
+  .compare-card.after li::before {
+    content: '✓';
+    color: var(--green); font-weight: 700; font-size: 14px;
+  }
+
+  .compare-list code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    background: var(--purple-soft); color: var(--purple-deep);
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  .compare-time {
+    margin-top: 16px;
+    padding-top: 20px;
+    border-top: 2px solid var(--border-soft);
+    font-family: 'Mona Sans', sans-serif;
+    font-stretch: 115%;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .compare-card.before .compare-time { color: var(--red); }
+  .compare-card.after .compare-time { color: var(--green); }
+
+  .compare-time small {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--fg-subtle);
+    font-weight: 500;
+    margin-bottom: 4px;
+    font-stretch: 100%;
+  }
+
+  /* ============ FLOW ============ */
+  .flow-wrap { position: relative; margin-top: 24px; }
+
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    position: relative;
+  }
+
+  .flow::before {
+    content: '';
+    position: absolute;
+    top: 28px; left: 5%; right: 5%;
+    height: 2px; background: var(--border);
+    z-index: 0;
+  }
+
+  .flow-track {
+    position: absolute;
+    top: 28px; left: 5%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--purple-deep));
+    z-index: 1; width: 0;
+    transition: width 1.4s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  .flow.in-view .flow-track { width: 90%; }
+
+  .step {
+    position: relative; z-index: 2;
+    text-align: center;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .flow.in-view .step { opacity: 1; transform: translateY(0); }
+  .flow.in-view .step:nth-child(2) { transition-delay: 0.15s; }
+  .flow.in-view .step:nth-child(3) { transition-delay: 0.3s; }
+  .flow.in-view .step:nth-child(4) { transition-delay: 0.45s; }
+  .flow.in-view .step:nth-child(5) { transition-delay: 0.6s; }
+  .flow.in-view .step:nth-child(6) { transition-delay: 0.75s; }
+
+  .node {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--purple);
+    color: var(--purple-deep);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600; font-size: 16px;
+    margin: 0 auto;
+    position: relative;
+    box-shadow: 0 0 0 6px var(--bg);
+  }
+
+  .flow.in-view .node {
+    animation: nodePulse 1.2s ease-out forwards;
+    animation-delay: calc(var(--i) * 0.15s + 0.3s);
+  }
+
+  @keyframes nodePulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 6px var(--bg), 0 0 0 0 rgba(130, 80, 223, 0.5); }
+    50% { transform: scale(1.08); box-shadow: 0 0 0 6px var(--bg), 0 0 0 12px rgba(130, 80, 223, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 6px var(--bg), 0 0 0 0 rgba(130, 80, 223, 0); }
+  }
+
+  .step-title { font-weight: 600; font-size: 15px; margin-top: 16px; color: var(--fg); }
+  .step-desc { font-size: 13.5px; color: var(--fg-muted); margin-top: 6px; line-height: 1.5; }
+  .step-desc code {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    background: var(--purple-soft); padding: 1px 5px; border-radius: 3px;
+    color: var(--purple-deep);
+  }
+  .step-code {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace; font-size: 11.5px;
+    background: var(--purple-soft); color: var(--purple-deep);
+    padding: 3px 8px; border-radius: 4px; margin-top: 8px;
+    border: 1px solid #e0d4f8;
+  }
+
+  /* ============ CONFIG AS CODE ============ */
+  .config {
+    background: var(--bg-soft);
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .config-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 48px; align-items: center;
+  }
+
+  .config-text h3 {
+    font-size: 22px; font-weight: 700;
+    margin-bottom: 14px; letter-spacing: -0.01em;
+  }
+
+  .config-text p {
+    font-size: 16px; color: var(--fg-muted);
+    line-height: 1.65; margin-bottom: 14px;
+  }
+
+  .config-bullets { list-style: none; margin-top: 20px; }
+
+  .config-bullets li {
+    padding: 10px 0;
+    font-size: 14.5px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+
+  .config-bullets li::before {
+    content: '✓';
+    color: var(--green); font-weight: 700;
+    margin-top: 1px;
+  }
+
+  .code-window {
+    background: var(--bg-dark);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(31, 35, 40, 0.18);
+    border: 1px solid #30363d;
+  }
+
+  .code-titlebar {
+    background: #161b22;
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid #30363d;
+  }
+
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  .code-filename {
+    margin-left: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: #8b949e;
+  }
+
+  .code-body {
+    padding: 18px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #c9d1d9;
+    overflow-x: auto;
+  }
+
+  .code-line {
+    display: block;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .code-window.in-view .code-line { opacity: 1; transform: translateY(0); }
+
+  .code-window.in-view .code-line:nth-child(1) { transition-delay: 0.05s; }
+  .code-window.in-view .code-line:nth-child(2) { transition-delay: 0.1s; }
+  .code-window.in-view .code-line:nth-child(3) { transition-delay: 0.15s; }
+  .code-window.in-view .code-line:nth-child(4) { transition-delay: 0.2s; }
+  .code-window.in-view .code-line:nth-child(5) { transition-delay: 0.25s; }
+  .code-window.in-view .code-line:nth-child(6) { transition-delay: 0.3s; }
+  .code-window.in-view .code-line:nth-child(7) { transition-delay: 0.35s; }
+  .code-window.in-view .code-line:nth-child(8) { transition-delay: 0.4s; }
+  .code-window.in-view .code-line:nth-child(9) { transition-delay: 0.45s; }
+  .code-window.in-view .code-line:nth-child(10) { transition-delay: 0.5s; }
+  .code-window.in-view .code-line:nth-child(11) { transition-delay: 0.55s; }
+  .code-window.in-view .code-line:nth-child(12) { transition-delay: 0.6s; }
+  .code-window.in-view .code-line:nth-child(13) { transition-delay: 0.65s; }
+  .code-window.in-view .code-line:nth-child(14) { transition-delay: 0.7s; }
+  .code-window.in-view .code-line:nth-child(15) { transition-delay: 0.75s; }
+
+  .tk-key { color: #79c0ff; }
+  .tk-str { color: #a5d6ff; }
+  .tk-pun { color: #c9d1d9; }
+  .tk-num { color: #ffa657; }
+
+  /* ============ FEATURES ============ */
+  .features {
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-tint) 100%);
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .feature {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .feature.in-view { opacity: 1; transform: translateY(0); }
+
+  .feature:hover {
+    border-color: var(--purple);
+    box-shadow: var(--shadow-purple);
+    transform: translateY(-4px);
+  }
+
+  .feature::after {
+    content: '';
+    position: absolute; top: 0; right: 0;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle at top right, var(--purple-soft) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .feature:hover::after { opacity: 1; }
+
+  .feature-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--purple-soft);
+    color: var(--purple-deep);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+    transition: all 0.3s ease;
+  }
+
+  .feature:hover .feature-icon {
+    background: var(--purple);
+    color: white;
+    transform: rotate(-6deg) scale(1.05);
+  }
+
+  .feature-icon svg { width: 22px; height: 22px; }
+
+  .feature h3 {
+    font-size: 17px; font-weight: 600;
+    margin-bottom: 8px; letter-spacing: -0.01em;
+  }
+
+  .feature p {
+    font-size: 14.5px;
+    color: var(--fg-muted);
+    line-height: 1.55;
+  }
+  .feature p code {
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px;
+    background: var(--purple-soft); padding: 1px 5px; border-radius: 3px;
+    color: var(--purple-deep);
+  }
+
+  .feature-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px; color: var(--purple-deep);
+    margin-top: 14px; padding-top: 14px;
+    border-top: 1px dashed var(--border);
+    display: block;
+  }
+
+  /* ============ TEAM COLLAB ============ */
+  .collab {
+    background: linear-gradient(180deg, var(--bg-tint) 0%, var(--bg) 100%);
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .collab-myth {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 36px;
+    box-shadow: var(--shadow-sm);
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .collab-myth-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--purple-soft);
+    color: var(--purple-deep);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .collab-myth p {
+    font-size: 15.5px;
+    color: var(--fg);
+    line-height: 1.55;
+  }
+
+  .collab-myth p strong {
+    color: var(--purple-deep);
+    font-weight: 600;
+  }
+
+  .collab-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .collab-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .collab-card.in-view { opacity: 1; transform: translateY(0); }
+
+  .collab-card:hover {
+    border-color: var(--purple);
+    box-shadow: var(--shadow-md);
+  }
+
+  .collab-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--purple);
+    background: var(--purple-soft);
+    padding: 3px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+
+  .collab-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+
+  .collab-card p {
+    font-size: 14.5px;
+    color: var(--fg-muted);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .collab-card p code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    background: var(--purple-soft);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--purple-deep);
+  }
+
+  .visibility-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border-soft);
+  }
+
+  .vis-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--fg-muted);
+    background: var(--bg-soft);
+  }
+
+  .vis-pill.active {
+    background: var(--purple-soft);
+    color: var(--purple-deep);
+    border-color: #d8c9f7;
+  }
+
+  .collab-howto {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--purple-deep);
+    padding-top: 14px;
+    border-top: 1px dashed var(--border-soft);
+    display: block;
+  }
+
+  /* ============ PREBUILDS ============ */
+  .prebuilds { border-top: 1px solid var(--border-soft); }
+
+  .prebuilds-bars {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 90px;
+    gap: 20px;
+    align-items: center;
+    padding: 14px 0;
+  }
+
+  .bar-row + .bar-row { border-top: 1px dashed var(--border-soft); }
+
+  .bar-label { font-size: 14px; font-weight: 600; color: var(--fg); }
+
+  .bar-label small {
+    display: block;
+    font-size: 11.5px; font-weight: 400;
+    color: var(--fg-subtle);
+    margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .bar {
+    height: 22px;
+    border-radius: 4px;
+    background: var(--border-soft);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    width: 0;
+    transition: width 1.6s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  .bar-fill.before { background: linear-gradient(90deg, #ffd5d8 0%, #cf222e 100%); }
+  .bar-fill.after { background: linear-gradient(90deg, var(--purple-soft) 0%, var(--purple) 60%); }
+
+  .prebuilds-bars.in-view .bar-fill.before { width: 100%; }
+  .prebuilds-bars.in-view .bar-fill.after { width: 2.1%; }
+
+  .bar-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 600;
+    text-align: right;
+  }
+
+  .bar-time.before { color: var(--red); }
+  .bar-time.after { color: var(--purple-deep); }
+
+  .prebuilds-flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    align-items: stretch;
+    margin-bottom: 32px;
+  }
+
+  .pb-step {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 14px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    position: relative;
+  }
+
+  .pb-step strong {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--purple);
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .pb-step + .pb-step::before {
+    content: '→';
+    position: absolute;
+    left: -14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--purple);
+    font-weight: 700; font-size: 16px;
+  }
+
+  .tradeoffs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .tradeoff-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+  }
+
+  .tradeoff-card h4 {
+    font-size: 13px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 14px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .tradeoff-card.pros h4 { color: var(--green); }
+  .tradeoff-card.cons h4 { color: var(--amber); }
+
+  .tradeoff-card ul { list-style: none; }
+
+  .tradeoff-card li {
+    padding: 6px 0;
+    font-size: 14px;
+    display: flex; gap: 10px; align-items: flex-start;
+    color: var(--fg);
+  }
+
+  .tradeoff-card.pros li::before {
+    content: '✓';
+    color: var(--green); font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .tradeoff-card.cons li::before {
+    content: '⚠';
+    color: var(--amber);
+    flex-shrink: 0;
+  }
+
+  .prebuilds-h3 {
+    font-size: 18px; font-weight: 600;
+    margin-bottom: 18px; letter-spacing: -0.01em;
+  }
+
+  /* ============ SECURITY ============ */
+  .security {
+    background: var(--bg-soft);
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .sec-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .sec-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+  }
+
+  .sec-card.in-view { opacity: 1; transform: translateY(0); }
+
+  .sec-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .sec-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--purple-soft);
+    color: var(--purple-deep);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  .sec-icon svg { width: 18px; height: 18px; }
+
+  .sec-card h3 {
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 6px; letter-spacing: -0.01em;
+  }
+
+  .sec-card p {
+    font-size: 13.5px;
+    color: var(--fg-muted);
+    line-height: 1.5;
+  }
+
+  /* ============ FACTS ============ */
+  .facts { border-top: 1px solid var(--border-soft); }
+
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border-soft);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border-soft);
+  }
+
+  .fact { background: var(--bg); padding: 28px 24px; text-align: center; }
+
+  .fact-num {
+    font-family: 'Mona Sans', sans-serif;
+    font-stretch: 125%;
+    font-weight: 800;
+    font-size: 36px;
+    line-height: 1; letter-spacing: -0.03em;
+    color: var(--purple-deep);
+  }
+
+  .fact-num small {
+    font-size: 16px; font-weight: 600;
+    color: var(--purple);
+    margin-left: 2px;
+  }
+
+  .fact-label {
+    font-size: 13px; color: var(--fg-muted);
+    margin-top: 8px; line-height: 1.4;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    border-top: 1px solid var(--border-soft);
+    padding: 48px 0 60px;
+    text-align: center;
+    color: var(--fg-muted);
+    font-size: 14px;
+  }
+
+  footer a {
+    color: var(--purple-deep);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  footer a:hover { border-bottom-color: var(--purple-deep); }
+
+  .footer-mark {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-subtle);
+    margin-top: 12px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 880px) {
+    .what-grid { grid-template-columns: 1fr; gap: 32px; }
+    .config-grid { grid-template-columns: 1fr; gap: 32px; }
+    .compare-grid { grid-template-columns: 1fr; gap: 64px; }
+    .compare-grid::after { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+    .flow { grid-template-columns: 1fr; gap: 32px; }
+    .flow::before, .flow-track { display: none; }
+    .feature-grid { grid-template-columns: repeat(2, 1fr); }
+    .sec-grid { grid-template-columns: repeat(2, 1fr); }
+    .collab-grid { grid-template-columns: 1fr; }
+    .pain-list { grid-template-columns: 1fr; }
+    .fact-grid { grid-template-columns: repeat(2, 1fr); }
+    .prebuilds-flow { grid-template-columns: 1fr 1fr; gap: 18px; }
+    .pb-step + .pb-step::before { display: none; }
+    .tradeoffs { grid-template-columns: 1fr; }
+    .bar-row { grid-template-columns: 100px 1fr 70px; gap: 12px; }
+  }
+
+  @media (max-width: 560px) {
+    .hero { padding: 64px 0 48px; }
+    section { padding: 60px 0; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .sec-grid { grid-template-columns: 1fr; }
+    .fact-grid { grid-template-columns: 1fr; }
+    .layer-container { margin-left: 8px; }
+    .layer-code { margin-left: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+  <div class="wrap hero-inner">
+    <span class="eyebrow"><span class="pulse-dot"></span>Dev environments, in the cloud</span>
+    <h1>GitHub <span class="accent">Codespaces</span><br/>explained.</h1>
+    <p class="tagline">Your dev environment, on demand. Spin one up in seconds, code from any machine, ship from anywhere.</p>
+    <div class="hero-stats">
+      <span class="pill"><strong>Cloud-hosted</strong> Linux container</span>
+      <span class="pill"><strong>Browser</strong>, VS Code, JetBrains, or CLI</span>
+      <span class="pill"><strong>2–32 cores</strong> on demand</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ THE PROBLEM ============ -->
+<section class="problem">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// The problem we all know</span>
+      <h2>Local dev setup eats days you'll never get back.</h2>
+    </div>
+
+    <div class="quote-block">
+      <span>It works on my machine.</span>
+    </div>
+
+    <div class="pain-list" id="painList">
+      <div class="pain"><div class="pain-mark">!</div><p>New hires lose <strong>days</strong> to environment setup before writing line one of code.</p></div>
+      <div class="pain"><div class="pain-mark">!</div><p>Contractors and open-source contributors hit a wall just trying to get the project to build.</p></div>
+      <div class="pain"><div class="pain-mark">!</div><p>Dev laptops drift from prod and from each other — bugs reproduce inconsistently.</p></div>
+      <div class="pain"><div class="pain-mark">!</div><p>Heavy repos demand expensive dev hardware that sits idle most of the time.</p></div>
+      <div class="pain"><div class="pain-mark">!</div><p>Switching branches means reinstall, rebuild, re-seed — and you're back to coffee #3.</p></div>
+      <div class="pain"><div class="pain-mark">!</div><p>Lost laptop, traveling, switching machines? Your whole setup goes with it.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHAT IS IT ============ -->
+<section class="what">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// What is it</span>
+      <h2>A dev box that lives on GitHub.</h2>
+      <p class="section-sub">Instead of cloning a repo and wrestling with local setup, you click a button. GitHub builds you a Linux machine pre-loaded with the project's tools and opens it in your editor.</p>
+    </div>
+
+    <div class="what-grid">
+      <div class="what-text">
+        <p>Each codespace runs as a <strong>Docker container</strong> on a <strong>virtual machine</strong> hosted by GitHub. When you connect — from your browser, VS Code, JetBrains, or the GitHub CLI — you land inside that container.</p>
+        <p>Your repository is cloned to <strong>/workspaces</strong>, and a config file in the repo (<code>devcontainer.json</code>) defines the languages, tools, and extensions everyone gets. Same setup, every time, for every contributor.</p>
+        <p>Whatever you're running locally — Mac, Windows, Chromebook — your codespace runs Linux. Consistent and disposable.</p>
+      </div>
+      <div class="vm-illo" aria-hidden="true">
+        <div class="layer layer-vm">
+          <span>☁️ Virtual Machine</span>
+          <span class="layer-tag">Linux host</span>
+        </div>
+        <div class="layer layer-container">
+          <span>📦 Docker Container</span>
+          <span class="layer-tag">dev environment</span>
+        </div>
+        <div class="layer layer-code">
+          <span>📝 /workspaces/your-repo</span>
+          <span class="layer-tag">your code</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BEFORE / AFTER ============ -->
+<section>
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// The dev setup story</span>
+      <h2>From hours of "it should be working" to coffee-time productive.</h2>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card before">
+        <h3>Without Codespaces</h3>
+        <ul class="compare-list">
+          <li>Clone the repo</li>
+          <li>brew install 14 things</li>
+          <li>Wrong Node version</li>
+          <li>Wait for npm install</li>
+          <li>Configure secrets &amp; env vars</li>
+          <li>Pray it builds</li>
+        </ul>
+        <div class="compare-time">
+          <small>Time to first commit</small>
+          Hours to days
+        </div>
+      </div>
+
+      <div class="compare-card after">
+        <h3>With Codespaces</h3>
+        <ul class="compare-list">
+          <li>Click <code>Code → Codespaces → Create</code></li>
+          <li>☕ Grab coffee</li>
+          <li>Tools, deps, secrets — already there</li>
+          <li>Editor opens in the browser</li>
+          <li>Start writing code</li>
+        </ul>
+        <div class="compare-time">
+          <small>Time to first commit</small>
+          ~30 seconds to 10 minutes
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section>
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// How it works</span>
+      <h2>From click to coding, in six steps.</h2>
+      <p class="section-sub">Watch the path light up: this is what happens between hitting "Open in codespace" and writing your first line of code.</p>
+    </div>
+
+    <div class="flow-wrap">
+      <div class="flow" id="flow">
+        <div class="flow-track"></div>
+
+        <div class="step" style="--i:0">
+          <div class="node">01</div>
+          <div class="step-title">You click "Create codespace"</div>
+          <div class="step-desc">From any repo, branch, commit, PR, or template.</div>
+        </div>
+
+        <div class="step" style="--i:1">
+          <div class="node">02</div>
+          <div class="step-title">A VM spins up</div>
+          <div class="step-desc">A Linux virtual machine launches, ready to host your container.</div>
+        </div>
+
+        <div class="step" style="--i:2">
+          <div class="node">03</div>
+          <div class="step-title">Container builds</div>
+          <div class="step-desc">A Docker container is created from the dev container image.</div>
+          <span class="step-code">devcontainer.json</span>
+        </div>
+
+        <div class="step" style="--i:3">
+          <div class="node">04</div>
+          <div class="step-title">Repo gets cloned</div>
+          <div class="step-desc">Your code lands in <code>/workspaces/your-repo</code>.</div>
+        </div>
+
+        <div class="step" style="--i:4">
+          <div class="node">05</div>
+          <div class="step-title">You connect</div>
+          <div class="step-desc">Browser, VS Code, JetBrains, or <code>gh codespace ssh</code>.</div>
+        </div>
+
+        <div class="step" style="--i:5">
+          <div class="node">06</div>
+          <div class="step-title">You code</div>
+          <div class="step-desc">Edit, run, debug, commit, push. Just like local — only in the cloud.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONFIG AS CODE ============ -->
+<section class="config">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Configuration as code</span>
+      <h2>Your environment, defined in the repo.</h2>
+      <p class="section-sub">One file — <code>devcontainer.json</code> — describes the whole setup. Anyone who creates a codespace from this repo gets the same environment.</p>
+    </div>
+
+    <div class="config-grid">
+      <div class="config-text">
+        <h3>Define, don't assume.</h3>
+        <p>Pick a base image, add features (Node, Docker-in-Docker, language runtimes), pin VS Code extensions, declare which ports to forward, and run a setup command after the container builds.</p>
+        <ul class="config-bullets">
+          <li>Same environment for every dev, every PR, every CI run</li>
+          <li>Versioned with the code — reproducible across the whole team</li>
+          <li>No more "what version of Python are you on?"</li>
+        </ul>
+      </div>
+
+      <div class="code-window" id="codeWindow">
+        <div class="code-titlebar">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+          <span class="code-filename">.devcontainer/devcontainer.json</span>
+        </div>
+        <div class="code-body"><span class="code-line"><span class="tk-pun">{</span></span><span class="code-line">  <span class="tk-key">"name"</span><span class="tk-pun">:</span> <span class="tk-str">"My App"</span><span class="tk-pun">,</span></span><span class="code-line">  <span class="tk-key">"image"</span><span class="tk-pun">:</span> <span class="tk-str">"mcr.microsoft.com/devcontainers/python:3.12"</span><span class="tk-pun">,</span></span><span class="code-line">  <span class="tk-key">"features"</span><span class="tk-pun">: {</span></span><span class="code-line">    <span class="tk-key">"ghcr.io/devcontainers/features/node:1"</span><span class="tk-pun">: {</span> <span class="tk-key">"version"</span><span class="tk-pun">:</span> <span class="tk-str">"20"</span> <span class="tk-pun">},</span></span><span class="code-line">    <span class="tk-key">"ghcr.io/devcontainers/features/docker-in-docker:2"</span><span class="tk-pun">: {}</span></span><span class="code-line">  <span class="tk-pun">},</span></span><span class="code-line">  <span class="tk-key">"postCreateCommand"</span><span class="tk-pun">:</span> <span class="tk-str">"pip install -r requirements.txt"</span><span class="tk-pun">,</span></span><span class="code-line">  <span class="tk-key">"customizations"</span><span class="tk-pun">: {</span></span><span class="code-line">    <span class="tk-key">"vscode"</span><span class="tk-pun">: {</span> <span class="tk-key">"extensions"</span><span class="tk-pun">: [</span><span class="tk-str">"github.copilot"</span><span class="tk-pun">,</span> <span class="tk-str">"ms-python.python"</span><span class="tk-pun">] }</span></span><span class="code-line">  <span class="tk-pun">},</span></span><span class="code-line">  <span class="tk-key">"forwardPorts"</span><span class="tk-pun">: [</span><span class="tk-num">3000</span><span class="tk-pun">,</span> <span class="tk-num">5432</span><span class="tk-pun">]</span></span><span class="code-line"><span class="tk-pun">}</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="features">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Key features</span>
+      <h2>Why developers reach for it.</h2>
+      <p class="section-sub">Six things that make Codespaces different from spinning up your own VM or wrestling a local environment into shape.</p>
+    </div>
+
+    <div class="feature-grid" id="features">
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <h3>Instant setup</h3>
+        <p>Skip "works on my machine." A working dev environment is one click away — no installs, no SDK juggling, no Docker Desktop.</p>
+        <span class="feature-meta">→ click → code</span>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20a8 8 0 1 0-8-8"/><path d="M12 8v4l3 2"/><path d="M16 16l4 4"/><path d="M20 16v4h-4"/></svg>
+        </div>
+        <h3>Configurable as code</h3>
+        <p>A <code>devcontainer.json</code> in your repo locks in languages, tools, ports, and VS Code extensions for every contributor.</p>
+        <span class="feature-meta">define, don't assume</span>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Real hardware</h3>
+        <p>Pick a machine with the muscle you need — from 2 cores and 8 GB RAM up to 32 cores and 128 GB RAM. Compile heavy projects without melting your laptop.</p>
+        <span class="feature-meta">2 → 32 cores</span>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </div>
+        <h3>Dotfiles travel with you</h3>
+        <p>Point Codespaces at your personal dotfiles repo. Every codespace, in every project, comes up wearing your shell, theme, and config.</p>
+        <span class="feature-meta">your tabs, your way</span>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3>Secrets, three scopes</h3>
+        <p>Encrypted secrets at user, repo, and org scope. Injected at startup as env vars — never in the repo, never in the logs.</p>
+        <span class="feature-meta">user · repo · org</span>
+      </div>
+
+      <div class="feature">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </div>
+        <h3>Port forwarding</h3>
+        <p>Run your app, Codespaces auto-detects the port. Share the URL — private, org-only, or public — to preview work-in-progress.</p>
+        <span class="feature-meta">localhost, but shareable</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ TEAM COLLAB ============ -->
+<section class="collab">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// How teams share Codespaces</span>
+      <h2>Each codespace is yours alone — but the work travels.</h2>
+      <p class="section-sub">A codespace is tied to one GitHub account. You can't hand someone the keys to your running session, but here are four ways the work moves between teammates.</p>
+    </div>
+
+    <div class="collab-myth">
+      <div class="collab-myth-icon">i</div>
+      <p>A single codespace is scoped to a <strong>single user</strong>. Two people can't log into the same one. What you share is the <strong>environment, the running app, and the editing session</strong> — not the VM itself.</p>
+    </div>
+
+    <div class="collab-grid" id="collabGrid">
+
+      <div class="collab-card">
+        <span class="collab-tag">01 · Same setup</span>
+        <h3>Identical environments via <code>devcontainer.json</code></h3>
+        <p>The fastest "share" is the one that's automatic. Commit the dev container config to the repo, and every teammate who opens a codespace gets the exact same OS, tools, extensions, and ports.</p>
+        <span class="collab-howto">→ Drop <code>.devcontainer/devcontainer.json</code> in the repo</span>
+      </div>
+
+      <div class="collab-card">
+        <span class="collab-tag">02 · Share previews</span>
+        <h3>Forward a port, share the URL</h3>
+        <p>Run your app, copy the forwarded port URL, send it to a teammate. They see exactly what you see — handy for design reviews, QA spot-checks, demos, or "does this look right?" pings.</p>
+        <div class="visibility-row">
+          <span class="vis-pill">Private</span>
+          <span class="vis-pill active">Org</span>
+          <span class="vis-pill">Public</span>
+        </div>
+      </div>
+
+      <div class="collab-card">
+        <span class="collab-tag">03 · Pair program</span>
+        <h3>VS Code Live Share, inside the codespace</h3>
+        <p>Install the Live Share extension and start a session. Teammates join with their own cursors, can edit files, run terminals, and debug together — like Google Docs for code.</p>
+        <span class="collab-howto">→ Extension: <code>ms-vsliveshare.vsliveshare</code></span>
+      </div>
+
+      <div class="collab-card">
+        <span class="collab-tag">04 · Org-owned</span>
+        <h3>Codespaces the org pays for and governs</h3>
+        <p>On Team and Enterprise plans, the org can own member codespaces — pay for them centrally, set spend limits, control machine types, regions, retention, and which port visibilities are allowed.</p>
+        <span class="collab-howto">→ Org Settings → Codespaces → Policies</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ PREBUILDS DEEP DIVE ============ -->
+<section class="prebuilds">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Prebuilds — deep dive</span>
+      <h2>Eight minutes of waiting, or ten seconds of waiting.</h2>
+      <p class="section-sub">A first codespace on a big repo means cloning, building, installing, and running post-create scripts — minutes you'd rather not spend. Prebuilds collapse it.</p>
+    </div>
+
+    <div class="prebuilds-bars" id="prebuildsBars">
+      <div class="bar-row">
+        <div class="bar-label">Cold start<small>big repo, no prebuild</small></div>
+        <div class="bar"><div class="bar-fill before"></div></div>
+        <div class="bar-time before">~8 min</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">With prebuild<small>image cached per region</small></div>
+        <div class="bar"><div class="bar-fill after"></div></div>
+        <div class="bar-time after">~10 sec</div>
+      </div>
+    </div>
+
+    <h3 class="prebuilds-h3">How prebuilds fix it</h3>
+    <div class="prebuilds-flow">
+      <div class="pb-step">
+        <strong>01 · Push</strong>
+        Code lands on the branch
+      </div>
+      <div class="pb-step">
+        <strong>02 · Actions</strong>
+        Runs the devcontainer build
+      </div>
+      <div class="pb-step">
+        <strong>03 · Cache</strong>
+        Image stored per region
+      </div>
+      <div class="pb-step">
+        <strong>04 · Boot</strong>
+        Codespace starts in ~10s 🚀
+      </div>
+    </div>
+
+    <div class="tradeoffs">
+      <div class="tradeoff-card pros">
+        <h4>Worth it when…</h4>
+        <ul>
+          <li>Boot time drops from ~8 min to ~10 sec</li>
+          <li>Predictable for live demos, training, classrooms</li>
+          <li>Monorepos and review-on-every-PR workflows</li>
+          <li>Multi-region teams — caches per region</li>
+        </ul>
+      </div>
+      <div class="tradeoff-card cons">
+        <h4>Watch out for…</h4>
+        <ul>
+          <li>Burns Actions compute on every push to tracked branches</li>
+          <li>Cached image storage adds up per region</li>
+          <li>Need to maintain the prebuild config alongside the dev container</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECURITY & GOVERNANCE ============ -->
+<section class="security">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Security &amp; governance</span>
+      <h2>Built for the enterprise — but configured per org.</h2>
+      <p class="section-sub">Code never lives on a laptop. IP stays in the tenant. And every control below is set <strong>at the organization level</strong> — even on Enterprise plans.</p>
+    </div>
+
+    <div class="collab-myth" style="margin-bottom: 32px;">
+      <div class="collab-myth-icon">⚙</div>
+      <p>Configured at: <code style="font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--purple-soft);padding:2px 6px;border-radius:4px;color:var(--purple-deep);">Org Settings → Codespaces → Policies</code>. Enterprise plans add the umbrella features (Enterprise Managed Users, audit log streaming, enterprise-wide IP allow lists), but the codespace policies themselves live <strong>per organization</strong>.</p>
+    </div>
+
+    <div class="sec-grid" id="secGrid">
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3>Encrypted secrets</h3>
+        <p>User, repo, and org scope. Encrypted at rest, injected at startup, never logged.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>IP allow lists</h3>
+        <p>Restrict where codespaces can be accessed from — corporate VPN, office IPs, only.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        </div>
+        <h3>No code on local laptops</h3>
+        <p>Source stays in your tenant. Nothing to wipe when a contractor offboards.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <h3>Org policies</h3>
+        <p>Control machine types, regions, retention windows, and approved base images.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <h3>Full audit log</h3>
+        <p>Every codespace lifecycle event — create, start, stop, delete — logged for review.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>BYOD-friendly</h3>
+        <p>Contractors and tablet-toting devs work in the cloud, not on a hardened laptop.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUICK FACTS ============ -->
+<section class="facts">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Good to know</span>
+      <h2>The numbers worth remembering.</h2>
+      <p class="section-sub">From the lifecycle limits to the per-hour rates — here's what to keep in your head.</p>
+    </div>
+
+    <div class="fact-grid">
+      <div class="fact">
+        <div class="fact-num">60<small>hrs</small></div>
+        <div class="fact-label">Free per month for individual accounts</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">30<small>min</small></div>
+        <div class="fact-label">Default idle timeout (configurable)</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">128<small>GB</small></div>
+        <div class="fact-label">Max RAM on the largest machine type</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">4<small>ways</small></div>
+        <div class="fact-label">Connect: browser, VS Code, JetBrains, GitHub CLI</div>
+      </div>
+
+      <div class="fact">
+        <div class="fact-num">$0.18<small>/hr</small></div>
+        <div class="fact-label">Compute starts here · 2-core machine</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">$2.88<small>/hr</small></div>
+        <div class="fact-label">Compute ceiling · 32-core machine</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">$0.07<small>/GiB·mo</small></div>
+        <div class="fact-label">Storage · charged while it exists</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">$0</div>
+        <div class="fact-label">Default spend limit · opt in to be charged</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <p>Want the full picture? Read the <a href="https://docs.github.com/codespaces" target="_blank" rel="noopener">official Codespaces docs</a>.</p>
+    <p class="footer-mark">// INFOGRAPHIC · GITHUB CODESPACES</p>
+  </div>
+</footer>
+
+<script>
+  // Generic intersection observer — adds .in-view when element scrolls into view
+  const observe = (selector, options = {}) => {
+    const els = document.querySelectorAll(selector);
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.25, ...options });
+    els.forEach((el) => io.observe(el));
+  };
+
+  observe('#flow');
+  observe('#prebuildsBars');
+  observe('#codeWindow', { threshold: 0.2 });
+
+  // Stagger pain points
+  const pains = document.querySelectorAll('#painList .pain');
+  const painIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(pains).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 80);
+        painIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  pains.forEach((p) => painIO.observe(p));
+
+  // Stagger features
+  const features = document.querySelectorAll('#features .feature');
+  const featureIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(features).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 90);
+        featureIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  features.forEach((f) => featureIO.observe(f));
+
+  // Stagger security cards
+  const secCards = document.querySelectorAll('#secGrid .sec-card');
+  const secIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(secCards).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 80);
+        secIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  secCards.forEach((s) => secIO.observe(s));
+
+  // Stagger collab cards
+  const collabCards = document.querySelectorAll('#collabGrid .collab-card');
+  const collabIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(collabCards).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 100);
+        collabIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  collabCards.forEach((c) => collabIO.observe(c));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GitHub Clusters — How They Work</title>
+<meta name="description" content="A detailed animated infographic covering GitHub Actions Runner clusters, Kubernetes on GitHub, and Codespaces machine clusters." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #f6f8fa;
+    --bg-tint: #faf8ff;
+    --bg-dark: #0d1117;
+    --fg: #1f2328;
+    --fg-muted: #59636e;
+    --fg-subtle: #818b98;
+    --border: #d1d9e0;
+    --border-soft: #e6ebf0;
+    --purple: #8250df;
+    --purple-deep: #6639ba;
+    --purple-soft: #efeafe;
+    --purple-tint: #f5f1ff;
+    --green: #1a7f37;
+    --red: #cf222e;
+    --amber: #9a6700;
+    --blue: #0969da;
+    --blue-soft: #ddf4ff;
+    --teal: #0e7490;
+    --teal-soft: #e0f7fa;
+    --shadow-sm: 0 1px 2px rgba(31,35,40,0.04), 0 0 0 1px var(--border-soft);
+    --shadow-md: 0 4px 16px rgba(130,80,223,0.08), 0 1px 3px rgba(31,35,40,0.04);
+    --shadow-purple: 0 8px 32px rgba(130,80,223,0.18);
+    --radius-sm: 6px;
+    --radius: 12px;
+    --radius-lg: 20px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Mona Sans', -apple-system, system-ui, sans-serif;
+    font-feature-settings: 'cv11','ss01';
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* ===== HERO ===== */
+  .hero { position: relative; padding: 88px 0 72px; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+
+  .blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(80px); opacity: 0.6;
+    animation: float 14s ease-in-out infinite;
+  }
+  .blob-1 { width: 420px; height: 420px; background: radial-gradient(circle, #c7b3ff 0%, transparent 70%); top: -120px; right: -80px; }
+  .blob-2 { width: 360px; height: 360px; background: radial-gradient(circle, #efeafe 0%, transparent 70%); top: 80px; left: -100px; animation-delay: -7s; }
+  .blob-3 { width: 280px; height: 280px; background: radial-gradient(circle, #ddf4ff 0%, transparent 70%); bottom: -60px; left: 35%; animation-delay: -3.5s; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, -20px) scale(1.05); }
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--border-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 60% 50% at 50% 30%, black 30%, transparent 80%);
+    opacity: 0.5;
+  }
+
+  .hero-inner { position: relative; z-index: 1; text-align: center; }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: var(--purple-deep); background: var(--purple-soft);
+    border: 1px solid #d8c9f7;
+    padding: 6px 12px; border-radius: 999px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+
+  .pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--purple);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(130,80,223,0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(130,80,223,0); }
+  }
+
+  h1 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 800; font-stretch: 125%;
+    font-size: clamp(40px, 7vw, 76px);
+    line-height: 1.02; letter-spacing: -0.03em;
+    margin-top: 24px;
+  }
+
+  h1 .accent {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+
+  .tagline {
+    font-size: clamp(17px, 2vw, 20px);
+    color: var(--fg-muted);
+    max-width: 620px; margin: 24px auto 0;
+    line-height: 1.5;
+  }
+
+  .hero-stats {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 8px; margin-top: 36px;
+  }
+
+  .pill {
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 500;
+    color: var(--fg-muted);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .pill strong { color: var(--fg); font-weight: 600; }
+
+  /* ===== SECTIONS ===== */
+  section { padding: 80px 0; position: relative; }
+
+  .section-header { margin-bottom: 56px; max-width: 680px; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: var(--purple);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 12px; display: block;
+  }
+
+  h2 {
+    font-family: 'Mona Sans', sans-serif;
+    font-weight: 700; font-stretch: 115%;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.1; letter-spacing: -0.02em;
+    color: var(--fg);
+  }
+
+  .section-sub {
+    font-size: 17px; color: var(--fg-muted);
+    margin-top: 16px; max-width: 620px;
+    line-height: 1.6;
+  }
+
+  .section-sub code, p code, li code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--purple-soft);
+    padding: 2px 6px; border-radius: 4px;
+    color: var(--purple-deep);
+  }
+
+  /* ===== THREE TYPES OVERVIEW ===== */
+  .types-bg {
+    background: var(--bg-soft);
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .types-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .type-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .type-card.in-view { opacity: 1; transform: translateY(0); }
+
+  .type-card:hover {
+    border-color: var(--purple);
+    box-shadow: var(--shadow-purple);
+    transform: translateY(-4px);
+  }
+
+  .type-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 600;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .type-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--purple-soft);
+    color: var(--purple-deep);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .type-card:hover .type-icon {
+    background: var(--purple);
+    color: white;
+    transform: rotate(-6deg) scale(1.05);
+  }
+
+  .type-icon svg { width: 24px; height: 24px; }
+
+  .type-card h3 {
+    font-size: 18px; font-weight: 700;
+    margin-bottom: 10px; letter-spacing: -0.01em;
+  }
+
+  .type-card p {
+    font-size: 14.5px; color: var(--fg-muted);
+    line-height: 1.6; margin-bottom: 18px;
+  }
+
+  .type-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--border-soft);
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    padding: 3px 9px; border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--fg-muted);
+    background: var(--bg-soft);
+  }
+
+  .tag.active {
+    background: var(--purple-soft);
+    color: var(--purple-deep);
+    border-color: #d8c9f7;
+  }
+
+  /* ===== DIVIDER ===== */
+  .cluster-divider {
+    display: flex; align-items: center; gap: 20px;
+    margin: 0 0 48px;
+  }
+
+  .cluster-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+
+  .cluster-divider-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 600;
+    color: var(--purple-deep);
+    background: var(--purple-soft);
+    padding: 6px 16px; border-radius: 999px;
+    border: 1px solid #d8c9f7;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ===== FLOW STEPS ===== */
+  .flow-wrap { position: relative; margin-top: 24px; }
+
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    position: relative;
+  }
+
+  .flow-6 { grid-template-columns: repeat(6, 1fr); }
+
+  .flow::before {
+    content: '';
+    position: absolute;
+    top: 28px; left: 5%; right: 5%;
+    height: 2px; background: var(--border);
+    z-index: 0;
+  }
+
+  .flow-track {
+    position: absolute;
+    top: 28px; left: 5%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--purple), var(--purple-deep));
+    z-index: 1; width: 0;
+    transition: width 1.4s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  .flow.in-view .flow-track { width: 90%; }
+
+  .step {
+    position: relative; z-index: 2;
+    text-align: center;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .flow.in-view .step { opacity: 1; transform: translateY(0); }
+  .flow.in-view .step:nth-child(2) { transition-delay: 0.12s; }
+  .flow.in-view .step:nth-child(3) { transition-delay: 0.24s; }
+  .flow.in-view .step:nth-child(4) { transition-delay: 0.36s; }
+  .flow.in-view .step:nth-child(5) { transition-delay: 0.48s; }
+  .flow.in-view .step:nth-child(6) { transition-delay: 0.60s; }
+  .flow.in-view .step:nth-child(7) { transition-delay: 0.72s; }
+
+  .node {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--purple);
+    color: var(--purple-deep);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600; font-size: 15px;
+    margin: 0 auto;
+    box-shadow: 0 0 0 6px var(--bg);
+  }
+
+  .flow.in-view .node {
+    animation: nodePulse 1.2s ease-out forwards;
+    animation-delay: calc(var(--i, 0) * 0.12s + 0.3s);
+  }
+
+  @keyframes nodePulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 6px var(--bg), 0 0 0 0 rgba(130,80,223,0.5); }
+    50% { transform: scale(1.08); box-shadow: 0 0 0 6px var(--bg), 0 0 0 12px rgba(130,80,223,0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 6px var(--bg), 0 0 0 0 rgba(130,80,223,0); }
+  }
+
+  .step-title { font-weight: 600; font-size: 14px; margin-top: 14px; color: var(--fg); }
+  .step-desc { font-size: 12.5px; color: var(--fg-muted); margin-top: 5px; line-height: 1.5; }
+  .step-code {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    background: var(--purple-soft); color: var(--purple-deep);
+    padding: 3px 7px; border-radius: 4px; margin-top: 7px;
+    border: 1px solid #e0d4f8;
+  }
+
+  /* ===== CODE WINDOW ===== */
+  .code-window {
+    background: var(--bg-dark);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(31,35,40,0.18);
+    border: 1px solid #30363d;
+  }
+
+  .code-titlebar {
+    background: #161b22;
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid #30363d;
+  }
+
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  .code-filename {
+    margin-left: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    color: #8b949e;
+  }
+
+  .code-body {
+    padding: 18px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: #c9d1d9;
+    overflow-x: auto;
+  }
+
+  .code-line {
+    display: block;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  .code-window.in-view .code-line { opacity: 1; transform: translateY(0); }
+  .code-window.in-view .code-line:nth-child(1)  { transition-delay: 0.04s; }
+  .code-window.in-view .code-line:nth-child(2)  { transition-delay: 0.08s; }
+  .code-window.in-view .code-line:nth-child(3)  { transition-delay: 0.12s; }
+  .code-window.in-view .code-line:nth-child(4)  { transition-delay: 0.16s; }
+  .code-window.in-view .code-line:nth-child(5)  { transition-delay: 0.20s; }
+  .code-window.in-view .code-line:nth-child(6)  { transition-delay: 0.24s; }
+  .code-window.in-view .code-line:nth-child(7)  { transition-delay: 0.28s; }
+  .code-window.in-view .code-line:nth-child(8)  { transition-delay: 0.32s; }
+  .code-window.in-view .code-line:nth-child(9)  { transition-delay: 0.36s; }
+  .code-window.in-view .code-line:nth-child(10) { transition-delay: 0.40s; }
+  .code-window.in-view .code-line:nth-child(11) { transition-delay: 0.44s; }
+  .code-window.in-view .code-line:nth-child(12) { transition-delay: 0.48s; }
+  .code-window.in-view .code-line:nth-child(13) { transition-delay: 0.52s; }
+  .code-window.in-view .code-line:nth-child(14) { transition-delay: 0.56s; }
+  .code-window.in-view .code-line:nth-child(15) { transition-delay: 0.60s; }
+  .code-window.in-view .code-line:nth-child(16) { transition-delay: 0.64s; }
+  .code-window.in-view .code-line:nth-child(17) { transition-delay: 0.68s; }
+  .code-window.in-view .code-line:nth-child(18) { transition-delay: 0.72s; }
+  .code-window.in-view .code-line:nth-child(19) { transition-delay: 0.76s; }
+  .code-window.in-view .code-line:nth-child(20) { transition-delay: 0.80s; }
+
+  .tk-key  { color: #79c0ff; }
+  .tk-str  { color: #a5d6ff; }
+  .tk-pun  { color: #c9d1d9; }
+  .tk-num  { color: #ffa657; }
+  .tk-cmt  { color: #8b949e; font-style: italic; }
+  .tk-kw   { color: #ff7b72; }
+  .tk-val  { color: #56d364; }
+
+  /* ===== TWO-COLUMN GRID ===== */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .two-col-center { align-items: center; }
+
+  /* ===== BENEFIT LIST ===== */
+  .benefit-list { list-style: none; margin-top: 0; }
+
+  .benefit-list li {
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--border-soft);
+    font-size: 15px;
+    display: flex; align-items: flex-start; gap: 12px;
+    color: var(--fg);
+    line-height: 1.5;
+  }
+
+  .benefit-list li:last-child { border-bottom: none; }
+
+  .benefit-list li::before {
+    content: '✓';
+    color: var(--green); font-weight: 700;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  .benefit-list li strong { color: var(--purple-deep); font-weight: 600; }
+
+  /* ===== INFO BOX ===== */
+  .info-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--purple);
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-sm);
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .info-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--purple-soft);
+    color: var(--purple-deep);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .info-box p {
+    font-size: 15.5px; color: var(--fg); line-height: 1.6;
+  }
+
+  .info-box p strong { color: var(--purple-deep); font-weight: 600; }
+
+  /* ===== ARCHITECTURE DIAGRAM ===== */
+  .arch-diagram {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .arch-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .arch-row:last-child { margin-bottom: 0; }
+
+  .arch-arrow {
+    color: var(--purple);
+    font-size: 18px;
+    font-weight: 700;
+    flex-shrink: 0;
+    display: flex; align-items: center;
+  }
+
+  .arch-node {
+    flex: 1;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .arch-node-label {
+    font-size: 11px;
+    color: var(--fg-subtle);
+    font-weight: 400;
+  }
+
+  .arch-github  { background: #f0f6ff; border-color: #b6d1f8; color: var(--blue); }
+  .arch-cluster { background: var(--purple-tint); border-color: #d8c9f7; color: var(--purple-deep); }
+  .arch-runner  { background: var(--bg-soft); border-color: var(--border); color: var(--fg-muted); margin-left: 20px; }
+  .arch-cloud   { background: #e8f9ee; border-color: #a7f3c0; color: var(--green); }
+  .arch-k8s     { background: #fff7e6; border-color: #fcd34d; color: #92400e; }
+
+  /* ===== MACHINE TYPES TABLE ===== */
+  .machine-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .machine-table thead {
+    background: var(--bg-dark);
+    color: #c9d1d9;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .machine-table th { padding: 14px 18px; text-align: left; font-weight: 500; }
+
+  .machine-table td {
+    padding: 14px 18px;
+    border-top: 1px solid var(--border-soft);
+    vertical-align: middle;
+  }
+
+  .machine-table tbody tr:hover { background: var(--bg-tint); }
+
+  .machine-table .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--purple-deep);
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; font-weight: 600;
+    padding: 3px 8px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  .badge-free { background: #e8f9ee; color: var(--green); }
+  .badge-paid { background: var(--purple-soft); color: var(--purple-deep); }
+  .badge-ent  { background: #fff7e6; color: var(--amber); }
+  .badge-gpu  { background: var(--blue-soft); color: var(--blue); }
+
+  /* ===== COMPARE CARDS ===== */
+  .compare-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .compare-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .compare-card.highlight {
+    border-color: var(--purple);
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-tint) 100%);
+    box-shadow: var(--shadow-md);
+  }
+
+  .compare-card h3 {
+    font-size: 14px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 18px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .compare-card.highlight h3 { color: var(--purple-deep); }
+  .compare-card:not(.highlight) h3 { color: var(--fg-muted); }
+
+  .check-list { list-style: none; }
+
+  .check-list li {
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--border-soft);
+    font-size: 14px; color: var(--fg);
+    display: flex; align-items: flex-start; gap: 10px;
+    line-height: 1.5;
+  }
+
+  .check-list li:last-child { border-bottom: none; }
+  .check-list li.good::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+  .check-list li.bad::before  { content: '✕'; color: var(--red);   font-weight: 700; font-size: 12px; flex-shrink: 0; }
+  .check-list li.warn::before { content: '⚠'; color: var(--amber); flex-shrink: 0; }
+
+  /* ===== SECURITY GRID ===== */
+  .sec-bg {
+    background: var(--bg-soft);
+    border-top: 1px solid var(--border-soft);
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .sec-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .sec-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+  }
+
+  .sec-card.in-view { opacity: 1; transform: translateY(0); }
+
+  .sec-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .sec-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--purple-soft);
+    color: var(--purple-deep);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px;
+  }
+
+  .sec-icon svg { width: 18px; height: 18px; }
+
+  .sec-card h3 {
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 6px; letter-spacing: -0.01em;
+  }
+
+  .sec-card p {
+    font-size: 13.5px;
+    color: var(--fg-muted);
+    line-height: 1.5;
+  }
+
+  /* ===== ENTERPRISE GRID ===== */
+  .ent-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-top: 32px;
+  }
+
+  .ent-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 26px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .ent-card.in-view { opacity: 1; transform: translateY(0); }
+
+  .ent-card:hover {
+    border-color: var(--purple);
+    box-shadow: var(--shadow-md);
+  }
+
+  .ent-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    color: var(--amber);
+    background: #fff7e6;
+    border: 1px solid #fcd34d;
+    padding: 3px 9px; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+
+  .ent-card h3 {
+    font-size: 17px; font-weight: 600;
+    margin-bottom: 8px; letter-spacing: -0.01em;
+  }
+
+  .ent-card p {
+    font-size: 14px; color: var(--fg-muted);
+    line-height: 1.6;
+  }
+
+  .ent-card p strong { color: var(--purple-deep); font-weight: 600; }
+
+  /* ===== FACTS ===== */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border-soft);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border-soft);
+  }
+
+  .fact { background: var(--bg); padding: 28px 20px; text-align: center; }
+
+  .fact-num {
+    font-family: 'Mona Sans', sans-serif;
+    font-stretch: 125%; font-weight: 800;
+    font-size: 34px;
+    line-height: 1; letter-spacing: -0.03em;
+    color: var(--purple-deep);
+  }
+
+  .fact-num small {
+    font-size: 15px; font-weight: 600;
+    color: var(--purple); margin-left: 2px;
+  }
+
+  .fact-label {
+    font-size: 13px; color: var(--fg-muted);
+    margin-top: 8px; line-height: 1.4;
+  }
+
+  /* ===== REGIONS BAR ===== */
+  .regions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .region-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .region-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--purple);
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px var(--purple-soft);
+  }
+
+  .region-name {
+    font-size: 13.5px; font-weight: 600; color: var(--fg);
+  }
+
+  .region-sub {
+    font-size: 12px; color: var(--fg-subtle);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ===== SECTION ALTERNATING ===== */
+  .alt-bg {
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg-tint) 100%);
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .alt-bg-2 {
+    background: linear-gradient(180deg, var(--bg-tint) 0%, var(--bg) 100%);
+    border-top: 1px solid var(--border-soft);
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--border-soft);
+    padding: 48px 0 60px;
+    text-align: center;
+    color: var(--fg-muted);
+    font-size: 14px;
+  }
+
+  footer a {
+    color: var(--purple-deep);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+
+  footer a:hover { border-bottom-color: var(--purple-deep); }
+
+  .footer-mark {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--fg-subtle);
+    margin-top: 12px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 880px) {
+    .types-grid { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; gap: 32px; }
+    .flow { grid-template-columns: 1fr; gap: 28px; }
+    .flow-6 { grid-template-columns: 1fr; }
+    .flow::before, .flow-track { display: none; }
+    .compare-pair { grid-template-columns: 1fr; }
+    .sec-grid { grid-template-columns: repeat(2, 1fr); }
+    .ent-grid { grid-template-columns: 1fr; }
+    .fact-grid { grid-template-columns: repeat(2, 1fr); }
+    .regions-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 560px) {
+    .hero { padding: 64px 0 48px; }
+    section { padding: 60px 0; }
+    .sec-grid { grid-template-columns: 1fr; }
+    .fact-grid { grid-template-columns: 1fr; }
+    .regions-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+  <div class="wrap hero-inner">
+    <span class="eyebrow"><span class="pulse-dot"></span>Compute at scale on GitHub</span>
+    <h1>GitHub <span class="accent">Clusters</span><br/>explained.</h1>
+    <p class="tagline">Three kinds of clusters. One platform. From self-hosted runner fleets to Kubernetes deployments to Codespaces machine pools — here's how they all work.</p>
+    <div class="hero-stats">
+      <span class="pill"><strong>Actions Runner</strong> clusters (ARC)</span>
+      <span class="pill"><strong>Kubernetes</strong> on GitHub</span>
+      <span class="pill"><strong>Codespaces</strong> machine clusters</span>
+      <span class="pill"><strong>Enterprise</strong> governance</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===== THREE TYPES ===== -->
+<section class="types-bg">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// The three cluster types</span>
+      <h2>Clusters that run code, clusters that deploy it, clusters that host it.</h2>
+      <p class="section-sub">GitHub surfaces three distinct cluster concepts. Each solves a different problem — but all three live under the same platform, policy, and security model.</p>
+    </div>
+
+    <div class="types-grid" id="typesGrid">
+      <div class="type-card">
+        <span class="type-num">01 · Runner clusters</span>
+        <div class="type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <h3>Actions Runner Clusters</h3>
+        <p>A pool of machines — GitHub-hosted or self-hosted — that execute your CI/CD workflows in parallel. The Actions Runner Controller (ARC) lets you run this pool on Kubernetes with autoscaling.</p>
+        <div class="type-tags">
+          <span class="tag active">CI/CD</span>
+          <span class="tag active">Autoscale</span>
+          <span class="tag">Self-hosted</span>
+          <span class="tag">ARC</span>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <span class="type-num">02 · Kubernetes clusters</span>
+        <div class="type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        </div>
+        <h3>Kubernetes via GitHub Actions</h3>
+        <p>Use GitHub Actions to deploy to your Kubernetes clusters — EKS, AKS, GKE, or any CNCF cluster. GitHub becomes the control plane: every deploy is a workflow, audited and gated by environments and protection rules.</p>
+        <div class="type-tags">
+          <span class="tag active">Deploy</span>
+          <span class="tag active">GitOps</span>
+          <span class="tag">EKS / AKS / GKE</span>
+          <span class="tag">OIDC</span>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <span class="type-num">03 · Codespaces clusters</span>
+        <div class="type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Codespaces Machine Clusters</h3>
+        <p>GitHub's global fleet of VMs that power dev environments. Each codespace runs in a regional cluster. Orgs control which machine types are available, prebuild images are cached per region, and Enterprise plans set the hardware ceiling.</p>
+        <div class="type-tags">
+          <span class="tag active">Dev environments</span>
+          <span class="tag active">Regional</span>
+          <span class="tag">Prebuilds</span>
+          <span class="tag">Org policy</span>
+        </div>
+      </div>
+
+      <div class="type-card">
+        <span class="type-num">04 · GHES cluster</span>
+        <div class="type-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+        </div>
+        <h3>GitHub Enterprise Server Cluster</h3>
+        <p>GHES has its own distinct cluster architecture — separate from GitHub.com entirely. VM-based nodes, whether deployed in a public cloud or self-hosted in your own data center. You own and operate the full stack.</p>
+        <div class="type-tags">
+          <span class="tag active">Self-hosted</span>
+          <span class="tag active">VM-based</span>
+          <span class="tag">Air-gapped</span>
+          <span class="tag">DC / Cloud</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== ACTIONS RUNNER CLUSTERS ===== -->
+<section>
+  <div class="wrap">
+    <div class="cluster-divider">
+      <div class="cluster-divider-line"></div>
+      <div class="cluster-divider-label">01 · Actions Runner Clusters</div>
+      <div class="cluster-divider-line"></div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-label">// GitHub Actions at scale</span>
+      <h2>A fleet of runners that grows with your pipeline.</h2>
+      <p class="section-sub">GitHub-hosted runners are the default. For larger scale, custom environments, GPU workloads, or cost control, you run your own — either as standalone VMs or as a Kubernetes-based cluster via the <strong>Actions Runner Controller (ARC)</strong>.</p>
+    </div>
+
+    <div class="info-box">
+      <div class="info-icon">ℹ</div>
+      <p><strong>Kubernetes hosts ARC.</strong> The Actions Runner Controller (ARC) is a Kubernetes operator — you deploy it onto a K8s cluster (EKS, AKS, GKE, k3s, or any CNCF cluster), and it manages runner pods for you. Each runner pod is <strong>ephemeral</strong>: it registers with GitHub, picks up exactly one job, then terminates. The Kubernetes cluster is the substrate; ARC is the layer that turns it into a GitHub Actions runner fleet.</p>
+    </div>
+
+    <!-- Architecture -->
+    <div class="two-col two-col-center" style="margin-bottom: 48px;">
+      <div>
+        <h3 style="font-size:20px;font-weight:700;margin-bottom:16px;letter-spacing:-0.01em;">How the pieces connect</h3>
+        <p style="font-size:15px;color:var(--fg-muted);line-height:1.6;margin-bottom:20px;">A workflow job sits in the GitHub queue. ARC's controller — running inside your Kubernetes cluster — polls the GitHub API, sees the job, and provisions a runner pod. The runner registers, picks up the job, executes it, and terminates. Ephemeral by default.</p>
+        <ul class="benefit-list">
+          <li><strong>Ephemeral runners:</strong> each job gets a fresh pod, nothing bleeds between runs</li>
+          <li><strong>Autoscaling:</strong> scale from zero to hundreds, back to zero</li>
+          <li><strong>Custom images:</strong> bring your own container with pre-baked tools</li>
+          <li><strong>Runner groups:</strong> restrict which repos or orgs can target which runner pool</li>
+        </ul>
+      </div>
+      <div class="arch-diagram">
+        <div class="arch-row">
+          <div class="arch-node arch-github">
+            <span>☁️ GitHub.com</span>
+            <span class="arch-node-label">workflow queue</span>
+          </div>
+        </div>
+        <div class="arch-row">
+          <div class="arch-arrow" style="padding-left:24px;">↓</div>
+        </div>
+        <div class="arch-row">
+          <div class="arch-node arch-cluster">
+            <span>⚙ ARC Controller</span>
+            <span class="arch-node-label">Kubernetes operator</span>
+          </div>
+        </div>
+        <div class="arch-row">
+          <div class="arch-arrow" style="padding-left:24px;">↓</div>
+        </div>
+        <div class="arch-node arch-runner" style="margin-left:0;margin-bottom:10px;">
+          <span>🏃 Runner Pod 1</span>
+          <span class="arch-node-label">ephemeral · job A</span>
+        </div>
+        <div class="arch-node arch-runner" style="margin-left:0;margin-bottom:10px;">
+          <span>🏃 Runner Pod 2</span>
+          <span class="arch-node-label">ephemeral · job B</span>
+        </div>
+        <div class="arch-node arch-runner" style="margin-left:0;">
+          <span>🏃 Runner Pod N</span>
+          <span class="arch-node-label">scales to demand</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Setup flow -->
+    <h3 style="font-size:20px;font-weight:700;margin-bottom:24px;letter-spacing:-0.01em;">ARC setup — five steps</h3>
+    <div class="flow-wrap" style="margin-bottom:48px;">
+      <div class="flow" id="arcFlow">
+        <div class="flow-track"></div>
+        <div class="step" style="--i:0">
+          <div class="node">01</div>
+          <div class="step-title">Prerequisites</div>
+          <div class="step-desc">A running Kubernetes cluster (k3s, EKS, GKE, AKS) with Helm installed.</div>
+        </div>
+        <div class="step" style="--i:1">
+          <div class="node">02</div>
+          <div class="step-title">Install cert-manager</div>
+          <div class="step-desc">ARC's webhook needs TLS. cert-manager handles it.</div>
+          <span class="step-code">helm install cert-manager</span>
+        </div>
+        <div class="step" style="--i:2">
+          <div class="node">03</div>
+          <div class="step-title">Install ARC</div>
+          <div class="step-desc">Deploy the controller and CRDs via Helm chart.</div>
+          <span class="step-code">actions-runner-controller</span>
+        </div>
+        <div class="step" style="--i:3">
+          <div class="node">04</div>
+          <div class="step-title">Create a GitHub App</div>
+          <div class="step-desc">ARC authenticates to GitHub via a GitHub App — not a PAT.</div>
+          <span class="step-code">Org Settings → Apps</span>
+        </div>
+        <div class="step" style="--i:4">
+          <div class="node">05</div>
+          <div class="step-title">Deploy runner set</div>
+          <div class="step-desc">Apply a <code>RunnerScaleSet</code> manifest. Target it from any workflow with <code>runs-on</code>.</div>
+          <span class="step-code">runs-on: arc-runner-set</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Code snippets -->
+    <div class="two-col">
+      <div class="code-window" id="arcRunnerYaml">
+        <div class="code-titlebar">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-filename">arc-runner-set.yaml</span>
+        </div>
+        <div class="code-body">
+<span class="code-line"><span class="tk-key">apiVersion</span><span class="tk-pun">:</span> <span class="tk-str">actions.summerwind.dev/v1alpha1</span></span>
+<span class="code-line"><span class="tk-key">kind</span><span class="tk-pun">:</span> <span class="tk-str">RunnerScaleSet</span></span>
+<span class="code-line"><span class="tk-key">metadata</span><span class="tk-pun">:</span></span>
+<span class="code-line">  <span class="tk-key">name</span><span class="tk-pun">:</span> <span class="tk-str">arc-runner-set</span></span>
+<span class="code-line">  <span class="tk-key">namespace</span><span class="tk-pun">:</span> <span class="tk-str">arc-systems</span></span>
+<span class="code-line"><span class="tk-key">spec</span><span class="tk-pun">:</span></span>
+<span class="code-line">  <span class="tk-key">githubConfigUrl</span><span class="tk-pun">:</span> <span class="tk-str">https://github.com/your-org</span></span>
+<span class="code-line">  <span class="tk-key">minRunners</span><span class="tk-pun">:</span> <span class="tk-num">0</span></span>
+<span class="code-line">  <span class="tk-key">maxRunners</span><span class="tk-pun">:</span> <span class="tk-num">20</span></span>
+<span class="code-line">  <span class="tk-key">template</span><span class="tk-pun">:</span></span>
+<span class="code-line">    <span class="tk-key">spec</span><span class="tk-pun">:</span></span>
+<span class="code-line">      <span class="tk-key">containers</span><span class="tk-pun">:</span></span>
+<span class="code-line">        <span class="tk-pun">-</span> <span class="tk-key">name</span><span class="tk-pun">:</span> <span class="tk-str">runner</span></span>
+<span class="code-line">          <span class="tk-key">image</span><span class="tk-pun">:</span> <span class="tk-str">ghcr.io/actions/actions-runner:latest</span></span>
+<span class="code-line">          <span class="tk-key">resources</span><span class="tk-pun">:</span></span>
+<span class="code-line">            <span class="tk-key">requests</span><span class="tk-pun">:</span> <span class="tk-pun">{</span><span class="tk-key">cpu</span><span class="tk-pun">:</span> <span class="tk-str">"500m"</span><span class="tk-pun">,</span> <span class="tk-key">memory</span><span class="tk-pun">:</span> <span class="tk-str">"1Gi"</span><span class="tk-pun">}</span></span>
+        </div>
+      </div>
+
+      <div class="code-window" id="arcWorkflowYaml">
+        <div class="code-titlebar">
+          <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+          <span class="code-filename">.github/workflows/ci.yml</span>
+        </div>
+        <div class="code-body">
+<span class="code-line"><span class="tk-key">name</span><span class="tk-pun">:</span> <span class="tk-str">Build &amp; Test</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="tk-key">on</span><span class="tk-pun">:</span></span>
+<span class="code-line">  <span class="tk-key">push</span><span class="tk-pun">:</span></span>
+<span class="code-line">    <span class="tk-key">branches</span><span class="tk-pun">: [</span><span class="tk-str">main</span><span class="tk-pun">]</span></span>
+<span class="code-line">  <span class="tk-key">pull_request</span><span class="tk-pun">:</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="tk-key">jobs</span><span class="tk-pun">:</span></span>
+<span class="code-line">  <span class="tk-key">test</span><span class="tk-pun">:</span></span>
+<span class="code-line">    <span class="tk-cmt"># Target the self-hosted ARC cluster</span></span>
+<span class="code-line">    <span class="tk-key">runs-on</span><span class="tk-pun">:</span> <span class="tk-str">arc-runner-set</span></span>
+<span class="code-line">    <span class="tk-key">steps</span><span class="tk-pun">:</span></span>
+<span class="code-line">      <span class="tk-pun">-</span> <span class="tk-key">uses</span><span class="tk-pun">:</span> <span class="tk-str">actions/checkout@v4</span></span>
+<span class="code-line">      <span class="tk-pun">-</span> <span class="tk-key">name</span><span class="tk-pun">:</span> <span class="tk-str">Run tests</span></span>
+<span class="code-line">        <span class="tk-key">run</span><span class="tk-pun">:</span> <span class="tk-str">make test</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hosted vs self-hosted -->
+    <div style="margin-top:40px;">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:20px;letter-spacing:-0.01em;">GitHub-hosted vs. self-hosted runners</h3>
+      <div class="compare-pair">
+        <div class="compare-card">
+          <h3>GitHub-hosted</h3>
+          <ul class="check-list">
+            <li class="good">Zero infrastructure to manage</li>
+            <li class="good">Free tier (2,000 min/month on Free plan)</li>
+            <li class="good">Larger runners: up to 64-core on Teams/Enterprise</li>
+            <li class="good">GPU runners available (beta)</li>
+            <li class="bad">No custom base image — only GitHub's images</li>
+            <li class="bad">Network can't reach private VPC resources</li>
+            <li class="warn">Costs add up on high-volume pipelines</li>
+          </ul>
+        </div>
+        <div class="compare-card highlight">
+          <h3>Self-hosted via ARC</h3>
+          <ul class="check-list">
+            <li class="good">Full control over environment and tools</li>
+            <li class="good">Runs inside your VPC — access private registries, DBs</li>
+            <li class="good">Autoscale from zero: no idle compute cost</li>
+            <li class="good">GPU nodes, custom hardware, spot instances</li>
+            <li class="good">Ephemeral runners — clean state every job</li>
+            <li class="warn">You own the infrastructure and upkeep</li>
+            <li class="warn">Runner must have outbound access to GitHub</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== KUBERNETES CLUSTERS ===== -->
+<section class="alt-bg">
+  <div class="wrap">
+    <div class="cluster-divider">
+      <div class="cluster-divider-line"></div>
+      <div class="cluster-divider-label">02 · Kubernetes on GitHub</div>
+      <div class="cluster-divider-line"></div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-label">// Deploying to Kubernetes via GitHub Actions</span>
+      <h2>GitHub as your GitOps control plane.</h2>
+      <p class="section-sub">GitHub Actions workflows can deploy to any Kubernetes cluster — EKS, AKS, GKE, or self-managed. The result: every deploy is a pull request, every rollback is a git revert, and every promotion is gated by environment protection rules.</p>
+    </div>
+
+    <div class="info-box">
+      <div class="info-icon">🔑</div>
+      <p>The modern way to authenticate is <strong>OIDC (OpenID Connect)</strong> — GitHub issues a short-lived token that your cloud provider (AWS, Azure, GCP) trusts. <strong>No long-lived credentials in your secrets.</strong> The token expires when the job ends.</p>
+    </div>
+
+    <!-- Architecture -->
+    <div class="two-col two-col-center" style="margin-bottom:48px;">
+      <div class="arch-diagram">
+        <div class="arch-row">
+          <div class="arch-node arch-github">
+            <span>🔀 Pull Request merged</span>
+            <span class="arch-node-label">triggers workflow</span>
+          </div>
+        </div>
+        <div class="arch-row"><div class="arch-arrow" style="padding-left:24px;">↓</div></div>
+        <div class="arch-row">
+          <div class="arch-node arch-github">
+            <span>⚙ GitHub Actions runner</span>
+            <span class="arch-node-label">builds image, calls kubectl</span>
+          </div>
+        </div>
+        <div class="arch-row"><div class="arch-arrow" style="padding-left:24px;">↓ OIDC token</div></div>
+        <div class="arch-row">
+          <div class="arch-node arch-cloud">
+            <span>☁️ Cloud IAM (AWS / Azure / GCP)</span>
+            <span class="arch-node-label">verifies OIDC, grants access</span>
+          </div>
+        </div>
+        <div class="arch-row"><div class="arch-arrow" style="padding-left:24px;">↓</div></div>
+        <div class="arch-row">
+          <div class="arch-node arch-k8s">
+            <span>⚓ Kubernetes cluster</span>
+            <span class="arch-node-label">EKS / AKS / GKE / self-managed</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:20px;font-weight:700;margin-bottom:16px;letter-spacing:-0.01em;">What you get</h3>
+        <ul class="benefit-list">
+          <li><strong>Full audit trail:</strong> every deploy, who triggered it, what SHA, logged in GitHub</li>
+          <li><strong>Environment gates:</strong> require reviewer approval before deploying to production</li>
+          <li><strong>Branch policies:</strong> only <code>main</code> can deploy to prod — enforced in the workflow</li>
+          <li><strong>Keyless auth:</strong> OIDC means no credentials to rotate or leak</li>
+          <li><strong>Rollback = git revert:</strong> revert the commit, workflow reruns with the old manifests</li>
+          <li><strong>Works with Helm, Kustomize, raw manifests</strong> — no vendor lock-in</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Deploy workflow -->
+    <h3 style="font-size:20px;font-weight:700;margin-bottom:24px;letter-spacing:-0.01em;">Deploy workflow setup — six steps</h3>
+    <div class="flow-wrap" style="margin-bottom:48px;">
+      <div class="flow flow-6" id="k8sFlow">
+        <div class="flow-track"></div>
+        <div class="step" style="--i:0">
+          <div class="node">01</div>
+          <div class="step-title">Configure OIDC</div>
+          <div class="step-desc">Add GitHub as an OIDC provider in your cloud (AWS IAM, Azure AD, GCP WIF).</div>
+        </div>
+        <div class="step" style="--i:1">
+          <div class="node">02</div>
+          <div class="step-title">Create IAM role</div>
+          <div class="step-desc">Bind the role to your repo with a condition on branch or environment.</div>
+        </div>
+        <div class="step" style="--i:2">
+          <div class="node">03</div>
+          <div class="step-title">Create Environment</div>
+          <div class="step-desc">Add <code>production</code> environment in repo settings with required reviewers.</div>
+        </div>
+        <div class="step" style="--i:3">
+          <div class="node">04</div>
+          <div class="step-title">Write workflow</div>
+          <div class="step-desc">Use <code>aws-actions/configure-aws-credentials</code> (or Azure/GCP equivalent).</div>
+        </div>
+        <div class="step" style="--i:4">
+          <div class="node">05</div>
+          <div class="step-title">Build & push image</div>
+          <div class="step-desc">Build Docker image, push to your registry (ECR, ACR, Artifact Registry).</div>
+        </div>
+        <div class="step" style="--i:5">
+          <div class="node">06</div>
+          <div class="step-title">kubectl apply</div>
+          <div class="step-desc">Apply manifests or run Helm upgrade. Cluster receives the deploy.</div>
+          <span class="step-code">helm upgrade --install</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workflow YAML -->
+    <div class="code-window" id="k8sWorkflow" style="max-width:860px;margin:0 auto;">
+      <div class="code-titlebar">
+        <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+        <span class="code-filename">.github/workflows/deploy-k8s.yml</span>
+      </div>
+      <div class="code-body">
+<span class="code-line"><span class="tk-key">name</span><span class="tk-pun">:</span> <span class="tk-str">Deploy to Production</span></span>
+<span class="code-line"><span class="tk-key">on</span><span class="tk-pun">:</span></span>
+<span class="code-line">  <span class="tk-key">push</span><span class="tk-pun">:</span></span>
+<span class="code-line">    <span class="tk-key">branches</span><span class="tk-pun">: [</span><span class="tk-str">main</span><span class="tk-pun">]</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="tk-key">permissions</span><span class="tk-pun">:</span></span>
+<span class="code-line">  <span class="tk-key">id-token</span><span class="tk-pun">:</span> <span class="tk-str">write</span>   <span class="tk-cmt"># Required for OIDC</span></span>
+<span class="code-line">  <span class="tk-key">contents</span><span class="tk-pun">:</span> <span class="tk-str">read</span></span>
+<span class="code-line"></span>
+<span class="code-line"><span class="tk-key">jobs</span><span class="tk-pun">:</span></span>
+<span class="code-line">  <span class="tk-key">deploy</span><span class="tk-pun">:</span></span>
+<span class="code-line">    <span class="tk-key">runs-on</span><span class="tk-pun">:</span> <span class="tk-str">ubuntu-latest</span></span>
+<span class="code-line">    <span class="tk-key">environment</span><span class="tk-pun">:</span> <span class="tk-str">production</span>  <span class="tk-cmt"># Triggers approval gate</span></span>
+<span class="code-line">    <span class="tk-key">steps</span><span class="tk-pun">:</span></span>
+<span class="code-line">      <span class="tk-pun">-</span> <span class="tk-key">uses</span><span class="tk-pun">:</span> <span class="tk-str">actions/checkout@v4</span></span>
+<span class="code-line">      <span class="tk-pun">-</span> <span class="tk-key">name</span><span class="tk-pun">:</span> <span class="tk-str">Authenticate to AWS via OIDC</span></span>
+<span class="code-line">        <span class="tk-key">uses</span><span class="tk-pun">:</span> <span class="tk-str">aws-actions/configure-aws-credentials@v4</span></span>
+<span class="code-line">        <span class="tk-key">with</span><span class="tk-pun">:</span></span>
+<span class="code-line">          <span class="tk-key">role-to-assume</span><span class="tk-pun">:</span> <span class="tk-str">arn:aws:iam::123456:role/gh-deploy</span></span>
+<span class="code-line">          <span class="tk-key">aws-region</span><span class="tk-pun">:</span> <span class="tk-str">us-east-1</span></span>
+<span class="code-line">      <span class="tk-pun">-</span> <span class="tk-key">name</span><span class="tk-pun">:</span> <span class="tk-str">Update kubeconfig (EKS)</span></span>
+<span class="code-line">        <span class="tk-key">run</span><span class="tk-pun">:</span> <span class="tk-str">aws eks update-kubeconfig --name my-cluster</span></span>
+<span class="code-line">      <span class="tk-pun">-</span> <span class="tk-key">name</span><span class="tk-pun">:</span> <span class="tk-str">Helm deploy</span></span>
+<span class="code-line">        <span class="tk-key">run</span><span class="tk-pun">:</span> <span class="tk-str">helm upgrade --install myapp ./chart --set image.tag=${{ github.sha }}</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== CODESPACES MACHINE CLUSTERS ===== -->
+<section class="alt-bg-2">
+  <div class="wrap">
+    <div class="cluster-divider">
+      <div class="cluster-divider-line"></div>
+      <div class="cluster-divider-label">03 · Codespaces Machine Clusters</div>
+      <div class="cluster-divider-line"></div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-label">// Codespaces at the infrastructure layer</span>
+      <h2>A global pool of dev VMs, managed by GitHub.</h2>
+      <p class="section-sub">When you create a codespace, it lands in a regional cluster of VMs managed entirely by GitHub. You pick the machine size; orgs set the ceiling. Prebuild images are cached per region so the cluster can serve a ready environment in ~10 seconds.</p>
+    </div>
+
+    <div class="two-col two-col-center" style="margin-bottom:48px;">
+      <div>
+        <h3 style="font-size:20px;font-weight:700;margin-bottom:16px;letter-spacing:-0.01em;">Machine types</h3>
+        <p style="font-size:15px;color:var(--fg-muted);line-height:1.6;margin-bottom:20px;">Every codespace runs on one of these machine types. Orgs can restrict which tiers members may use — preventing accidental spend on 32-core machines for small tasks.</p>
+        <ul class="benefit-list">
+          <li><strong>Free plan:</strong> 2-core and 4-core available; 60 hrs/month included</li>
+          <li><strong>Org-owned:</strong> org pays, org sets the allowed machine types via policy</li>
+          <li><strong>Enterprise:</strong> same policy controls, plus EMU and audit log streaming</li>
+        </ul>
+      </div>
+
+      <table class="machine-table">
+        <thead>
+          <tr>
+            <th>Cores</th>
+            <th>RAM</th>
+            <th>Storage</th>
+            <th>Tier</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">2-core</td>
+            <td>8 GB</td>
+            <td>32 GB</td>
+            <td><span class="badge badge-free">Free tier</span></td>
+          </tr>
+          <tr>
+            <td class="mono">4-core</td>
+            <td>16 GB</td>
+            <td>32 GB</td>
+            <td><span class="badge badge-free">Free tier</span></td>
+          </tr>
+          <tr>
+            <td class="mono">8-core</td>
+            <td>32 GB</td>
+            <td>64 GB</td>
+            <td><span class="badge badge-paid">Paid</span></td>
+          </tr>
+          <tr>
+            <td class="mono">16-core</td>
+            <td>64 GB</td>
+            <td>128 GB</td>
+            <td><span class="badge badge-paid">Paid</span></td>
+          </tr>
+          <tr>
+            <td class="mono">32-core</td>
+            <td>128 GB</td>
+            <td>128 GB</td>
+            <td><span class="badge badge-ent">Enterprise</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Regional clusters -->
+    <h3 style="font-size:20px;font-weight:700;margin-bottom:12px;letter-spacing:-0.01em;">Regional clusters — where your codespace lives</h3>
+    <p style="font-size:15px;color:var(--fg-muted);line-height:1.6;margin-bottom:6px;">GitHub runs Codespaces infrastructure in multiple geographic regions. When you create a codespace, it's placed in the region closest to you by default. Orgs can restrict available regions — important for data residency.</p>
+
+    <div class="regions-grid">
+      <div class="region-card"><div class="region-dot"></div><div><div class="region-name">US East</div><div class="region-sub">eastus · default for most NA users</div></div></div>
+      <div class="region-card"><div class="region-dot"></div><div><div class="region-name">US West</div><div class="region-sub">westus2</div></div></div>
+      <div class="region-card"><div class="region-dot"></div><div><div class="region-name">Europe West</div><div class="region-sub">westeurope</div></div></div>
+      <div class="region-card"><div class="region-dot"></div><div><div class="region-name">Southeast Asia</div><div class="region-sub">southeastasia</div></div></div>
+      <div class="region-card"><div class="region-dot"></div><div><div class="region-name">Australia East</div><div class="region-sub">australiaeast</div></div></div>
+      <div class="region-card"><div class="region-dot"></div><div><div class="region-name">Brazil South</div><div class="region-sub">brazilsouth</div></div></div>
+    </div>
+
+    <!-- Prebuilds -->
+    <div style="margin-top:48px;">
+      <h3 style="font-size:20px;font-weight:700;margin-bottom:16px;letter-spacing:-0.01em;">Prebuilds: caching the cluster startup</h3>
+      <div class="info-box" style="margin-bottom:24px;">
+        <div class="info-icon">⚡</div>
+        <p>Prebuilds run your <code>devcontainer.json</code> setup on GitHub Actions whenever you push to a tracked branch. The resulting image is stored <strong>per region</strong>. When someone creates a codespace, they get the cached image — skipping all the build time.</p>
+      </div>
+
+      <div class="flow-wrap">
+        <div class="flow" id="prebuildFlow">
+          <div class="flow-track"></div>
+          <div class="step" style="--i:0">
+            <div class="node">01</div>
+            <div class="step-title">Push to branch</div>
+            <div class="step-desc">A push to any tracked branch triggers the prebuild workflow.</div>
+          </div>
+          <div class="step" style="--i:1">
+            <div class="node">02</div>
+            <div class="step-title">Actions builds image</div>
+            <div class="step-desc">GitHub Actions runs your full <code>devcontainer.json</code> build, including <code>postCreateCommand</code>.</div>
+          </div>
+          <div class="step" style="--i:2">
+            <div class="node">03</div>
+            <div class="step-title">Cache per region</div>
+            <div class="step-desc">The prebuild image is stored in each configured region's cluster.</div>
+          </div>
+          <div class="step" style="--i:3">
+            <div class="node">04</div>
+            <div class="step-title">Codespace created</div>
+            <div class="step-desc">User hits "Create codespace" — cluster serves the cached image instantly.</div>
+          </div>
+          <div class="step" style="--i:4">
+            <div class="node">05</div>
+            <div class="step-title">~10 sec to code</div>
+            <div class="step-desc">Instead of 5–10 min cold start. Every time, for every dev in that region.</div>
+            <span class="step-code">vs ~8 min cold start</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== SECURITY ===== -->
+<section class="sec-bg">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Security — across all three cluster types</span>
+      <h2>Shared security model, cluster-specific controls.</h2>
+      <p class="section-sub">Whether it's a runner pod, a Kubernetes deploy, or a dev environment — the same GitHub security primitives apply. Each cluster type adds its own layer on top.</p>
+    </div>
+
+    <div class="sec-grid" id="secGrid">
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h3>Encrypted secrets</h3>
+        <p>All three cluster types consume secrets at user, repo, and org scope. Encrypted at rest, injected as env vars at runtime — never in logs, never in code.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M20.188 10.934a8 8 0 1 0-16.376 0 8 8 0 0 0 16.376 0z"/></svg>
+        </div>
+        <h3>OIDC keyless auth</h3>
+        <p>Runner workflows and Kubernetes deploy jobs can authenticate to AWS, Azure, and GCP via short-lived OIDC tokens. No long-lived credentials needed, anywhere.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Ephemeral runners</h3>
+        <p>ARC runners terminate after every job. Nothing persists between runs — no secrets cached in memory, no artifacts from previous jobs accessible. Clean slate, every time.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>Runner groups</h3>
+        <p>Assign self-hosted runners to groups. Control which repos and orgs can use which runner group. Prevents untrusted repos from running on privileged infrastructure.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <h3>Full audit log</h3>
+        <p>Every workflow run, codespace lifecycle event, and deployment is logged. Enterprise plans stream audit logs to your SIEM — Splunk, Datadog, and others.</p>
+      </div>
+
+      <div class="sec-card">
+        <div class="sec-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <h3>Environment gates</h3>
+        <p>Kubernetes deploy jobs reference a GitHub Environment. Each environment can require named approvers, wait timers, and branch policies before any deploy proceeds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== ENTERPRISE ===== -->
+<section>
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Enterprise &amp; org-level governance</span>
+      <h2>Every control lives at the organization level.</h2>
+      <p class="section-sub">Enterprise plans add umbrella features — Enterprise Managed Users, enterprise-wide audit log streaming, cross-org IP allow lists — but the cluster policies themselves are configured <strong>per organization</strong>, even on Enterprise.</p>
+    </div>
+
+    <div class="info-box">
+      <div class="info-icon">⚙</div>
+      <p>Where to find it: <code>Org Settings → Actions</code> for runner policies, <code>Org Settings → Codespaces</code> for dev environment policies, and <code>Org Settings → Environments</code> for deployment gates. Each org on your Enterprise manages its own.</p>
+    </div>
+
+    <div class="ent-grid" id="entGrid">
+      <div class="ent-card">
+        <span class="ent-tag">Runners</span>
+        <h3>Runner group policies</h3>
+        <p>Create runner groups and restrict them to specific repositories or all org repos. Set whether <strong>public repos can use self-hosted runners</strong> — critical for security, since a public fork PR could otherwise run code on your private infrastructure.</p>
+      </div>
+
+      <div class="ent-card">
+        <span class="ent-tag">Runners</span>
+        <h3>Allowed actions &amp; reusable workflows</h3>
+        <p>At the org level, restrict which GitHub Actions can be used: only GitHub-owned, only verified creator, or a specific allow list. Prevents supply-chain attacks from untrusted third-party actions in the ecosystem.</p>
+      </div>
+
+      <div class="ent-card">
+        <span class="ent-tag">Kubernetes</span>
+        <h3>Environment protection rules</h3>
+        <p>Every Kubernetes deploy that references a <code>production</code> environment can require <strong>named reviewers, a wait timer, and branch restrictions</strong>. Adds a human gate to every production deployment, fully audited.</p>
+      </div>
+
+      <div class="ent-card">
+        <span class="ent-tag">Kubernetes</span>
+        <h3>Deployment history &amp; rollback</h3>
+        <p>GitHub stores the full deployment history for every environment. See exactly what SHA is live in production, who deployed it, and when. A rollback is a re-run of the previous workflow with an older SHA.</p>
+      </div>
+
+      <div class="ent-card">
+        <span class="ent-tag">Codespaces</span>
+        <h3>Machine type &amp; region policies</h3>
+        <p>Orgs control which machine types members may create — prevent runaway spend by blocking 16-core and 32-core machines for everyday dev. Also restrict codespaces to specific regions for <strong>data residency compliance</strong>.</p>
+      </div>
+
+      <div class="ent-card">
+        <span class="ent-tag">Codespaces</span>
+        <h3>Spend limits &amp; billing controls</h3>
+        <p>Org-owned codespaces charge to the org. Set a <strong>monthly spend limit</strong> — default is $0, which means members can't use codespaces until an admin explicitly enables and funds them. No surprise bills.</p>
+      </div>
+
+      <div class="ent-card">
+        <span class="ent-tag">Enterprise</span>
+        <h3>Enterprise Managed Users (EMU)</h3>
+        <p>With EMU, every member account is provisioned and controlled by your identity provider (Okta, Azure AD). Members can't create personal GitHub accounts — all activity is on org-owned accounts, all access is revoked at offboarding automatically.</p>
+      </div>
+
+      <div class="ent-card">
+        <span class="ent-tag">Enterprise</span>
+        <h3>IP allow lists &amp; audit log streaming</h3>
+        <p>Restrict access to your org — codespaces, repos, and the GitHub UI — to an approved set of IP ranges (VPN, office). Stream audit events to Splunk, Datadog, or any SIEM via webhook or cloud storage in real time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== GHES CLUSTER ===== -->
+<section style="border-top:1px solid var(--border-soft);">
+  <div class="wrap">
+    <div class="cluster-divider">
+      <div class="cluster-divider-line"></div>
+      <div class="cluster-divider-label">04 · GHES Cluster Architecture</div>
+      <div class="cluster-divider-line"></div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-label">// GitHub Enterprise Server</span>
+      <h2>Its own architecture — entirely separate from GitHub.com.</h2>
+      <p class="section-sub">GHES is not a feature of GitHub.com — it's a self-contained product you install and operate. When you run it as a cluster, you're managing a set of VM-based nodes yourself, whether those VMs sit in a public cloud or inside your own data center.</p>
+    </div>
+
+    <div class="info-box">
+      <div class="info-icon">🏗</div>
+      <p>GHES clustering is <strong>VM-based at every layer</strong> — there are no managed Kubernetes abstractions hiding underneath. Every node (primary, replica, cache) is a VM you provision, whether in AWS/Azure/GCP or on bare metal in a DC. You own the OS, the networking, and the upgrade cycle.</p>
+    </div>
+
+    <!-- Topology -->
+    <div class="two-col two-col-center" style="margin-bottom:48px;">
+      <div>
+        <h3 style="font-size:20px;font-weight:700;margin-bottom:16px;letter-spacing:-0.01em;">Cluster node roles</h3>
+        <p style="font-size:15px;color:var(--fg-muted);line-height:1.6;margin-bottom:20px;">A GHES cluster is built from specialized VM nodes. Each role can run on its own VM (or set of VMs) — you scale horizontally by adding nodes of the right type, not by resizing a single machine.</p>
+        <ul class="benefit-list">
+          <li><strong>Primary node:</strong> runs the main application, admin console, and coordinates writes</li>
+          <li><strong>Git replica nodes:</strong> serve read traffic for git operations — scale these for large teams</li>
+          <li><strong>Storage nodes:</strong> hold repository data, LFS objects, and attachments</li>
+          <li><strong>Cache replica nodes:</strong> geo-distributed read cache for globally distributed orgs</li>
+          <li><strong>MySQL replicas:</strong> database read scaling and HA failover</li>
+          <li><strong>Elasticsearch nodes:</strong> code search and issue search indexing</li>
+        </ul>
+      </div>
+      <div class="arch-diagram">
+        <div class="arch-row">
+          <div class="arch-node arch-github" style="background:#fff7e6;border-color:#fcd34d;color:#92400e;">
+            <span>🖥 Primary node VM</span>
+            <span class="arch-node-label">application + admin console</span>
+          </div>
+        </div>
+        <div class="arch-row"><div class="arch-arrow" style="padding-left:24px;">↓ replication</div></div>
+        <div class="arch-node arch-runner" style="margin-left:0;margin-bottom:8px;">
+          <span>📂 Git replica VMs</span>
+          <span class="arch-node-label">read scale · HA</span>
+        </div>
+        <div class="arch-node arch-runner" style="margin-left:0;margin-bottom:8px;">
+          <span>💾 Storage node VMs</span>
+          <span class="arch-node-label">repos · LFS · blobs</span>
+        </div>
+        <div class="arch-node arch-runner" style="margin-left:0;margin-bottom:8px;">
+          <span>🔍 Elasticsearch VMs</span>
+          <span class="arch-node-label">code + issue search</span>
+        </div>
+        <div class="arch-node arch-runner" style="margin-left:0;">
+          <span>🗄 MySQL replica VMs</span>
+          <span class="arch-node-label">DB read scale · failover</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DC vs Cloud -->
+    <h3 style="font-size:20px;font-weight:700;margin-bottom:20px;letter-spacing:-0.01em;">Where the VMs live — two deployment models</h3>
+    <div class="compare-pair" style="margin-bottom:40px;">
+      <div class="compare-card highlight">
+        <h3>Cloud-hosted VMs</h3>
+        <ul class="check-list">
+          <li class="good">VMs in AWS (EC2), Azure (VMs), or GCP (Compute Engine)</li>
+          <li class="good">Use cloud load balancers, managed disks, and VPC networking</li>
+          <li class="good">Snapshot-based backup and DR is straightforward</li>
+          <li class="good">Scale storage nodes by attaching larger EBS / managed disk volumes</li>
+          <li class="good">Can use cloud-native monitoring (CloudWatch, Azure Monitor)</li>
+          <li class="warn">Still fully self-managed — GitHub doesn't operate it for you</li>
+          <li class="warn">GHES must be able to reach GitHub.com for license validation (unless air-gapped)</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <h3>Self-hosted in a data center</h3>
+        <ul class="check-list">
+          <li class="good">Runs entirely on your own hardware — bare metal or on-prem hypervisor (VMware, Hyper-V, KVM)</li>
+          <li class="good">Full air-gap support — no outbound internet required</li>
+          <li class="good">Meets strict data residency requirements (financial, government, defence)</li>
+          <li class="good">Can integrate with on-prem LDAP, SAML, and internal CAs</li>
+          <li class="warn">You handle all hardware procurement, capacity planning, and failure domains</li>
+          <li class="warn">Upgrades require manual intervention — no auto-patching</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Key differences from GitHub.com -->
+    <h3 style="font-size:20px;font-weight:700;margin-bottom:16px;letter-spacing:-0.01em;">How GHES differs from GitHub.com</h3>
+    <div class="ent-grid" id="ghesGrid">
+      <div class="ent-card">
+        <span class="ent-tag">Architecture</span>
+        <h3>No shared infrastructure</h3>
+        <p>GitHub.com is a multi-tenant SaaS. GHES is a <strong>single-tenant appliance</strong> — every VM, every database, every byte of storage belongs to your deployment. Nothing is shared with other customers or with GitHub.com itself.</p>
+      </div>
+      <div class="ent-card">
+        <span class="ent-tag">Networking</span>
+        <h3>Air-gap capable</h3>
+        <p>GHES can run with <strong>no internet access at all</strong>. License validation, package registries, and even Actions runner images can all be served from internal mirrors. Required for classified, regulated, or highly restricted environments.</p>
+      </div>
+      <div class="ent-card">
+        <span class="ent-tag">Operations</span>
+        <h3>You run the upgrade cycle</h3>
+        <p>GitHub releases GHES versions on a regular cadence. You download the patch, schedule a maintenance window, and apply it. Unlike GitHub.com — which updates transparently — <strong>your GHES version is pinned until you upgrade it</strong>.</p>
+      </div>
+      <div class="ent-card">
+        <span class="ent-tag">Actions on GHES</span>
+        <h3>Self-hosted runners only</h3>
+        <p>GHES does not have GitHub-hosted runners. All Actions jobs run on <strong>self-hosted runners you provision</strong> — including ARC on Kubernetes if you want ephemeral runner pods. You bring the compute; GHES coordinates the jobs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== FACTS ===== -->
+<section style="border-top:1px solid var(--border-soft);">
+  <div class="wrap">
+    <div class="section-header">
+      <span class="section-label">// Numbers worth remembering</span>
+      <h2>The quick-reference stats across all three.</h2>
+    </div>
+
+    <div class="fact-grid">
+      <div class="fact">
+        <div class="fact-num">0<small>→N</small></div>
+        <div class="fact-label">ARC runner pods — scales from zero to demand, back to zero</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">64<small>cores</small></div>
+        <div class="fact-label">Largest GitHub-hosted runner on Teams / Enterprise plans</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">128<small>GB</small></div>
+        <div class="fact-label">Max RAM on a 32-core Codespaces machine</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">6<small>regions</small></div>
+        <div class="fact-label">Codespaces regional clusters — prebuilds cached in each</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">~10<small>sec</small></div>
+        <div class="fact-label">Codespace boot time with a prebuild image cached</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">0<small>creds</small></div>
+        <div class="fact-label">Long-lived credentials needed with OIDC keyless auth</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">$0</div>
+        <div class="fact-label">Default Codespaces spend limit — opt in before charges start</div>
+      </div>
+      <div class="fact">
+        <div class="fact-num">3<small>scopes</small></div>
+        <div class="fact-label">Secret scopes: user · repo · org across all cluster types</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap">
+    <p>
+      Read the full docs:
+      <a href="https://docs.github.com/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller" target="_blank" rel="noopener">Actions Runner Controller</a>
+      ·
+      <a href="https://docs.github.com/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect" target="_blank" rel="noopener">OIDC Security</a>
+      ·
+      <a href="https://docs.github.com/codespaces" target="_blank" rel="noopener">Codespaces</a>
+      ·
+      <a href="https://docs.github.com/enterprise-server/admin/enterprise-management/configuring-clustering" target="_blank" rel="noopener">GHES Clustering</a>
+    </p>
+    <p class="footer-mark">// INFOGRAPHIC · GITHUB CLUSTERS</p>
+  </div>
+</footer>
+
+<script>
+  const observe = (selector, options = {}) => {
+    const els = document.querySelectorAll(selector);
+    if (!els.length) return;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2, ...options });
+    els.forEach((el) => io.observe(el));
+  };
+
+  // Flow animations
+  observe('#arcFlow');
+  observe('#k8sFlow');
+  observe('#prebuildFlow');
+
+  // Code windows
+  observe('#arcRunnerYaml', { threshold: 0.15 });
+  observe('#arcWorkflowYaml', { threshold: 0.15 });
+  observe('#k8sWorkflow', { threshold: 0.15 });
+
+  // Stagger type cards
+  const typeCards = document.querySelectorAll('#typesGrid .type-card');
+  const typeIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(typeCards).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 100);
+        typeIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  typeCards.forEach((c) => typeIO.observe(c));
+
+  // Stagger sec cards
+  const secCards = document.querySelectorAll('#secGrid .sec-card');
+  const secIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(secCards).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 80);
+        secIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  secCards.forEach((s) => secIO.observe(s));
+
+  // Stagger enterprise cards
+  const entCards = document.querySelectorAll('#entGrid .ent-card');
+  const entIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(entCards).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 90);
+        entIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  entCards.forEach((e) => entIO.observe(e));
+
+  // Stagger GHES cards
+  const ghesCards = document.querySelectorAll('#ghesGrid .ent-card');
+  const ghesIO = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(ghesCards).indexOf(entry.target);
+        setTimeout(() => entry.target.classList.add('in-view'), idx * 90);
+        ghesIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  ghesCards.forEach((e) => ghesIO.observe(e));
+</script>
+</body>
+</html>
