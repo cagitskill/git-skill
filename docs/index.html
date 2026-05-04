@@ -40,6 +40,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .hero h1 span{color:var(--accent);}
 .hero p{font-size:13px;color:var(--muted2);font-family:var(--mono);font-weight:500;line-height:1.7;max-width:520px;margin:0 auto;}
 
+/* ── SECTION LABEL ── */
+.section-label{font-size:10px;font-family:var(--mono);font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-label::before{content:'';width:16px;height:1px;background:var(--border2);}
+
 /* ── DEMO CARDS ── */
 .demos{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:40px;}
 @media(max-width:600px){.demos{grid-template-columns:1fr;}}
@@ -56,6 +60,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 .demo-body{padding:20px;flex:1;display:flex;flex-direction:column;}
 .demo-tag{font-size:10px;font-family:var(--mono);font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.demo-tag.infographic{color:var(--accent2);}
 .demo-title{font-size:16px;font-weight:800;margin-bottom:8px;line-height:1.3;}
 .demo-desc{font-size:11px;font-family:var(--mono);font-weight:500;color:var(--muted2);line-height:1.65;flex:1;margin-bottom:16px;}
 
@@ -68,6 +73,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 .open-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px;border-radius:8px;border:1px solid rgba(0,229,255,0.35);background:rgba(0,229,255,0.07);color:var(--accent);font-size:12px;font-family:var(--mono);font-weight:700;text-decoration:none;cursor:pointer;transition:all 0.2s;}
 .open-btn:hover{background:rgba(0,229,255,0.15);border-color:var(--accent);box-shadow:0 0 12px rgba(0,229,255,0.2);}
+.open-btn.infographic{border-color:rgba(167,139,250,0.35);background:rgba(167,139,250,0.07);color:var(--accent2);}
+.open-btn.infographic:hover{background:rgba(167,139,250,0.15);border-color:var(--accent2);box-shadow:0 0 12px rgba(167,139,250,0.2);}
 
 /* ── FOOTER ── */
 .footer{border-top:1px solid var(--border);padding-top:20px;display:flex;justify-content:space-between;align-items:center;font-size:10px;font-family:var(--mono);font-weight:500;color:var(--muted2);}
@@ -80,6 +87,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .page>*:nth-child(2){animation-delay:0.08s;}
 .page>*:nth-child(3){animation-delay:0.16s;}
 .page>*:nth-child(4){animation-delay:0.24s;}
+.page>*:nth-child(5){animation-delay:0.32s;}
 </style>
 </head>
 <body>
@@ -99,12 +107,13 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   <div class="hero">
     <div class="hero-eyebrow">Technical Work</div>
     <h1>Learning GitHub<br><span>From the Inside</span></h1>
-    <p>Hands-on demos covering GitHub Actions CI/CD resilience and the GitHub MCP Server — built as interactive reference material.</p>
+    <p>Hands-on demos and animated infographics covering GitHub Actions, MCP, Codespaces, and platform architecture — built as interactive reference material.</p>
   </div>
 
-  <div class="demos">
+  <!-- ── Interactive Demos ── -->
+  <div class="section-label">Interactive Demos</div>
+  <div class="demos" style="margin-bottom:48px;">
 
-    <!-- CICD -->
     <div class="demo-card">
       <div class="demo-preview" onclick="openDemo('cicd-resiliency-github.html')">
         <iframe src="cicd-resiliency-github.html" scrolling="no" tabindex="-1"></iframe>
@@ -123,7 +132,6 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       </div>
     </div>
 
-    <!-- MCP -->
     <div class="demo-card">
       <div class="demo-preview" onclick="openDemo('github-mcp-demo.html')">
         <iframe src="github-mcp-demo.html" scrolling="no" tabindex="-1"></iframe>
@@ -139,6 +147,68 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <span class="chip chip-b">VS Code · JetBrains</span>
         </div>
         <a class="open-btn" href="github-mcp-demo.html" target="_blank">Open Demo ↗</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Infographics ── -->
+  <div class="section-label">Infographics</div>
+  <div class="demos">
+
+    <div class="demo-card">
+      <div class="demo-preview" onclick="openDemo('github-clusters.html')">
+        <iframe src="github-clusters.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="demo-overlay"><button class="play-btn">↗</button></div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-tag infographic">Infographic</div>
+        <div class="demo-title">GitHub Clusters — How They Work</div>
+        <div class="demo-desc">All three GitHub cluster types in one place: Actions Runner clusters (ARC on Kubernetes), Kubernetes deployments via GitHub Actions, Codespaces machine clusters, and GHES cluster architecture. Setup flows, YAML snippets, security, and Enterprise governance.</div>
+        <div class="demo-chips">
+          <span class="chip chip-p">ARC · K8s</span>
+          <span class="chip chip-g">Codespaces</span>
+          <span class="chip chip-b">GHES</span>
+          <span class="chip chip-n">Enterprise</span>
+        </div>
+        <a class="open-btn infographic" href="github-clusters.html" target="_blank">Open Infographic ↗</a>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="demo-preview" onclick="openDemo('codespaces.html')">
+        <iframe src="codespaces.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="demo-overlay"><button class="play-btn">↗</button></div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-tag infographic">Infographic</div>
+        <div class="demo-title">GitHub Codespaces — What It Is & How It Works</div>
+        <div class="demo-desc">How Codespaces works under the hood: cloud VM architecture, devcontainer setup, prebuild caching, machine types, regional clusters, and org-level policies. From zero to coding in seconds.</div>
+        <div class="demo-chips">
+          <span class="chip chip-g">Codespaces</span>
+          <span class="chip chip-b">devcontainer</span>
+          <span class="chip chip-p">Prebuilds</span>
+          <span class="chip chip-n">Org Policy</span>
+        </div>
+        <a class="open-btn infographic" href="codespaces.html" target="_blank">Open Infographic ↗</a>
+      </div>
+    </div>
+
+    <div class="demo-card">
+      <div class="demo-preview" onclick="openDemo('github-repo-types.html')">
+        <iframe src="github-repo-types.html" scrolling="no" tabindex="-1"></iframe>
+        <div class="demo-overlay"><button class="play-btn">↗</button></div>
+      </div>
+      <div class="demo-body">
+        <div class="demo-tag infographic">Infographic</div>
+        <div class="demo-title">GitHub Repository Types — When to Use What</div>
+        <div class="demo-desc">A visual guide to GitHub repository types — public, private, internal, and forks. Covers visibility rules, permission inheritance, org policies, and how to choose the right type for your team's workflow.</div>
+        <div class="demo-chips">
+          <span class="chip chip-g">Public · Private</span>
+          <span class="chip chip-b">Internal · Forks</span>
+          <span class="chip chip-n">Org Policy</span>
+        </div>
+        <a class="open-btn infographic" href="github-repo-types.html" target="_blank">Open Infographic ↗</a>
       </div>
     </div>
 

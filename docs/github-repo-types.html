@@ -1216,6 +1216,38 @@
 </style>
 </head>
 <body>
+<a href="index.html" class="back-to-demos" aria-label="Back to demos">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  Demos
+</a>
+<style>
+.back-to-demos {
+  position: fixed;
+  top: 16px; left: 16px;
+  z-index: 999;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6639ba;
+  background: rgba(239,234,254,0.92);
+  border: 1px solid #d8c9f7;
+  padding: 7px 13px;
+  border-radius: 999px;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(130,80,223,0.12);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.back-to-demos:hover {
+  background: rgba(130,80,223,0.12);
+  box-shadow: 0 4px 16px rgba(130,80,223,0.2);
+  transform: translateX(-2px);
+}
+</style>
 
 <!-- ============ HERO ============ -->
 <header class="hero">
