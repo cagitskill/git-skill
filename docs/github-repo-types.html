@@ -1248,6 +1248,38 @@
   transform: translateX(-2px);
 }
 </style>
+<a href="index.html" class="back-to-demos" aria-label="Back to demos">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  Demos
+</a>
+<style>
+.back-to-demos {
+  position: fixed;
+  top: 16px; left: 16px;
+  z-index: 999;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6639ba;
+  background: rgba(239,234,254,0.92);
+  border: 1px solid #d8c9f7;
+  padding: 7px 13px;
+  border-radius: 999px;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(130,80,223,0.12);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.back-to-demos:hover {
+  background: rgba(130,80,223,0.12);
+  box-shadow: 0 4px 16px rgba(130,80,223,0.2);
+  transform: translateX(-2px);
+}
+</style>
 
 <!-- ============ HERO ============ -->
 <header class="hero">
@@ -1279,13 +1311,13 @@
 
     <div class="model-grid">
       <div class="model-text">
-        <p class="lede">Microsoft is the <strong>Enterprise account</strong>. Xbox, LinkedIn, GitHub, and Microsoft Engineering are <strong>orgs</strong> under it. Each org has its own <strong>repos</strong>.</p>
+        <p class="lede">Ridgeline Industries is the <strong>Enterprise account</strong>. Forge &amp; Cast, Precision Parts, Smart Assembly, and Plant Engineering are <strong>orgs</strong> under it. Each org has its own <strong>repos</strong>.</p>
 
-        <p>The orgs are independent — Xbox is a gaming division, LinkedIn is a social platform, GitHub is dev tools, MS Engineering is the broader internal engineering org. They mostly run their own show.</p>
+        <p>The orgs are independent — Forge &amp; Cast runs the foundry, Precision Parts handles machined components, Smart Assembly manages the robotics lines, and Plant Engineering is the internal controls and automation engineering org. They mostly run their own show.</p>
 
-        <p>But Microsoft as a parent still wants to push policies down to all of them: branch protection, who can create public repos, IP allow lists, audit log streaming. That's <strong>set at the enterprise level</strong> and inherited by every org underneath.</p>
+        <p>But Ridgeline Industries as a parent still wants to push policies down to all of them: branch protection, who can create public repos, IP allow lists, audit log streaming. That's <strong>set at the enterprise level</strong> and inherited by every org underneath.</p>
 
-        <p>At the repo level, each org runs the mix that makes sense for them. Xbox shares very little with GitHub. But <strong>GitHub and MS Engineering co-develop products</strong> like Copilot and Actions — so they keep some <strong>internal repos</strong> that both can read across the org boundary, while still keeping their own <strong>private repos</strong> for things only their team should touch. And every org has a few <strong>public repos</strong> for open source.</p>
+        <p>At the repo level, each org runs the mix that makes sense for them. Forge &amp; Cast shares very little with Smart Assembly. But <strong>Smart Assembly and Plant Engineering co-develop the line automation software</strong> — so they keep some <strong>internal repos</strong> that both can read across the org boundary, while still keeping their own <strong>private repos</strong> for things only their team should touch. And every org has a few <strong>public repos</strong> for open source.</p>
       </div>
 
       <div class="org-chart">
@@ -1293,7 +1325,7 @@
         <div class="tier-enterprise">
           <div class="ent-card">
             <span class="ent-tag">Enterprise account</span>
-            <span class="ent-name">Microsoft</span>
+            <span class="ent-name">Ridgeline Industries</span>
           </div>
           <div class="ent-policies">
             <span class="policy-chip">branch protection</span>
@@ -1319,7 +1351,7 @@
         <div class="tier-orgs">
           <div class="org-card">
             <div class="org-tag">Org</div>
-            <div class="org-name">Xbox</div>
+            <div class="org-name">Forge &amp; Cast</div>
             <div class="repo-chips">
               <span class="repo-chip private" title="private"></span>
               <span class="repo-chip private" title="private"></span>
@@ -1330,7 +1362,7 @@
 
           <div class="org-card">
             <div class="org-tag">Org</div>
-            <div class="org-name">LinkedIn</div>
+            <div class="org-name">Precision Parts</div>
             <div class="repo-chips">
               <span class="repo-chip private" title="private"></span>
               <span class="repo-chip private" title="private"></span>
@@ -1340,7 +1372,7 @@
 
           <div class="org-card">
             <div class="org-tag">Org</div>
-            <div class="org-name">GitHub</div>
+            <div class="org-name">Smart Assembly</div>
             <div class="repo-chips">
               <span class="repo-chip private" title="private"></span>
               <span class="repo-chip internal" title="internal"></span>
@@ -1351,7 +1383,7 @@
 
           <div class="org-card">
             <div class="org-tag">Org</div>
-            <div class="org-name">MS Engineering</div>
+            <div class="org-name">Plant Engineering</div>
             <div class="repo-chips">
               <span class="repo-chip private" title="private"></span>
               <span class="repo-chip internal" title="internal"></span>
@@ -1363,8 +1395,8 @@
 
         <!-- The shared internal callout -->
         <div class="shared-bridge">
-          <span class="bridge-icon">GitHub</span> ⇄ <span class="bridge-icon">MS Engineering</span><br/>
-          Co-develop Copilot &amp; Actions — <strong>internal repos let both orgs read across the boundary</strong>, while private repos stay scoped to each team.
+          <span class="bridge-icon">Smart Assembly</span> ⇄ <span class="bridge-icon">Plant Engineering</span><br/>
+          Co-develop line automation software — <strong>internal repos let both orgs read across the boundary</strong>, while private repos stay scoped to each team.
         </div>
 
         <!-- Legend -->
