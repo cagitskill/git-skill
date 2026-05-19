@@ -70,3 +70,5 @@ The pitch: go from idea to deployed app without writing code or configuring infr
 Spark is worth knowing and worth showing customers as an example of what GitHub Copilot can enable. For internal use or onboarding exercises where speed matters more than polish, it gets the job done. For anything you'd want to put in front of a customer as a finished artifact, it needs more iteration than the prompt-and-go pitch suggests.
 
 The onboarding exercise is a good fit for Spark — the point is to build, not to receive a finished product. Just set expectations that the first output is a starting point, not a final one.
+
+https://renewal-risk-dice-ga--cagitskill.github.app/
