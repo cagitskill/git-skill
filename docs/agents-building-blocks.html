@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building Agents That Work — Copilot Training</title>
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--surface:#f6f8fa;--bg-tint:#faf8ff;
+  --fg:#1f2328;--fg-muted:#59636e;--fg-subtle:#818b98;
+  --border:#d1d9e0;--border-soft:#e6ebf0;
+  --accent:#8250df;--accent-deep:#6639ba;--accent-soft:#efeafe;--accent-tint:#f5f1ff;
+  --success:#1a7f37;--danger:#cf222e;--warn:#9a6700;--amber:#fbbf24;
+  --shadow-sm:0 1px 2px rgba(31,35,40,0.04),0 0 0 1px var(--border-soft);
+  --shadow-md:0 4px 16px rgba(130,80,223,0.08),0 1px 3px rgba(31,35,40,0.04);
+  --mono:'JetBrains Mono',monospace;--sans:'Mona Sans',-apple-system,system-ui,sans-serif;
+  --loop:14s;
+}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);min-height:100vh;padding-bottom:80px;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+header{padding:40px 40px 28px;border-bottom:1px solid var(--border);position:relative;overflow:hidden}
+header::before{content:'';position:absolute;top:-80px;left:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(130,80,223,0.07) 0%,transparent 70%);pointer-events:none}
+.header-label{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+header h1{font-size:clamp(24px,4.5vw,46px);font-weight:800;line-height:1.1;letter-spacing:-1px}
+header h1 span{color:var(--accent)}
+header p{margin-top:10px;color:var(--fg-muted);font-size:13px;font-family:var(--mono);line-height:1.6;font-weight:500}
+
+.nav-dots{display:flex;gap:8px;padding:18px 40px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.nav-dot{width:10px;height:10px;border-radius:50%;background:var(--border);cursor:pointer;transition:all 0.3s;border:none;padding:0}
+.nav-dot.active{background:var(--accent);box-shadow:0 0 8px rgba(130,80,223,0.4)}
+.nav-dot:hover{background:var(--fg-muted)}
+
+.section{display:none;padding:36px 40px 24px;max-width:1100px;margin:0 auto}
+.section.active{display:block}
+.slide-num{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:3px;margin-bottom:8px}
+.section h2{font-size:clamp(20px,3.5vw,32px);font-weight:800;letter-spacing:-0.5px;margin-bottom:6px;line-height:1.2}
+.lede{font-family:var(--mono);font-size:13px;color:var(--fg-muted);margin-bottom:28px}
+.why-intro{max-width:780px;margin:0 auto 22px;color:var(--fg-muted);font-size:14px;line-height:1.65}
+.why-intro p{margin:0}
+.why-intro p + p{margin-top:10px}
+.why-intro b{color:var(--fg);font-weight:700}
+.why-intro code{font-family:var(--mono);background:var(--surface);border:1px solid var(--border);padding:1px 6px;border-radius:4px;font-size:.9em;color:var(--accent)}
+
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.96);backdrop-filter:blur(8px);border-top:1px solid var(--border);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;gap:16px;z-index:100}
+.nbtn{background:var(--bg);border:1px solid var(--border);color:var(--fg);font-family:var(--mono);font-size:12px;font-weight:600;padding:9px 18px;border-radius:6px;cursor:pointer;transition:all 0.15s}
+.nbtn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.nbtn:disabled{opacity:.4;cursor:not-allowed}
+.nbtn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.nbtn.primary:hover:not(:disabled){background:var(--accent-deep);border-color:var(--accent-deep);color:#fff}
+.nav-progress{font-family:var(--mono);font-size:12px;color:var(--fg-muted);font-weight:600}
+
+.blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:22px}
+.block{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;border-top-width:3px;box-shadow:var(--shadow-sm)}
+.block .tag{font-family:var(--mono);font-size:10px;color:var(--fg-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.block h4{font-size:14px;font-weight:800;margin-bottom:4px;letter-spacing:-.01em}
+.block p{font-size:12.5px;color:var(--fg-muted);line-height:1.5}
+.b-i{border-top-color:var(--accent)} .b-p{border-top-color:var(--accent-deep)} .b-i2{border-top-color:var(--accent)} .b-a{border-top-color:var(--warn)} .b-t{border-top-color:var(--success)}
+.transition{font-family:var(--mono);font-size:13px;color:var(--fg-muted);padding-top:8px}
+.transition b{color:var(--accent);font-weight:700}
+
+.ce-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:18px}
+.ce-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;box-shadow:var(--shadow-sm)}
+.ce-card::before{content:"";position:absolute;top:0;left:20px;right:20px;height:3px;border-radius:3px;background:var(--ac)}
+.ce-card .lbl{font-family:var(--mono);font-size:10px;color:var(--ac);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:700}
+.ce-card h3{font-size:18px;font-weight:800;margin-bottom:8px;letter-spacing:-.01em}
+.ce-card .def{font-size:13px;color:var(--fg-muted);margin-bottom:14px;line-height:1.55}
+.ce-card .ex{font-family:var(--mono);font-size:11.5px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--fg);line-height:1.6;margin-bottom:12px;white-space:pre-wrap}
+.ce-card .why{font-size:12px;line-height:1.55;color:var(--fg-muted)}
+.ce-card .why .skip{color:var(--danger);font-weight:700}
+.ce-card .why .with{color:var(--ac);font-weight:700}
+.c-plan{--ac:var(--accent)} .c-resp{--ac:var(--accent-deep)} .c-result{--ac:var(--success)}
+.ce-combined{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-top:16px;box-shadow:var(--shadow-sm)}
+.ce-combined .lbl{font-family:var(--mono);font-size:10px;color:var(--fg-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.ce-combined pre{font-family:var(--mono);font-size:12px;line-height:1.75;color:var(--fg);white-space:pre-wrap;margin:0}
+.ce-combined .h{color:var(--accent);font-weight:700} .ce-combined .h2{color:var(--accent-deep);font-weight:700} .ce-combined .h3{color:var(--success);font-weight:700}
+
+.editor{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:780px;margin:0 auto;box-shadow:var(--shadow-md)}
+.editor-bar{background:var(--bg);padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.dots{display:flex;gap:6px}
+.dots i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.dots i:nth-child(1){background:#ff5f56} .dots i:nth-child(2){background:#ffbd2e} .dots i:nth-child(3){background:#27c93f}
+.path{color:var(--fg-muted);font-family:var(--mono);font-size:12px;margin-left:8px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy-btn{background:transparent;border:1px solid var(--border);color:var(--fg-muted);font-family:var(--mono);font-size:11px;padding:4px 10px;border-radius:5px;cursor:pointer;transition:all .15s}
+.copy-btn:hover{background:var(--bg);color:var(--fg);border-color:var(--accent)}
+.copy-btn.copied{color:var(--success);border-color:var(--success)}
+.editor-body{font-family:var(--mono);font-size:13px;padding:16px 18px 20px;line-height:1.75;min-height:280px;position:relative;color:var(--fg);background:var(--bg)}
+.row{display:flex;align-items:baseline;padding-left:6px;border-left:2px solid transparent}
+.row.new{border-left-color:var(--warn);background:rgba(245,158,11,.06)}
+.ln{color:var(--fg-subtle);width:28px;flex:0 0 28px;user-select:none;font-size:11px}
+.line{display:inline-block;overflow:hidden;white-space:pre;width:0}
+.static-line{display:inline-block;white-space:pre}
+@keyframes type{to{width:var(--w)}}
+.section.active .row .line{animation:type var(--dur,1s) linear forwards;animation-delay:var(--d,0s)}
+
+.cm{color:var(--fg-subtle)}
+.k-i{color:var(--accent);font-weight:600} .k-p{color:var(--accent-deep);font-weight:600} .k-a{color:var(--warn);font-weight:700} .k-t{color:var(--success);font-weight:600}
+.s{color:var(--success)}
+.h1c{color:var(--accent);font-weight:700} .h2c{color:var(--accent-deep);font-weight:700}
+.ag{color:var(--accent);font-weight:700} .call{color:var(--warn);font-weight:700}
+
+.skills .editor-body{min-height:420px}
+.skills .view{position:absolute;inset:0;padding:16px 18px 20px}
+.skills .static-view{opacity:1}
+.skills .typing-view{opacity:0}
+.skills.active .static-view{animation:hideStatic .6s 3.5s ease forwards}
+.skills.active .typing-view{animation:showTyping .4s 4s ease forwards}
+@keyframes hideStatic{to{opacity:0}}
+@keyframes showTyping{to{opacity:1}}
+.phase-label{text-align:center;font-family:var(--mono);font-size:11px;height:18px;margin-bottom:10px;position:relative;letter-spacing:.5px}
+.phase-label .ph{position:absolute;left:0;right:0;top:0;opacity:0}
+.phase-label .ph.static-ph{color:var(--accent-deep);font-weight:700}
+.phase-label .ph.build-ph{color:var(--warn);font-weight:700}
+.skills.active .phase-label .ph.static-ph{animation:phStatic 4s ease forwards}
+.skills.active .phase-label .ph.build-ph{animation:phBuild 1s 4.2s ease forwards}
+@keyframes phStatic{0%,80%{opacity:1}100%{opacity:0}}
+@keyframes phBuild{to{opacity:1}}
+
+.tp-intro{max-width:760px;margin:0 auto 18px;color:var(--fg-muted);font-size:14.5px;line-height:1.6}
+.tp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;max-width:760px;margin:0 auto 18px}
+.tp-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;border-top:3px solid var(--fg-subtle);box-shadow:var(--shadow-sm)}
+.tp-card .lbl{font-family:var(--mono);font-size:10px;color:var(--fg-subtle);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;font-weight:700}
+.tp-card h4{font-size:14px;font-weight:800;margin-bottom:4px}
+.tp-card p{font-size:13px;color:var(--fg-muted);line-height:1.55}
+.tp-note{max-width:760px;margin:0 auto;color:var(--fg-muted);font-family:var(--mono);font-size:13px;font-style:italic;padding:14px 16px;background:var(--surface);border-left:3px solid var(--fg-subtle);border-radius:0 6px 6px 0}
+
+.stage-scroll{overflow-x:auto;padding:8px 0 4px}
+.stage{position:relative;width:100%;min-width:760px;height:480px;margin:0 auto}
+svg.wires{position:absolute;inset:0;width:100%;height:100%}
+.base{stroke:var(--border);stroke-width:2;fill:none}
+.flow{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-dasharray:1 9}
+.feed1{stroke:var(--accent);opacity:.75}
+.feed2{stroke:var(--accent-deep);opacity:.75}
+.dispatch{stroke:var(--warn);opacity:0}
+.ret{stroke:var(--success);opacity:0}
+.bgflow{stroke:var(--success);opacity:0}
+.tpwire{stroke:var(--fg-subtle);stroke-width:2;fill:none;stroke-dasharray:6 4;opacity:.45}
+.section.active .feed1,.section.active .feed2{animation:dash 1.1s linear infinite}
+.section.active .dispatch{animation:dash 1.1s linear infinite,oDispatch var(--loop) ease-in-out infinite}
+.section.active .ret{animation:dashRev 1.1s linear infinite,oReturn var(--loop) ease-in-out infinite}
+.section.active .bgflow{animation:dash 1.1s linear infinite,oBg var(--loop) ease-in-out infinite}
+@keyframes dash{to{stroke-dashoffset:-100}}
+@keyframes dashRev{to{stroke-dashoffset:100}}
+@keyframes oDispatch{0%,11%{opacity:0}13%{opacity:1}26%{opacity:1}30%,100%{opacity:0}}
+@keyframes oReturn{0%,49%{opacity:0}51%{opacity:1}58%{opacity:1}61%,100%{opacity:0}}
+@keyframes oBg{0%,59%{opacity:0}61%{opacity:1}73%{opacity:1}77%,100%{opacity:0}}
+
+.node{position:absolute;transform:translate(-50%,-50%);background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;width:182px;box-shadow:var(--shadow-sm)}
+.node .tile{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:9px}
+.node .tile svg{width:18px;height:18px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.node h3{font-size:14px;font-weight:800;letter-spacing:-.01em}
+.node .k{font-size:11px;color:var(--fg-muted);margin-top:3px;line-height:1.45}
+.node .chip{display:inline-block;font-family:var(--mono);font-size:10.5px;margin-top:9px;padding:3px 8px;border-radius:6px}
+.n-instr{left:16%;top:23%} .n-skills{left:16%;top:77%} .n-main{left:48%;top:50%;width:200px} .n-sub{left:84%;top:23%} .n-bg{left:84%;top:77%}
+.n-3p{left:50%;top:9%;width:170px;border:1.5px dashed var(--fg-subtle);background:rgba(129,139,152,.04)}
+.n-3p .tile{background:rgba(129,139,152,.14)} .n-3p .tile svg{stroke:var(--fg-subtle)} .n-3p .chip{color:var(--fg-subtle);background:rgba(129,139,152,.10)}
+.n-instr .tile{background:rgba(130,80,223,.12)} .n-instr .tile svg{stroke:var(--accent)} .n-instr .chip{color:var(--accent);background:rgba(130,80,223,.08)}
+.n-skills .tile{background:rgba(102,57,186,.12)} .n-skills .tile svg{stroke:var(--accent-deep)} .n-skills .chip{color:var(--accent-deep);background:rgba(102,57,186,.08)}
+.n-main{text-align:center;border-color:rgba(130,80,223,.3);background:linear-gradient(180deg,#fff,#faf8ff)}
+.section.active .n-main{animation:mainGlow var(--loop) ease-in-out infinite}
+@keyframes mainGlow{0%,15%{box-shadow:0 0 0 1px rgba(130,80,223,.2),0 0 22px rgba(130,80,223,.10)}17%,51%{box-shadow:0 0 0 1px rgba(154,103,0,.22),0 0 18px rgba(154,103,0,.08)}54%,100%{box-shadow:0 0 0 1px rgba(130,80,223,.2),0 0 22px rgba(130,80,223,.10)}}
+.n-main .tile{margin:0 auto 9px;background:linear-gradient(135deg,var(--accent),var(--accent-deep))}
+.n-main .tile svg{stroke:#fff}
+.n-main h3{font-size:15px}
+.pillwrap{position:relative;height:22px;margin-top:11px}
+.pill{position:absolute;left:50%;transform:translateX(-50%);top:0;display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;padding:3px 11px;border-radius:20px;white-space:nowrap;opacity:0}
+.pill .pdot{width:5px;height:5px;border-radius:50%}
+.p-active{color:var(--success);background:rgba(26,127,55,.10);border:1px solid rgba(26,127,55,.3)}
+.p-active .pdot{background:var(--success)}
+.p-wait{color:var(--warn);background:rgba(154,103,0,.10);border:1px solid rgba(154,103,0,.3)}
+.p-wait .pdot{background:var(--warn)}
+.section.active .p-active{animation:pActive var(--loop) ease-in-out infinite}
+.section.active .p-wait{animation:pWait var(--loop) ease-in-out infinite}
+.section.active .p-wait .pdot{animation:blink 1s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes pActive{0%,14%{opacity:1}16%,52%{opacity:0}54%,100%{opacity:1}}
+@keyframes pWait{0%,15%{opacity:0}17%,51%{opacity:1}53%,100%{opacity:0}}
+.n-sub{border:1.5px dashed rgba(154,103,0,.5);background:rgba(245,158,11,.04);opacity:0}
+.section.active .n-sub{animation:subShow var(--loop) ease-in-out infinite}
+@keyframes subShow{0%,12%{opacity:0;transform:translate(-50%,-50%) scale(.9)}16%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1)}57%,100%{opacity:0;transform:translate(-50%,-50%) scale(.9)}}
+.n-sub .tile{background:rgba(245,158,11,.14)} .n-sub .tile svg{stroke:var(--warn)} .n-sub .chip{color:var(--warn);background:rgba(245,158,11,.10)}
+.runtag{display:inline-flex;align-items:center;gap:6px;font-size:9px;font-weight:700;color:var(--warn);text-transform:uppercase;letter-spacing:1px;margin-top:8px}
+.runtag .spin{width:11px;height:11px;border:1.5px solid rgba(245,158,11,.3);border-top-color:var(--warn);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.iso{position:absolute;top:8px;right:10px;font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--warn);opacity:.8}
+.section.active .n-bg{animation:bgGlow var(--loop) ease-in-out infinite}
+@keyframes bgGlow{0%,59%{border-color:var(--border)}62%{border-color:rgba(26,127,55,.45)}95%{border-color:rgba(26,127,55,.45)}98%,100%{border-color:var(--border)}}
+.n-bg .tile{background:rgba(26,127,55,.12)} .n-bg .tile svg{stroke:var(--success)} .n-bg .chip{color:var(--success);background:rgba(26,127,55,.10)}
+.prog{height:5px;border-radius:4px;background:rgba(26,127,55,.12);margin-top:10px;overflow:hidden}
+.prog>i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,var(--success),#5eba7d)}
+.section.active .prog>i{animation:bgProg var(--loop) ease-in-out infinite}
+@keyframes bgProg{0%,62%{width:0}94%{width:100%}95.5%{width:100%}96%,100%{width:0}}
+.paralleltag{font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--success);opacity:0;margin-top:8px;display:inline-block}
+.section.active .paralleltag{animation:bgGlowTxt var(--loop) ease-in-out infinite}
+@keyframes bgGlowTxt{0%,60%{opacity:0}63%{opacity:.85}95%{opacity:.85}98%,100%{opacity:0}}
+.caption{position:relative;height:46px;margin:14px auto 8px;max-width:680px;text-align:center}
+.caption p{position:absolute;left:0;right:0;top:0;font-size:14px;color:var(--fg-muted);line-height:1.5;opacity:0}
+.caption b{color:var(--fg);font-weight:700}
+.section.active .cap1{animation:cap1 var(--loop) ease-in-out infinite}
+.section.active .cap2{animation:cap2 var(--loop) ease-in-out infinite}
+.section.active .cap3{animation:cap3 var(--loop) ease-in-out infinite}
+.section.active .cap4{animation:cap4 var(--loop) ease-in-out infinite}
+@keyframes cap1{0%{opacity:1}12%{opacity:1}16%,100%{opacity:0}}
+@keyframes cap2{0%,14%{opacity:0}18%{opacity:1}48%{opacity:1}52%,100%{opacity:0}}
+@keyframes cap3{0%,50%{opacity:0}54%{opacity:1}59%{opacity:1}63%,100%{opacity:0}}
+@keyframes cap4{0%,61%{opacity:0}65%{opacity:1}94%{opacity:1}98%,100%{opacity:0}}
+.legend{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;padding:6px 0 4px}
+.legend div{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--fg-muted)}
+.legend i{width:18px;height:3px;border-radius:3px;display:inline-block}
+
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.qr-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;box-shadow:var(--shadow-sm)}
+.qr-card::before{content:"";position:absolute;top:0;left:18px;right:18px;height:3px;border-radius:3px;background:var(--ac)}
+.qr-card .lbl{font-family:var(--mono);font-size:9px;color:var(--ac);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;font-weight:700}
+.qr-card h4{font-size:16px;font-weight:800;margin-bottom:6px}
+.qr-card p{font-size:13px;color:var(--fg-muted);line-height:1.55;margin-bottom:10px}
+.qr-card .chip{display:inline-block;font-family:var(--mono);font-size:11px;color:var(--ac);background:var(--acbg);border:1px solid var(--acsoft);border-radius:6px;padding:4px 9px}
+.q-i{--ac:var(--accent);--acbg:rgba(130,80,223,.08);--acsoft:rgba(130,80,223,.25)}
+.q-p{--ac:var(--accent-deep);--acbg:rgba(102,57,186,.08);--acsoft:rgba(102,57,186,.25)}
+.q-i2{--ac:var(--accent);--acbg:rgba(130,80,223,.08);--acsoft:rgba(130,80,223,.25)}
+.q-a{--ac:var(--warn);--acbg:rgba(154,103,0,.08);--acsoft:rgba(154,103,0,.25)}
+.q-t{--ac:var(--success);--acbg:rgba(26,127,55,.08);--acsoft:rgba(26,127,55,.25)}
+
+@media (max-width:680px){header{padding:30px 20px 22px}.section{padding:30px 20px 20px}.nav-bar{padding:12px 20px}.nav-dots{padding:14px 20px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-label">// Copilot Training</div>
+  <h1>Building <span>Agents</span> That Work</h1>
+  <p>// the pieces, the prompt, the architecture</p>
+</header>
+
+<div class="nav-dots" id="navDots"></div>
+
+<main id="sections"></main>
+
+<div class="nav-bar">
+  <button class="nbtn" id="prevBtn" onclick="navigate(-1)" disabled>← Prev</button>
+  <div class="nav-progress">Slide <span id="curSlide">1</span> of <span id="totSlide">10</span></div>
+  <button class="nbtn primary" id="nextBtn" onclick="navigate(1)">Next →</button>
+</div>
+
+<script>
+const SECTIONS = [
+  { id:'s1', type:'intro', eyebrow:'// 01 OF 10', title:'The Building Blocks', lede:'// five pieces sit around one main session',
+    blocks: [
+      { cls:'b-i',  tag:'Standing rules',    name:'Copilot Instructions', desc:'Set the rules applied to every chat request.' },
+      { cls:'b-p',  tag:'Reusable know-how', name:'Content Skills',       desc:'A folder Copilot loads when relevant.' },
+      { cls:'b-i2', tag:'Your agent',        name:'Custom Agents',        desc:'How you compose the rest, written in markdown.' },
+      { cls:'b-a',  tag:'Isolated work',     name:'Subagents',            desc:'Runs in its own context. Returns a result.' },
+      { cls:'b-t',  tag:'Async work',        name:'Background Agents',    desc:'Run alongside the main session, in parallel.' }
+    ],
+    transition:'Next: <b>how to write the prompt</b> that makes all of this actually work.'
+  },
+  { id:'s2', type:'ce-cards', eyebrow:'// 02 OF 10', title:'Context Engineering for Agents', lede:'// the three pieces every agent prompt needs',
+    cards: [
+      { cls:'c-plan', lbl:'Piece 1', name:'Concise Plan', def:'Defines the task, output format, and constraints.',
+        ex:'Generate a 5-step work instruction in markdown. One action per step. Maximum 12 words per step. Include a safety note above any step that involves moving parts or chemicals.',
+        skip:'output format drifts, steps balloon.', wIt:'every run produces the same shape.' },
+      { cls:'c-resp', lbl:'Piece 2', name:'Responsibilities', def:"Establishes the AI's expert persona and target audience.",
+        ex:'You are an industrial safety engineer with 20 years on the floor. You are writing for new line workers who have basic safety training but have not done this specific procedure.',
+        skip:"tone is off, vocabulary doesn't land.", wIt:'depth and language match the reader.' },
+      { cls:'c-result', lbl:'Piece 3', name:'Expected Results', def:'Sets success criteria and the final goal.',
+        ex:'Output is complete when each step is independently testable, a peer can run the procedure without asking questions, and the acceptance check confirms equipment is ready for the next shift.',
+        skip:"agent has no idea when it's done well.", wIt:'the agent self-corrects toward criteria.' }
+    ],
+    combined:'<span class="h2">## Responsibilities</span>\nYou are an industrial safety engineer writing for new line workers.\n\n<span class="h">## Concise Plan</span>\nProduce a 5-step work instruction in markdown.\nOne action per step. Maximum 12 words per step.\n\n<span class="h3">## Expected Results</span>\nEach step is testable. A peer can execute without questions.\nAcceptance check confirms readiness for next shift.'
+  },
+  { id:'s3', type:'typed-code', eyebrow:'// 03 OF 10', title:'Copilot Instructions', lede:'// the standing rules applied to every chat request',
+    file:'.github/copilot-instructions.md', copyId:'copilot',
+    why:'<b>Why this exists:</b> every chat request in this repo gets these rules loaded automatically, so you don\'t have to repeat your code style, review priorities, or tone preferences every time. It lives in <code>.github/</code> because that\'s where GitHub looks. The <code>applyTo: \'**\'</code> line says apply this to every file.',
+    code: [
+      '<span class="cm">---</span>',
+      '<span class="k-i">applyTo:</span> <span class="s">\'**\'</span>',
+      '<span class="cm">---</span>',
+      ' ',
+      '<span class="h1c"># Copilot Instructions</span>',
+      ' ',
+      '<span class="h2c">## Code style</span>',
+      '- Match the existing style.',
+      '- Prefer clear names over short ones.',
+      "- Add comments only when intent isn't obvious.",
+      ' ',
+      '<span class="h2c">## Reviews</span>',
+      '- Flag anything that looks unsafe.',
+      '- Suggest tests for uncovered functions.',
+      ' ',
+      '<span class="h2c">## Communication</span>',
+      '- Be concise. Skip preamble.'
+    ]
+  },
+  { id:'s4', type:'static-then-typed', cls:'skills', eyebrow:'// 04 OF 10', title:'Content Skills', lede:'// a folder Copilot loads when relevant',
+    file:'.github/skills/work-instructions/SKILL.md', copyId:'skill',
+    why:'<b>Why this exists:</b> skills are reusable know-how you don\'t paste into every chat. Copilot reads your prompt and matches it against the <code>description:</code> of each skill — if the description fits, the skill loads. No tagging, no menu, no command: the description is the trigger.',
+    code: [
+      '<span class="cm">---</span>',
+      '<span class="k-p">name:</span> work-instructions',
+      '<span class="k-p">description:</span> Use when writing a work instruction.',
+      '<span class="cm">---</span>',
+      ' ',
+      '<span class="h1c"># Work Instructions</span>',
+      ' ',
+      '<span class="h2c">## Required sections</span>',
+      '1. Purpose',
+      '2. Scope',
+      '3. Safety',
+      '4. Steps (one action per step)',
+      '5. Acceptance check',
+      ' ',
+      '<span class="h2c">## Rules</span>',
+      '- One action per numbered step.',
+      '- Same term throughout.'
+    ]
+  },
+  { id:'s5', type:'typed-code', eyebrow:'// 05 OF 10', title:'Custom Agents', lede:'// same shape as a skill, plus tools and a prompt',
+    file:'.github/agents/work-instruction-writer.md', copyId:'agent',
+    why:'<b>Why this exists:</b> skills are knowledge, agents are workers. Same file shape, different role — a skill describes what a thing is, an agent describes what to do and how to act. The <code>name:</code> is what shows in the picker; the filename (<code>work-instruction-writer.md</code>) is what other agents reference when they hand off work.',
+    code: [
+      '<span class="cm">---</span>',
+      '<span class="k-i">name:</span> Work Instruction Writer',
+      '<span class="k-i">description:</span> Drafts a standardized work instruction.',
+      '<span class="k-i">tools:</span> [<span class="s">\'search\'</span>]',
+      '<span class="cm">---</span>',
+      ' ',
+      'You are the <span class="ag">WORK INSTRUCTION WRITER</span> agent.',
+      ' ',
+      'Use the work-instructions skill for structure.',
+      ' ',
+      'Ask the user for:',
+      '- The task or procedure',
+      '- Tools and materials',
+      '- Safety notes',
+      ' ',
+      'Then write the procedure with',
+      'one action per numbered step.'
+    ]
+  },
+  { id:'s6', type:'typed-code', eyebrow:'// 06 OF 10', title:'Subagents', lede:'// same file shape, new lines for delegating',
+    file:'.github/agents/sop-review-orchestrator.md', copyId:'sub',
+    why:'<p><b>Why this exists:</b> a subagent is an agent you run from inside another agent. Same file shape, same <code>.github/agents/</code> folder. The difference is how it runs: a subagent gets its own isolated context, does its work, and returns only the result. The parent agent waits, then continues with whatever came back.</p><p><b>How it\'s called:</b> the parent lists the subagent in its <code>agents:</code> array and adds <code>runSubagent</code> to its <code>tools:</code>. Then in the prompt, the parent uses <code>#runSubagent</code> to hand off. The highlighted lines below are the only difference from a regular agent — everything else looks the same.</p>',
+    code: [
+      { html:'<span class="cm">---</span>' },
+      { html:'<span class="k-i">name:</span> SOP Review Orchestrator' },
+      { html:'<span class="k-i">description:</span> Reviews a batch of work instructions.' },
+      { html:'<span class="k-a">tools:</span> [<span class="s">\'runSubagent\'</span>, <span class="s">\'search\'</span>]', hl:true },
+      { html:'<span class="k-a">agents:</span> [<span class="s">"Reviewer"</span>]', hl:true },
+      { html:'<span class="k-a">handoffs:</span>', hl:true },
+      { html:'  - label: Review document', hl:true },
+      { html:'    agent: Reviewer', hl:true },
+      { html:'    prompt: <span class="s">"Check this WI"</span>', hl:true },
+      { html:'<span class="cm">---</span>' },
+      { html:' ' },
+      { html:'You are the <span class="ag">SOP REVIEW ORCHESTRATOR</span>.' },
+      { html:' ' },
+      { html:'For each WI in the folder:' },
+      { html:'  - Hand off to Reviewer with', hl:true },
+      { html:'    <span class="call">#runSubagent</span>', hl:true },
+      { html:'Consolidate findings into a report.' }
+    ]
+  },
+  { id:'s7', type:'typed-code', eyebrow:'// 07 OF 10', title:'Background Agents', lede:"// work continues in parallel, you don't wait",
+    file:'.github/agents/feature-implementer.md', copyId:'bg',
+    why:'<p><b>Why this exists:</b> a background agent runs alongside the main session instead of inside it. You kick it off and keep working. It does its job in parallel and posts the result, typically as a pull request, when it\'s done. Subagents block the parent and return; background agents never block, never return. They just deliver.</p><p><b>How it\'s called:</b> not from a prompt. You start a background session from a supported surface. Most commonly that\'s assigning a GitHub issue to @copilot, but VS Code, the agents dashboard, a failing Actions run, GitHub Mobile, and integrations like Slack or Jira all work too. Once started, the session runs autonomously and posts a PR when done.</p>',
+    code: [
+      '<span class="cm">---</span>',
+      '<span class="k-t">name:</span> Feature Implementer',
+      '<span class="k-t">description:</span> Implements features from assigned issues.',
+      '<span class="k-t">tools:</span> [<span class="s">\'search\'</span>, <span class="s">\'edit\'</span>, <span class="s">\'run\'</span>]',
+      '<span class="cm">---</span>',
+      ' ',
+      'You are the FEATURE IMPLEMENTER agent.',
+      ' ',
+      'You run in the background after',
+      'being assigned to a GitHub issue.',
+      ' ',
+      'Read the issue. Plan the change.',
+      'Implement it. Run the tests.',
+      ' ',
+      'Open a pull request with a summary,',
+      'a link to the issue, and notes on',
+      "anything you couldn't do."
+    ]
+  },
+  { id:'s8', type:'third-party', eyebrow:'// 08 OF 10', title:'Third-Party Agents', lede:'// built outside, plugged in alongside Copilot',
+    intro:"Third-party agents are AI agents from providers outside of GitHub: AI labs like Anthropic and OpenAI, and a growing ecosystem of partner-built agents from vendors like JFrog, Dynatrace, and PagerDuty. You don't write them in markdown. You authorize them in settings, and they show up alongside Copilot in your workflows.",
+    cards: [
+      { lbl:'Model providers', name:'Claude, Codex, others',     desc:'Same agent framework, different underlying model. Anthropic and OpenAI today, more over time.' },
+      { lbl:'Partner-built',   name:'Vendor-built for a domain', desc:'Observability, security, artifacts, incident response. Dynatrace, JFrog, PagerDuty, and more.' },
+      { lbl:'Authorization',   name:'Enabled, not authored',     desc:'Turned on in org settings. Surfaced in the agent picker. No file to write.' }
+    ],
+    difference:"Different relationship from custom agents: you don't write them, you authorize them."
+  },
+  { id:'s9', type:'architecture', eyebrow:'// 09 OF 10', title:'How They Connect', lede:'// one main session, agents around it' },
+  { id:'s10', type:'recap', eyebrow:'// 10 OF 10', title:'Quick Reference', lede:'// five pieces, where they live',
+    cards: [
+      { cls:'q-i',  lbl:'Standing setup',    name:'Copilot Instructions', desc:'Rules and style applied to every chat request, set once.', chip:'.github/copilot-instructions.md' },
+      { cls:'q-p',  lbl:'Reusable know-how', name:'Content Skills',       desc:'A folder Copilot loads when the task fits.',               chip:'SKILL.md' },
+      { cls:'q-i2', lbl:'Your agent',        name:'Custom Agents',        desc:'Prompt, tools, and MCP servers, defined in markdown.',     chip:'.github/agents/*.md' },
+      { cls:'q-a',  lbl:'Isolated, blocks',  name:'Subagents',            desc:'Runs in its own context. Returns only the result.',        chip:'#runSubagent' },
+      { cls:'q-t',  lbl:'Async, parallel',   name:'Background Agents',    desc:'Runs autonomously while you keep working.',                chip:'opens a PR when done' }
+    ]
+  }
+];
+
+function lineLength(html){const t=document.createElement('div');t.innerHTML=html;return Math.max(1,t.textContent.length)}
+function typedLine(line,idx,baseDelay){
+  const html=typeof line==='string'?line:line.html;
+  const hl=typeof line==='object'&&line.hl;
+  const chars=lineLength(html);
+  const dur=Math.max(0.4,chars*0.04);
+  const d=baseDelay+idx*0.5;
+  return `<div class="row${hl?' new':''}" style="--d:${d.toFixed(2)}s;--w:${chars}ch;--dur:${dur.toFixed(2)}s"><span class="ln">${idx+1}</span><span class="line">${html}</span></div>`;
+}
+function staticLine(line,idx){
+  const html=typeof line==='string'?line:line.html;
+  return `<div class="row"><span class="ln">${idx+1}</span><span class="static-line">${html}</span></div>`;
+}
+function header(s){return `<div class="slide-num">${s.eyebrow}</div><h2>${s.title}</h2><div class="lede">${s.lede}</div>`}
+function editorBar(file,copyId){return `<div class="editor-bar"><div class="dots"><i></i><i></i><i></i></div><div class="path">${file}</div><button class="copy-btn" data-target="${copyId}">Copy</button></div>`}
+
+function renderIntro(s){
+  const blocks=s.blocks.map(b=>`<div class="block ${b.cls}"><div class="tag">${b.tag}</div><h4>${b.name}</h4><p>${b.desc}</p></div>`).join('');
+  return `${header(s)}<div class="blocks">${blocks}</div><div class="transition">${s.transition}</div>`;
+}
+function renderCeCards(s){
+  const cards=s.cards.map(c=>`<div class="ce-card ${c.cls}"><div class="lbl">${c.lbl}</div><h3>${c.name}</h3><div class="def">${c.def}</div><div class="ex">${c.ex}</div><div class="why"><span class="skip">Skip it:</span> ${c.skip} <span class="with">With it:</span> ${c.wIt}</div></div>`).join('');
+  return `${header(s)}<div class="ce-cards">${cards}</div><div class="ce-combined"><div class="lbl">All three, woven into one prompt</div><pre>${s.combined}</pre></div>`;
+}
+function renderTypedCode(s){
+  const lines=s.code.map((line,i)=>typedLine(line,i,0.3)).join('');
+  const why=s.why?`<div class="why-intro">${s.why}</div>`:'';
+  return `${header(s)}${why}<div class="editor">${editorBar(s.file,s.copyId)}<div class="editor-body" id="${s.copyId}-code">${lines}</div></div>`;
+}
+function renderStaticThenTyped(s){
+  const stat=s.code.map((line,i)=>staticLine(line,i)).join('');
+  const typed=s.code.map((line,i)=>typedLine(line,i,4.3)).join('');
+  const why=s.why?`<div class="why-intro">${s.why}</div>`:'';
+  return `${header(s)}${why}<div class="phase-label"><span class="ph static-ph">Example · a finished SKILL.md</span><span class="ph build-ph">Now building one</span></div><div class="editor">${editorBar(s.file,s.copyId)}<div class="editor-body"><div class="view static-view">${stat}</div><div class="view typing-view" id="${s.copyId}-code">${typed}</div></div></div>`;
+}
+function renderThirdParty(s){
+  const cards=s.cards.map(c=>`<div class="tp-card"><div class="lbl">${c.lbl}</div><h4>${c.name}</h4><p>${c.desc}</p></div>`).join('');
+  return `${header(s)}<p class="tp-intro">${s.intro}</p><div class="tp-cards">${cards}</div><p class="tp-note">${s.difference}</p>`;
+}
+function renderArchitecture(s){
+  return `${header(s)}<div class="stage-scroll"><div class="stage">
+    <svg class="wires" viewBox="0 0 900 480" preserveAspectRatio="none">
+      <line class="tpwire" x1="450" y1="48" x2="450" y2="240"/>
+      <line class="base" x1="150" y1="115" x2="450" y2="240"/>
+      <line class="base" x1="150" y1="365" x2="450" y2="240"/>
+      <line class="base" x1="450" y1="240" x2="756" y2="115"/>
+      <line class="base" x1="450" y1="240" x2="756" y2="365"/>
+      <line class="flow feed1" x1="150" y1="115" x2="450" y2="240"/>
+      <line class="flow feed2" x1="150" y1="365" x2="450" y2="240"/>
+      <line class="flow dispatch" x1="450" y1="240" x2="756" y2="115"/>
+      <line class="flow ret" x1="450" y1="240" x2="756" y2="115"/>
+      <line class="flow bgflow" x1="450" y1="240" x2="756" y2="365"/>
+    </svg>
+    <div class="node n-3p"><div class="tile"><svg viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M21 3l-7 7"/><path d="M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></div><h3>Third-Party Agent</h3><div class="k">External, authorized</div><span class="chip">plug in</span></div>
+    <div class="node n-instr"><div class="tile"><svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M14 3v5h5"/><path d="M8 12h8M8 16h6"/></svg></div><h3>Copilot Instructions</h3><div class="k">Standing rules and style</div><span class="chip">copilot-instructions.md</span></div>
+    <div class="node n-skills"><div class="tile"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h9v15H6a2 2 0 0 0-2 2z"/><path d="M15 3l4 2v13l-4-2"/></svg></div><h3>Content Skills</h3><div class="k">Loaded when relevant</div><span class="chip">SKILL.md</span></div>
+    <div class="node n-main"><div class="tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></div><h3>Custom Agent</h3><div class="pillwrap"><span class="pill p-active"><span class="pdot"></span>Active</span><span class="pill p-wait"><span class="pdot"></span>Waiting</span></div></div>
+    <div class="node n-sub"><span class="iso">isolated context</span><div class="tile"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M6 8.4v2a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2M12 12.4v3.2"/></svg></div><h3>Subagent</h3><div class="runtag"><span class="spin"></span>running</div><span class="chip">#runSubagent</span></div>
+    <div class="node n-bg"><div class="tile"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v4h-4"/><path d="M12 8v4l3 2"/></svg></div><h3>Background Agent</h3><div class="prog"><i></i></div><span class="paralleltag">running in parallel</span></div>
+  </div></div>
+  <div class="caption">
+    <p class="cap1">Instructions and skills feed <b>context</b> into the custom agent.</p>
+    <p class="cap2">A <b>subagent</b> runs in isolated context. The custom agent <b>waits</b>.</p>
+    <p class="cap3">Only the <b>result</b> returns. The custom agent resumes.</p>
+    <p class="cap4">A <b>background agent</b> runs in parallel. The custom agent keeps working.</p>
+  </div>
+  <div class="legend">
+    <div><i style="background:var(--accent)"></i>Context feed</div>
+    <div><i style="background:var(--warn)"></i>Subagent (blocks)</div>
+    <div><i style="background:var(--success)"></i>Background (parallel)</div>
+    <div><i style="background:var(--fg-subtle)"></i>Third-party (external)</div>
+  </div>`;
+}
+function renderRecap(s){
+  const cards=s.cards.map(c=>`<div class="qr-card ${c.cls}"><div class="lbl">${c.lbl}</div><h4>${c.name}</h4><p>${c.desc}</p><span class="chip">${c.chip}</span></div>`).join('');
+  return `${header(s)}<div class="qr-grid">${cards}</div>
+  <div style="margin-top:24px;margin-bottom:32px;padding-top:18px;border-top:1px solid var(--border-soft);font-family:var(--mono);font-size:12px;color:var(--fg-muted);">
+    <span style="margin-right:18px;">Further reading:</span>
+    <a href="https://cagitskill.github.io/git-skill/github-doc-links.html" target="_blank" style="color:var(--accent);text-decoration:none;margin-right:24px;">GitHub Agent Docs ↗</a>
+    <a href="https://cagitskill.github.io/git-skill/github-agent-taxonomy.html" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub Agent Terminology ↗</a>
+  </div>`;
+}
+
+const RENDERERS={'intro':renderIntro,'ce-cards':renderCeCards,'typed-code':renderTypedCode,'static-then-typed':renderStaticThenTyped,'third-party':renderThirdParty,'architecture':renderArchitecture,'recap':renderRecap};
+
+let cur=0;
+const total=SECTIONS.length;
+
+function build(){
+  const main=document.getElementById('sections');
+  const dots=document.getElementById('navDots');
+  SECTIONS.forEach((s,i)=>{
+    const sec=document.createElement('div');
+    sec.className='section'+(i===0?' active':'')+(s.cls?' '+s.cls:'');
+    sec.id=s.id;
+    const r=RENDERERS[s.type];
+    if(r) sec.innerHTML=r(s);
+    main.appendChild(sec);
+
+    const dot=document.createElement('button');
+    dot.className='nav-dot'+(i===0?' active':'');
+    dot.onclick=()=>goTo(i);
+    dot.setAttribute('aria-label','Go to slide '+(i+1));
+    dots.appendChild(dot);
+  });
+  document.getElementById('totSlide').textContent=total;
+}
+
+function goTo(i){
+  if(i<0||i>=total||i===cur) return;
+  document.getElementById(SECTIONS[cur].id).classList.remove('active');
+  document.querySelectorAll('.nav-dot')[cur].classList.remove('active');
+  cur=i;
+  document.getElementById(SECTIONS[cur].id).classList.add('active');
+  document.querySelectorAll('.nav-dot')[cur].classList.add('active');
+  document.getElementById('curSlide').textContent=cur+1;
+  document.getElementById('prevBtn').disabled=cur===0;
+  const nb=document.getElementById('nextBtn');
+  nb.disabled=false;
+  nb.textContent=cur===total-1?'Done ✓':'Next →';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function navigate(d){goTo(Math.max(0,Math.min(total-1,cur+d)))}
+
+function setupCopy(){
+  document.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const editor=btn.closest('.editor');
+      const body=editor.querySelector('.editor-body');
+      const view=body.querySelector('.typing-view')||body;
+      const text=Array.from(view.querySelectorAll('.row')).map(r=>{
+        const t=r.querySelector('.line, .static-line');
+        return t?t.textContent:'';
+      }).join('\n');
+      navigator.clipboard.writeText(text).then(()=>{
+        btn.textContent='Copied';
+        btn.classList.add('copied');
+        setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied');},1400);
+      }).catch(()=>{});
+    });
+  });
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();navigate(1)}
+  if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();navigate(-1)}
+});
+
+build();
+setupCopy();
+</script>
+
+</body>
+</html>
