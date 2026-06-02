@@ -56,7 +56,7 @@ header p{margin-top:10px;color:var(--fg-muted);font-size:13px;font-family:var(--
 .block .tag{font-family:var(--mono);font-size:10px;color:var(--fg-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
 .block h4{font-size:14px;font-weight:800;margin-bottom:4px;letter-spacing:-.01em}
 .block p{font-size:12.5px;color:var(--fg-muted);line-height:1.5}
-.b-i{border-top-color:var(--accent)} .b-p{border-top-color:var(--accent-deep)} .b-i2{border-top-color:var(--accent)} .b-a{border-top-color:var(--warn)} .b-t{border-top-color:var(--success)}
+.b-i{border-top-color:var(--accent)} .b-p{border-top-color:var(--accent-deep)} .b-i2{border-top-color:var(--accent)} .b-a{border-top-color:var(--warn)} .b-t{border-top-color:var(--success)} .b-ext{border-top-color:var(--fg-subtle)}
 .transition{font-family:var(--mono);font-size:13px;color:var(--fg-muted);padding-top:8px}
 .transition b{color:var(--accent);font-weight:700}
 
@@ -221,6 +221,7 @@ svg.wires{position:absolute;inset:0;width:100%;height:100%}
 .q-i2{--ac:var(--accent);--acbg:rgba(130,80,223,.08);--acsoft:rgba(130,80,223,.25)}
 .q-a{--ac:var(--warn);--acbg:rgba(154,103,0,.08);--acsoft:rgba(154,103,0,.25)}
 .q-t{--ac:var(--success);--acbg:rgba(26,127,55,.08);--acsoft:rgba(26,127,55,.25)}
+.q-ext{--ac:var(--fg-subtle);--acbg:rgba(129,139,152,.08);--acsoft:rgba(129,139,152,.25)}
 
 @media (max-width:680px){header{padding:30px 20px 22px}.section{padding:30px 20px 20px}.nav-bar{padding:12px 20px}.nav-dots{padding:14px 20px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important}}
@@ -250,13 +251,14 @@ svg.wires{position:absolute;inset:0;width:100%;height:100%}
 
 <script>
 const SECTIONS = [
-  { id:'s1', type:'intro', eyebrow:'// 01 OF 10', title:'The Building Blocks', lede:'// five pieces sit around one main session',
+  { id:'s1', type:'intro', eyebrow:'// 01 OF 10', title:'The Building Blocks', lede:'// six pieces sit around one main session',
     blocks: [
       { cls:'b-i',  tag:'Standing rules',    name:'Copilot Instructions', desc:'Set the rules applied to every chat request.' },
       { cls:'b-p',  tag:'Reusable know-how', name:'Content Skills',       desc:'A folder Copilot loads when relevant.' },
       { cls:'b-i2', tag:'Your agent',        name:'Custom Agents',        desc:'How you compose the rest, written in markdown.' },
       { cls:'b-a',  tag:'Isolated work',     name:'Subagents',            desc:'Runs in its own context. Returns a result.' },
-      { cls:'b-t',  tag:'Async work',        name:'Background Agents',    desc:'Run alongside the main session, in parallel.' }
+      { cls:'b-t',  tag:'Async work',        name:'Background Agents',    desc:'Run alongside the main session, in parallel.' },
+      { cls:'b-ext', tag:'External, authorized', name:'Third-Party Agents',   desc:'Claude, Codex, and partner agents plugged in alongside Copilot.' }
     ],
     transition:'Next: <b>how to write the prompt</b> that makes all of this actually work.'
   },
@@ -399,13 +401,14 @@ const SECTIONS = [
     difference:"Different relationship from custom agents: you don't write them, you authorize them."
   },
   { id:'s9', type:'architecture', eyebrow:'// 09 OF 10', title:'How They Connect', lede:'// one main session, agents around it' },
-  { id:'s10', type:'recap', eyebrow:'// 10 OF 10', title:'Quick Reference', lede:'// five pieces, where they live',
+  { id:'s10', type:'recap', eyebrow:'// 10 OF 10', title:'Quick Reference', lede:'// six pieces, where they live',
     cards: [
       { cls:'q-i',  lbl:'Standing setup',    name:'Copilot Instructions', desc:'Rules and style applied to every chat request, set once.', chip:'.github/copilot-instructions.md' },
       { cls:'q-p',  lbl:'Reusable know-how', name:'Content Skills',       desc:'A folder Copilot loads when the task fits.',               chip:'SKILL.md' },
       { cls:'q-i2', lbl:'Your agent',        name:'Custom Agents',        desc:'Prompt, tools, and MCP servers, defined in markdown.',     chip:'.github/agents/*.md' },
       { cls:'q-a',  lbl:'Isolated, blocks',  name:'Subagents',            desc:'Runs in its own context. Returns only the result.',        chip:'#runSubagent' },
-      { cls:'q-t',  lbl:'Async, parallel',   name:'Background Agents',    desc:'Runs autonomously while you keep working.',                chip:'opens a PR when done' }
+      { cls:'q-t',  lbl:'Async, parallel',   name:'Background Agents',    desc:'Runs autonomously while you keep working.',                chip:'opens a PR when done' },
+      { cls:'q-ext', lbl:'External, authorized', name:'Third-Party Agents',   desc:'Claude, Codex, and partner agents. Authorized in settings, not authored.',  chip:'agent picker' }
     ]
   }
 ];
