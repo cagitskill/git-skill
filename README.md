@@ -2,7 +2,7 @@
 
 A working notebook for my experience with AI Tools. A storyteller of products and features associated with GitHub. Period.
 
-This repo is where I park the small stuff — things I figure out, things I try, and things I build while doing the job.
+This repo is where I park the small stuff — things I figure out, try, and build while doing the job or building on my own.
 
 ## What lives here
 
@@ -24,7 +24,7 @@ Also off-limits: anything tied to a specific customer, internal-only material, u
 
 Visual, animated walk-throughs of technical concepts that come up in customer conversations. Live at **https://cagitskill.github.io/git-skill/** and built from the `/docs` folder.
 
-Current set:
+Some of the current content (constantly growing):
 - **CI/CD Resiliency with Self-Hosted Runners** — what breaks, why it breaks, and how GitHub gives you the tools to fix it.
 - **GitHub's MCP Server — How It Works** — how Copilot connects to your repos, issues, and PRs from the IDE, end to end.
 
