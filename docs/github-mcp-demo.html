@@ -136,7 +136,8 @@ body::before {
   box-shadow: 0 0 6px rgba(130,80,223,0.5);
 }
 h1 {
-  font-size: clamp(28px, 4.5vw, 42px);
+  font-size: clamp(40px, 7vw, 76px);
+  font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -1px;
@@ -425,20 +426,28 @@ h1 span { color: var(--accent); }
 
   <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;font-family:var(--mono);font-size:11px;color:var(--muted2);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted2)'">← Back to Demos</a>
 
-  <!-- NAV -->
-  <div class="topnav">
-    <div class="gh-identity">
-      <div class="gh-octocat">🐙</div>
-      <div>
-        <div class="gh-handle">cagitskill</div>
-        <div class="gh-role">@GitHub · MCP & Copilot</div>
-      </div>
-    </div>
-    <div class="gh-badge">
-      <div class="gh-badge-dot"></div>
-      GitHub MCP Server · Live
-    </div>
-  </div>
+<style>
+.hero-eyebrow-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 12px; font-weight: 500;
+  color: #6639ba; background: #efeafe;
+  border: 1px solid #d8c9f7;
+  padding: 6px 12px; border-radius: 999px;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  margin-bottom: 18px; display: inline-flex;
+}
+.hero-eyebrow-pill .pdot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #8250df;
+  animation: hpulse 2s ease-in-out infinite;
+}
+@keyframes hpulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(130,80,223,0.5); }
+  50% { box-shadow: 0 0 0 8px rgba(130,80,223,0); }
+}
+</style>
+
+  <span class="hero-eyebrow-pill"><span class="pdot"></span>GitHub MCP Server · Live</span>
 
   <!-- WHAT'S NEW BADGE -->
   <a href="github-mcp-whats-new.html" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:20px;padding:5px 14px;border-radius:100px;border:1px solid rgba(167,139,250,0.3);background:rgba(167,139,250,0.06);font-family:var(--mono);font-size:10px;font-weight:700;color:var(--accent2);text-decoration:none;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent2)';this.style.boxShadow='0 0 10px rgba(167,139,250,0.2)'" onmouseout="this.style.borderColor='rgba(167,139,250,0.3)';this.style.boxShadow='none'">⚡ What's New in GitHub MCP Server →</a>
