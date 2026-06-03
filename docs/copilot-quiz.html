@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Copilot Quiz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Inter:wght@400;500&display=swap');
+
+  :root {
+    --warm: #E8A020;
+    --warm-light: #FDF3DC;
+    --warm-dark: #A06010;
+    --beg: #1D9E75;
+    --beg-light: #E1F5EE;
+    --beg-dark: #0F6E56;
+    --int: #378ADD;
+    --int-light: #E6F1FB;
+    --int-dark: #185FA5;
+    --adv: #7F77DD;
+    --adv-light: #EEEDFE;
+    --adv-dark: #534AB7;
+    --swag: #D85A30;
+    --swag-light: #FAECE7;
+    --mc: #BA7517;
+    --mc-light: #FAEEDA;
+    --bg: #0d0d0d;
+    --surface: #181818;
+    --surface2: #222222;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0f0f0;
+    --muted: #888;
+    --dim: #555;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 40px;
+    border-bottom: 0.5px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text);
+  }
+  .topbar-logo svg { width: 28px; height: 28px; fill: var(--text); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .level-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .pill-warm { border-color: var(--warm); color: var(--warm); }
+  .pill-warm.active { background: var(--warm); color: #fff; }
+  .pill-beg { border-color: var(--beg); color: var(--beg); }
+  .pill-beg.active { background: var(--beg); color: #fff; }
+  .pill-int { border-color: var(--int); color: var(--int); }
+  .pill-int.active { background: var(--int); color: #fff; }
+  .pill-adv { border-color: var(--adv); color: var(--adv); }
+  .pill-adv.active { background: var(--adv); color: #fff; }
+  .pill-warm:hover:not(.active) { background: rgba(232,160,32,0.1); }
+  .pill-beg:hover:not(.active) { background: rgba(29,158,117,0.1); }
+  .pill-int:hover:not(.active) { background: rgba(55,138,221,0.1); }
+  .pill-adv:hover:not(.active) { background: rgba(127,119,221,0.1); }
+
+  /* MAIN LAYOUT */
+  .main {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    border-right: 0.5px solid var(--border);
+    overflow-y: auto;
+    padding: 20px 0 0;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-section {
+    padding: 0 12px;
+    margin-bottom: 24px;
+  }
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+    padding: 0 8px;
+    margin-bottom: 8px;
+  }
+  .q-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--muted);
+    transition: all 0.12s;
+    line-height: 1.3;
+  }
+  .q-item:hover { background: var(--surface2); color: var(--text); }
+  .q-item.active { background: var(--surface2); color: var(--text); font-weight: 500; }
+  .q-item.revealed .dot { background: var(--warm); }
+  .q-item.revealed.beg .dot { background: var(--beg); }
+  .q-item.revealed.int .dot { background: var(--int); }
+  .q-item.revealed.adv .dot { background: var(--adv); }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--dim);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .q-item-num { color: var(--dim); font-size: 11px; min-width: 20px; }
+
+  /* CONTENT AREA */
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* PROGRESS */
+  .progress-track {
+    height: 3px;
+    background: var(--surface2);
+    flex-shrink: 0;
+  }
+  .progress-fill {
+    height: 100%;
+    transition: width 0.3s, background 0.3s;
+  }
+
+  /* QUESTION AREA */
+  .question-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 48px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .q-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+  }
+  .badge-warm { background: var(--warm-light); color: var(--warm-dark); }
+  .badge-beg { background: var(--beg-light); color: var(--beg-dark); }
+  .badge-int { background: var(--int-light); color: var(--int-dark); }
+  .badge-adv { background: var(--adv-light); color: var(--adv-dark); }
+  .badge-mc { background: var(--mc-light); color: var(--mc); }
+  .badge-swag {
+    background: var(--swag-light);
+    color: var(--swag);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .q-counter {
+    font-size: 13px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  .q-text {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(20px, 2.8vw, 32px);
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text);
+    max-width: 820px;
+  }
+
+  /* CHOICES */
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    max-width: 820px;
+  }
+  .choice {
+    padding: 14px 18px;
+    border-radius: 10px;
+    border: 0.5px solid var(--border2);
+    background: var(--surface2);
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.4;
+  }
+  .choice .choice-key {
+    font-weight: 600;
+    margin-right: 8px;
+    color: var(--muted);
+  }
+
+  /* ANSWER SECTION */
+  .answer-section {
+    max-width: 820px;
+  }
+  .reveal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .reveal-warm { border-color: var(--warm); color: var(--warm); background: transparent; }
+  .reveal-warm:hover { background: var(--warm); color: #fff; }
+  .reveal-beg { border-color: var(--beg); color: var(--beg); background: transparent; }
+  .reveal-beg:hover { background: var(--beg); color: #fff; }
+  .reveal-int { border-color: var(--int); color: var(--int); background: transparent; }
+  .reveal-int:hover { background: var(--int); color: #fff; }
+  .reveal-adv { border-color: var(--adv); color: var(--adv); background: transparent; }
+  .reveal-adv:hover { background: var(--adv); color: #fff; }
+
+  .answer-card {
+    display: none;
+    padding: 24px 28px;
+    border-radius: 12px;
+    border-left: 3px solid;
+    background: var(--surface2);
+    animation: slideIn 0.2s ease;
+  }
+  .answer-card.shown { display: block; }
+  .answer-card.warm { border-left-color: var(--warm); }
+  .answer-card.beg { border-left-color: var(--beg); }
+  .answer-card.int { border-left-color: var(--int); }
+  .answer-card.adv { border-left-color: var(--adv); }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .answer-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .answer-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .answer-text strong {
+    font-weight: 600;
+  }
+  .swag-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: var(--swag-light);
+    color: var(--swag);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 64px;
+    border-top: 0.5px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: 0.5px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .nav-btn:hover:not(:disabled) { border-color: rgba(255,255,255,0.3); background: #2a2a2a; }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .nav-btn.primary {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+  .nav-btn.primary:hover { opacity: 0.85; }
+  .nav-center { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .nav-pos { font-size: 15px; font-weight: 600; color: var(--text); }
+  .nav-total { font-size: 11px; color: var(--muted); }
+
+  /* SIDEBAR BOTTOM */
+  .sidebar-bottom {
+    border-top: 0.5px solid var(--border);
+    padding: 16px 20px 20px;
+    margin-top: auto;
+  }
+  .score-tray-title { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px; }
+  .score-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12px; color: var(--muted); }
+  .score-dot { width: 7px; height: 7px; border-radius: 50%; margin-right: 7px; display: inline-block; flex-shrink: 0; }
+  .score-val { font-weight: 600; color: var(--text); font-size: 12px; }
+  .reset-btn {
+    width: 100%;
+    margin-top: 14px;
+    padding: 8px 0;
+    border-radius: 7px;
+    border: 0.5px solid rgba(220,60,60,0.4);
+    background: rgba(220,60,60,0.08);
+    color: #e07070;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .reset-btn:hover { background: rgba(220,60,60,0.18); border-color: rgba(220,60,60,0.7); color: #f09090; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--dim); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+    </svg>
+    GitHub Copilot Quiz
+  </div>
+  <div class="topbar-right">
+    <button class="level-pill pill-warm active" id="tab-war" onclick="switchLevel('warmup')">☀ Warm Up</button>
+    <button class="level-pill pill-beg" id="tab-beg" onclick="switchLevel('beginner')">● Beginner</button>
+    <button class="level-pill pill-int" id="tab-int" onclick="switchLevel('intermediate')">● Intermediate</button>
+    <button class="level-pill pill-adv" id="tab-adv" onclick="switchLevel('advanced')">● Advanced</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <!-- filled by JS -->
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:20%; background: var(--warm);"></div>
+    </div>
+    <div class="question-area" id="question-area">
+      <!-- filled by JS -->
+    </div>
+    <div class="bottom-nav">
+      <button class="nav-btn" id="btn-prev" onclick="navigate(-1)">← Prev</button>
+      <div class="nav-center">
+        <span class="nav-pos" id="nav-pos">1 / 5</span>
+        <span class="nav-total" id="nav-total">Warm Up</span>
+      </div>
+      <button class="nav-btn primary" id="btn-next" onclick="navigate(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = {
+  warmup: [
+    {
+      q: "First person to share — how are you using Copilot today?",
+      mc: false,
+      swag: true,
+      open: true,
+      answer: "No wrong answer here! Whether it's code completions, chat, PR reviews, CLI, or you're just getting started — every use case counts. This is about learning from each other."
+    },
+    {
+      q: "Which AI model are you running in Copilot, and why did you pick it?",
+      mc: false,
+      swag: true,
+      open: true,
+      answer: "GitHub Copilot supports multiple models including GPT-4o, Claude Sonnet, Gemini, and others depending on your plan. There's no single right answer — the best model depends on your workflow, language, and what feels most natural to you."
+    },
+    {
+      q: "If Copilot were a person, where would they work — and what would their job title be?",
+      mc: false,
+      swag: true,
+      open: true,
+      answer: "Totally open! Some say 'the colleague who never sleeps,' others say 'staff engineer at every company simultaneously.' The fun is in how you see it — Copilot is whatever kind of teammate you need it to be."
+    },
+    {
+      q: "Does Copilot wear glasses?",
+      mc: true,
+      swag: true,
+      open: true,
+      choices: ["A. Obviously yes — the smart ones always do", "B. No — too cool for that", "C. It sees all code with perfect clarity, glasses optional", "D. Depends on the model"],
+      answer: "All answers are correct. This is a vibe check, not a technical question. Though D is arguably the most accurate — different models, different aesthetics."
+    },
+    {
+      q: "One word to describe your Copilot experience so far. Go.",
+      mc: false,
+      swag: true,
+      open: true,
+      answer: "No wrong answers. Common ones: fast, magical, surprising, frustrating, game-changing, weird, helpful, wild. Whatever your one word is — it's valid, and it's the start of a good conversation."
+    },
+    {
+      q: "What's the first thing you'd teach a brand new developer about Copilot?",
+      mc: false,
+      swag: true,
+      open: true,
+      answer: "Open floor! Great answers range from 'always review what it gives you' to 'write better comments and you'll get better suggestions' to 'just start using it and you'll figure it out.' Everyone's first lesson is different."
+    },
+    {
+      q: "Has Copilot ever surprised you — in a good way or a bad way? Tell us.",
+      mc: false,
+      swag: true,
+      open: true,
+      answer: "This one's all yours. The surprises people share — good and bad — usually teach the room more than any slide deck. No wrong answer."
+    },
+    {
+      q: "If you had to give Copilot a performance review today, what rating would you give it?",
+      mc: true,
+      swag: true,
+      open: true,
+      choices: ["A. Exceeds expectations — already getting a raise", "B. Meets expectations — solid teammate, room to grow", "C. Needs improvement — promising but inconsistent", "D. It reviewed me first and honestly I'm still processing it"],
+      answer: "All valid — and D is a real phenomenon. The point is to talk about where it's delivering and where it's falling short for your team. That conversation is worth more than the rating."
+    },
+    {
+      q: "What would Copilot's LinkedIn headline say?",
+      mc: false,
+      swag: true,
+      open: true,
+      answer: "Completely open. Past answers have included: 'AI pair programmer | 500M+ lines suggested | Open to all repos,' 'Helping developers ship faster | Not a replacement, a teammate,' and 'Currently: everywhere at once.' What would yours say?"
+    }
+  ],
+  beginner: [
+    {
+      q: "What is GitHub Copilot?",
+      mc: false,
+      swag: true,
+      answer: "GitHub Copilot is an AI-powered coding assistant developed by GitHub and OpenAI. It suggests whole lines or blocks of code as you type, directly inside your editor — acting like a pair programmer that's always available."
+    },
+    {
+      q: "Which of the following best describes how GitHub Copilot generates code suggestions?",
+      mc: true,
+      swag: false,
+      choices: ["A. It searches Stack Overflow in real time", "B. It uses an AI model trained on publicly available code to generate completions", "C. It copies code from the repository you are currently working in", "D. It runs a small local model stored on your machine"],
+      answer: "B — It uses an AI model trained on publicly available code. The model was trained on billions of lines of public source code and uses your current file context to generate relevant suggestions."
+    },
+    {
+      q: "What editors and IDEs does GitHub Copilot support?",
+      mc: false,
+      swag: true,
+      answer: "GitHub Copilot supports VS Code, Visual Studio, JetBrains IDEs (IntelliJ, PyCharm, WebStorm, Rider, and others), Neovim, and GitHub.com's web editor — covering the most common developer environments."
+    },
+    {
+      q: "What keyboard shortcut accepts a GitHub Copilot inline suggestion in VS Code?",
+      mc: false,
+      swag: false,
+      answer: "Press the Tab key to accept a Copilot inline suggestion in VS Code. You can press Escape to dismiss it or use Alt+] / Alt+[ to cycle through alternate suggestions."
+    },
+    {
+      q: "Which of these is an actual GitHub Copilot product?",
+      mc: true,
+      swag: true,
+      choices: ["A. Copilot Chat", "B. Copilot Runner", "C. Copilot Studio", "D. Copilot Debugger"],
+      answer: "A — Copilot Chat is a real GitHub product. It lets you have a natural language conversation about your code directly inside your editor or on GitHub.com — asking questions, debugging, and getting explanations."
+    },
+    {
+      q: "Does GitHub Copilot require an internet connection to work?",
+      mc: false,
+      swag: false,
+      answer: "Yes — GitHub Copilot sends context from your current code to GitHub's servers and receives suggestions back. It requires an active internet connection and cannot function fully offline."
+    },
+    {
+      q: "What programming languages does GitHub Copilot support?",
+      mc: false,
+      swag: true,
+      answer: "GitHub Copilot supports dozens of languages. It works especially well with Python, JavaScript, TypeScript, Ruby, Go, C#, C++, Java, PHP, and many others. It performs best in languages heavily represented in its training data."
+    },
+    {
+      q: "Can you trigger GitHub Copilot suggestions by writing a comment?",
+      mc: false,
+      swag: false,
+      answer: "Yes — writing a natural language comment like '// function to sort a list of users by last name' will prompt Copilot to suggest a full implementation. Comments are one of the most effective ways to guide Copilot's output."
+    },
+    {
+      q: "What is GitHub Copilot Chat used for?",
+      mc: false,
+      swag: true,
+      answer: "Copilot Chat lets you ask questions about your code in plain English — debugging issues, explaining what code does, suggesting refactors, generating tests, or getting guidance on how to approach a problem, all inside your editor."
+    },
+    {
+      q: "True or false: GitHub Copilot can suggest entire functions based on a comment you write.",
+      mc: false,
+      swag: false,
+      answer: "True — write a comment describing what you want (e.g. '// parse a CSV file and return an array of objects') and Copilot will generate a full function to match. This is one of its most powerful use cases."
+    },
+    {
+      q: "What is the difference between Copilot Free and a paid Copilot plan?",
+      mc: true,
+      swag: false,
+      choices: ["A. Free has no chat, paid unlocks chat", "B. Free has monthly limits on completions and chat; paid plans offer more usage and features", "C. Free only works in VS Code", "D. There is no free tier — Copilot requires a subscription"],
+      answer: "B — GitHub Copilot Free includes a limited number of code completions and chat messages per month. Paid plans (Pro, Business, Enterprise) remove or raise those limits and unlock additional features like policy controls and audit logs."
+    },
+    {
+      q: "What does it mean when Copilot shows a 'ghost text' suggestion?",
+      mc: false,
+      swag: false,
+      answer: "Ghost text is the greyed-out suggestion Copilot displays inline as you type. It's a preview of what Copilot thinks you're about to write. Press Tab to accept it, Escape to dismiss it, or keep typing to ignore it and let Copilot recalculate."
+    },
+    {
+      q: "Can GitHub Copilot help write tests as well as production code?",
+      mc: false,
+      swag: true,
+      answer: "Yes — Copilot is particularly good at generating unit tests. You can describe what you want tested in a comment, open a test file alongside your code, or use Copilot Chat with a prompt like '/tests' to generate a test suite for a selected function."
+    },
+    {
+      q: "What does the slash command /explain do in Copilot Chat?",
+      mc: true,
+      swag: false,
+      choices: ["A. It opens GitHub documentation", "B. It asks Copilot to explain the selected code in plain language", "C. It generates a README for your repo", "D. It summarizes your git commit history"],
+      answer: "B — The /explain slash command tells Copilot Chat to walk through the selected code and describe what it does in plain English. It's a quick way to understand unfamiliar code or prepare to explain it to someone else."
+    },
+    {
+      q: "Where can you access GitHub Copilot outside of your editor?",
+      mc: false,
+      swag: true,
+      answer: "Beyond your IDE, Copilot is available on GitHub.com (in pull requests, issues, and the file editor), in the terminal via Copilot CLI, and now in the GitHub Copilot desktop app announced at Microsoft Build 2026."
+    }
+  ],
+  intermediate: [
+    {
+      q: "What context does GitHub Copilot use when generating code suggestions?",
+      mc: false,
+      swag: true,
+      answer: "Copilot uses the content of your open file, adjacent open tabs in your editor, and any comments or prompts you write. It does not have access to your full repository by default — context is limited to what's open in the editor session."
+    },
+    {
+      q: "Which GitHub Copilot feature lets you plan and implement multi-file changes starting from a GitHub issue?",
+      mc: true,
+      swag: false,
+      choices: ["A. Copilot Inline Chat", "B. Copilot Workspace", "C. Copilot CLI", "D. Copilot Code Review"],
+      answer: "B — Copilot Workspace. It lets you start from a GitHub issue or idea and uses repository-wide context to plan, propose, and implement multi-file changes with AI guidance throughout the process."
+    },
+    {
+      q: "What is 'prompt engineering' in the context of GitHub Copilot?",
+      mc: false,
+      swag: true,
+      answer: "Prompt engineering means writing comments, naming functions and variables, and structuring your code intentionally so that Copilot receives better context — resulting in more accurate and useful suggestions."
+    },
+    {
+      q: "What does the Copilot content exclusion feature do?",
+      mc: false,
+      swag: false,
+      answer: "Content exclusion lets organization admins configure specific files, folders, or repositories that Copilot should not use as context and should not offer suggestions for — useful for protecting sensitive, proprietary, or regulated code."
+    },
+    {
+      q: "Which plan is required to manage GitHub Copilot for an entire organization?",
+      mc: true,
+      swag: true,
+      choices: ["A. Any GitHub Free account", "B. A GitHub Team or Enterprise Cloud organization", "C. A personal GitHub Pro plan", "D. A GitHub Actions billing plan"],
+      answer: "B — GitHub Copilot Business is available to organizations on GitHub Team or Enterprise Cloud. It adds organization-wide seat management, policy controls, audit logs, and content exclusion settings."
+    },
+    {
+      q: "What is Copilot CLI and what does it help with?",
+      mc: false,
+      swag: false,
+      answer: "Copilot CLI (gh copilot) is a GitHub CLI extension that brings AI assistance to your terminal. You can ask it to suggest or explain shell commands, Git operations, and other command-line tasks without leaving your terminal."
+    },
+    {
+      q: "How does GitHub Copilot's duplication detection filter work?",
+      mc: false,
+      swag: true,
+      answer: "Copilot has an optional duplication detection filter that can block suggestions closely matching public code above a certain length threshold. Organization admins can enable or disable this setting — it's off by default."
+    },
+    {
+      q: "What is the purpose of GitHub Copilot Code Review?",
+      mc: false,
+      swag: false,
+      answer: "Copilot Code Review uses AI to automatically review pull requests — identifying potential bugs, style issues, security concerns, and areas for improvement. It can leave comments on PRs the same way a human reviewer would."
+    },
+    {
+      q: "What are Copilot Extensions and how do they work?",
+      mc: false,
+      swag: true,
+      answer: "Copilot Extensions let third-party developers integrate their tools — like Sentry, Datadog, or Docker — directly into Copilot Chat. Once connected, you can ask questions about those external services without leaving your editor."
+    },
+    {
+      q: "Which Copilot feature helps with writing and troubleshooting GitHub Actions YAML?",
+      mc: true,
+      swag: false,
+      choices: ["A. Copilot Workspace", "B. Copilot for Actions (inline YAML assistance)", "C. Copilot CLI only", "D. Copilot has no Actions support"],
+      answer: "B — GitHub has integrated Copilot assistance directly into the GitHub Actions YAML editor on GitHub.com and in VS Code, helping you write, fix, and understand workflow files with inline suggestions and Chat support."
+    },
+    {
+      q: "What is the '.github/copilot-instructions.md' file and who benefits from using it?",
+      mc: false,
+      swag: false,
+      answer: "This file lets teams define repository-level instructions for Copilot — things like preferred libraries, coding conventions, and naming standards. Every contributor automatically gets Copilot suggestions aligned to those team norms without having to configure anything individually."
+    },
+    {
+      q: "How does Copilot handle multiple open files in your editor?",
+      mc: true,
+      swag: true,
+      choices: ["A. It only reads the file you are actively editing", "B. It uses open tabs as additional context to improve suggestions", "C. It scans your entire repository in the background", "D. It ignores all files except the one you prompt it about"],
+      answer: "B — Copilot uses open editor tabs as context clues. Having related files open — like a type definition alongside the file you're editing — improves suggestion quality because the model has more relevant information to work with."
+    },
+    {
+      q: "What does Copilot agent mode do that standard Copilot suggestions cannot?",
+      mc: false,
+      swag: true,
+      answer: "Agent mode lets Copilot autonomously run terminal commands, read error output, edit multiple files, and iterate on its own results with minimal input from you. Standard Copilot only suggests completions at your cursor — it doesn't take action on its own."
+    },
+    {
+      q: "How can a developer use Copilot to understand code they didn't write?",
+      mc: false,
+      swag: false,
+      answer: "Select the unfamiliar code and use Copilot Chat's /explain command, or ask a plain-language question like 'what does this function do?' Copilot will walk through the logic, explain what each part does, and flag anything it considers unusual or complex."
+    },
+    {
+      q: "What is the Copilot trust boundary and why does it matter for enterprise customers?",
+      mc: false,
+      swag: false,
+      answer: "The trust boundary defines what code and context Copilot can access and what stays private. For enterprise customers, this matters because content exclusion rules, data retention policies, and model training opt-outs all operate at this boundary — determining what Copilot sees and what it cannot."
+    }
+  ],
+  advanced: [
+    {
+      q: "What is GitHub Copilot Workspace and how does it differ from standard inline Copilot?",
+      mc: false,
+      swag: true,
+      answer: "Copilot Workspace is a task-centric environment where you start from a GitHub issue and Copilot plans and implements changes across multiple files. Standard Copilot gives single-file inline completions. Workspace is a full agentic loop across the whole repository."
+    },
+    {
+      q: "Which of the following best describes how Copilot Business differs from Copilot Individual?",
+      mc: true,
+      swag: false,
+      choices: ["A. Business supports more programming languages", "B. Business adds organization management, policy controls, and audit logs", "C. Business allows offline use", "D. Business uses a different underlying AI model"],
+      answer: "B — Copilot Business adds enterprise-grade controls: organization-wide policy management, seat assignment and revocation, usage audit logs, and content exclusion — none of which are available on the individual plan."
+    },
+    {
+      q: "What is Copilot agent mode and what makes it different from standard suggestions?",
+      mc: false,
+      swag: true,
+      answer: "Agent mode lets Copilot autonomously execute multi-step tasks: running terminal commands, reading files, iterating on errors, and editing across your project with minimal manual input. Standard Copilot only suggests completions at the cursor."
+    },
+    {
+      q: "How does GitHub Copilot's billing model work under the AI Credits system?",
+      mc: false,
+      swag: false,
+      answer: "GitHub has been transitioning Copilot to a metered AI Credits model for some plans. Instead of a flat per-seat fee, usage is measured in credits — different features (chat, completions, agent tasks) consume credits at different rates, giving organizations more granular cost control."
+    },
+    {
+      q: "What is a 'tool' or 'skill' in the context of Copilot Extensions?",
+      mc: true,
+      swag: true,
+      choices: ["A. A keyboard shortcut customization file", "B. A callable capability registered by an extension that the AI model can invoke", "C. A VS Code snippet template", "D. A pull request template"],
+      answer: "B — In Copilot Extensions, a tool or skill is a callable function the extension registers with the AI model. During a chat conversation, Copilot can invoke these to query external APIs or services on your behalf."
+    },
+    {
+      q: "What privacy protections apply to code sent to GitHub when using Copilot Business?",
+      mc: false,
+      swag: false,
+      answer: "For Copilot Business, GitHub does not use prompts or suggestions to train its AI models. Code context is not retained after the suggestion is returned and is not shared with OpenAI for training. This is contractually guaranteed for business plans."
+    },
+    {
+      q: "What is the difference between Copilot Inline Chat and the Copilot Chat panel?",
+      mc: false,
+      swag: true,
+      answer: "Inline Chat (Cmd/Ctrl+I) opens a prompt directly in the editor at your cursor — ideal for editing a specific block of code. The Chat panel is a persistent sidebar for broader multi-turn conversations, referencing files, asking questions, and exploring solutions."
+    },
+    {
+      q: "What does the '.github/copilot-instructions.md' file do?",
+      mc: false,
+      swag: false,
+      answer: "This file lets teams define custom instructions for Copilot at the repository level — specifying coding standards, preferred libraries, naming conventions, or project context — so all contributors get Copilot suggestions aligned to team norms automatically."
+    },
+    {
+      q: "What is GitHub Models and how does it relate to Copilot customization?",
+      mc: false,
+      swag: true,
+      answer: "GitHub Models allows developers and enterprise customers to explore, test, and integrate different AI models (including non-OpenAI models) into their workflows. At the enterprise level, it enables selecting or fine-tuning the underlying model that powers Copilot experiences."
+    },
+    {
+      q: "How does Copilot agent mode handle errors it encounters during a multi-step task?",
+      mc: true,
+      swag: false,
+      choices: ["A. It stops and asks the user to fix each error manually", "B. It retries the same approach up to three times then gives up", "C. It iterates — running commands, reading errors, and adjusting its approach autonomously", "D. It rolls back all changes and starts over from scratch"],
+      answer: "C — In agent mode, Copilot iterates autonomously. It runs a command, reads the error output, adjusts its plan, and tries again — behaving more like a developer debugging their own work than a static suggestion engine."
+    },
+    {
+      q: "Can you name a GitHub Copilot or developer tool announcement from Microsoft BUILD this week?",
+      mc: false,
+      swag: true,
+      open: true,
+      answer: "Big ones from BUILD 2026 (June 2-3, San Francisco): Project Polaris — Microsoft's own in-house AI coding model replacing GPT-4 Turbo as the Copilot default starting August 2026. The GitHub Copilot desktop app — a new agent-native experience now in technical preview for Windows, Mac, and Linux. Copilot Workspace reached general availability. The Copilot SDK went GA in Node.js, TypeScript, Python, Go, .NET, Rust, and Java. Multi-agent support shipped for VS Code. Any of these counts!"
+    },
+    {
+      q: "How does the Copilot SDK announced at BUILD 2026 change what developers can build?",
+      mc: false,
+      swag: false,
+      answer: "The Copilot SDK, now generally available in Node.js/TypeScript, Python, Go, .NET, Rust, and Java, lets developers build their own tools and integrations on top of the Copilot platform. Teams can create custom agents, connect external services, and extend Copilot's capabilities within their own workflows rather than being limited to first-party features."
+    },
+    {
+      q: "What is Project Polaris and what changes when it becomes the default Copilot model in August 2026?",
+      mc: true,
+      swag: true,
+      choices: ["A. A new GitHub Actions runner with AI-assisted workflow execution", "B. Microsoft's in-house AI coding model replacing GPT-4 Turbo as the Copilot default", "C. A new branch protection rule powered by machine learning", "D. A code scanning engine built on Azure Defender"],
+      answer: "B — Project Polaris is Microsoft's own in-house AI coding model, built as a mixture-of-experts architecture with sub-modules tuned for different languages and frameworks. It replaces GPT-4 Turbo as the default for all Copilot subscribers in August 2026, ending Copilot's dependence on OpenAI models. Teams can opt for a three-month GPT-4 fallback during transition."
+    },
+    {
+      q: "What is the GitHub Copilot desktop app announced at BUILD 2026 and how does it differ from using Copilot inside VS Code?",
+      mc: false,
+      swag: false,
+      answer: "The GitHub Copilot desktop app is a standalone agent-native application — not an IDE extension. It gives you a centralized 'My Work' view across connected repositories showing active sessions, issues, pull requests, and background automations. Each session runs in its own Git worktree so parallel agents can work simultaneously without conflict. It's in technical preview for Windows, Mac, and Linux, and currently requires a Copilot subscription."
+    },
+    {
+      q: "How does the new Azure Agent Mesh announced at BUILD 2026 relate to GitHub Copilot workflows?",
+      mc: false,
+      swag: false,
+      answer: "Azure Agent Mesh is a control plane that federates agent execution across on-premises servers, cloud PCs, and edge devices. It integrates with the GitHub Copilot SDK, meaning teams can compose Copilot agents alongside agents from Azure OpenAI, Anthropic, and other providers in a single pipeline — routing each task to the best available resource regardless of where it runs."
+    }
+  ]
+};
+
+let currentLevel = 'warmup';
+let currentIndex = 0;
+const revealed = { warmup: {}, beginner: {}, intermediate: {}, advanced: {} };
+
+function levelColor(l) {
+  if (l === 'warmup') return 'var(--warm)';
+  if (l === 'beginner') return 'var(--beg)';
+  if (l === 'intermediate') return 'var(--int)';
+  return 'var(--adv)';
+}
+function levelClass(l) {
+  if (l === 'warmup') return 'warm';
+  if (l === 'beginner') return 'beg';
+  if (l === 'intermediate') return 'int';
+  return 'adv';
+}
+function levelLabel(l) {
+  if (l === 'warmup') return 'Warm Up';
+  if (l === 'beginner') return 'Beginner';
+  if (l === 'intermediate') return 'Intermediate';
+  return 'Advanced';
+}
+
+function switchLevel(level) {
+  currentLevel = level;
+  currentIndex = 0;
+  const tabMap = { warmup: 'war', beginner: 'beg', intermediate: 'int', advanced: 'adv' };
+  Object.keys(tabMap).forEach(l => {
+    const tab = document.getElementById('tab-' + tabMap[l]);
+    if (tab) tab.classList.toggle('active', l === level);
+  });
+  renderSidebar();
+  renderQuestion();
+}
+
+function navigate(dir) {
+  const total = questions[currentLevel].length;
+  currentIndex = Math.max(0, Math.min(total - 1, currentIndex + dir));
+  renderSidebar();
+  renderQuestion();
+}
+
+function goTo(index) {
+  currentIndex = index;
+  renderSidebar();
+  renderQuestion();
+}
+
+function revealAnswer() {
+  revealed[currentLevel][currentIndex] = true;
+  renderQuestion();
+  renderSidebar();
+}
+
+function resetAll() {
+  if (!confirm('Reset all revealed answers across all levels?')) return;
+  revealed.warmup = {};
+  revealed.beginner = {};
+  revealed.intermediate = {};
+  revealed.advanced = {};
+  currentIndex = 0;
+  renderSidebar();
+  renderQuestion();
+}
+
+function renderSidebar() {
+  const qs = questions[currentLevel];
+  const lc = levelClass(currentLevel);
+  let html = '<div class="sidebar-section"><div class="sidebar-label">' + levelLabel(currentLevel) + '</div>';
+  qs.forEach((q, i) => {
+    const isActive = i === currentIndex;
+    const isRevealed = revealed[currentLevel][i];
+    const short = q.q.length > 52 ? q.q.substring(0, 52) + '…' : q.q;
+    html += `<div class="q-item ${isActive ? 'active' : ''} ${isRevealed ? 'revealed ' + lc : ''}" onclick="goTo(${i})">
+      <span class="dot"></span>
+      <span class="q-item-num">Q${i+1}</span>
+      <span>${short}</span>
+    </div>`;
+  });
+  html += '</div>';
+
+  const warmCount = Object.keys(revealed.warmup).length;
+  const begCount = Object.keys(revealed.beginner).length;
+  const intCount = Object.keys(revealed.intermediate).length;
+  const advCount = Object.keys(revealed.advanced).length;
+  const warmTotal = questions.warmup.length;
+  const begTotal = questions.beginner.length;
+  const intTotal = questions.intermediate.length;
+  const advTotal = questions.advanced.length;
+
+  html += `<div class="sidebar-bottom">
+    <div class="score-tray-title">Revealed</div>
+    <div class="score-row"><span><span class="score-dot" style="background:var(--warm)"></span>Warm Up</span><span class="score-val">${warmCount} / ${warmTotal}</span></div>
+    <div class="score-row"><span><span class="score-dot" style="background:var(--beg)"></span>Beginner</span><span class="score-val">${begCount} / ${begTotal}</span></div>
+    <div class="score-row"><span><span class="score-dot" style="background:var(--int)"></span>Intermediate</span><span class="score-val">${intCount} / ${intTotal}</span></div>
+    <div class="score-row"><span><span class="score-dot" style="background:var(--adv)"></span>Advanced</span><span class="score-val">${advCount} / ${advTotal}</span></div>
+    <button class="reset-btn" onclick="resetAll()">↺ Reset all answers</button>
+  </div>`;
+  document.getElementById('sidebar').innerHTML = html;
+}
+
+function renderQuestion() {
+  const qs = questions[currentLevel];
+  const q = qs[currentIndex];
+  const lc = levelClass(currentLevel);
+  const ll = levelLabel(currentLevel);
+  const total = qs.length;
+  const isRevealed = revealed[currentLevel][currentIndex];
+
+  const pct = ((currentIndex + 1) / total * 100).toFixed(0);
+  const fill = document.getElementById('progress-fill');
+  fill.style.width = pct + '%';
+  fill.style.background = levelColor(currentLevel);
+
+  document.getElementById('nav-pos').textContent = (currentIndex + 1) + ' / ' + total;
+  document.getElementById('nav-total').textContent = ll;
+  document.getElementById('btn-prev').disabled = currentIndex === 0;
+  document.getElementById('btn-next').disabled = currentIndex === total - 1;
+
+  let badgesHtml = `<span class="badge badge-${lc}">${ll}</span>`;
+  if (q.open) badgesHtml += `<span class="badge badge-mc">Open ended</span>`;
+  else if (q.mc) badgesHtml += `<span class="badge badge-mc">Multiple choice</span>`;
+  if (q.swag) badgesHtml += `<span class="badge badge-swag">🎁 Prize eligible</span>`;
+  badgesHtml += `<span class="q-counter">Q${currentIndex + 1} of ${total}</span>`;
+
+  let choicesHtml = '';
+  if (q.mc && q.choices) {
+    choicesHtml = '<div class="choices">' + q.choices.map(c => {
+      const key = c.charAt(0);
+      const text = c.substring(3);
+      return `<div class="choice"><span class="choice-key">${key}.</span>${text}</div>`;
+    }).join('') + '</div>';
+  }
+
+  let answerHtml = '';
+  if (isRevealed) {
+    answerHtml = `<div class="answer-card shown ${lc}">
+      <div class="answer-label">${q.open ? 'Discussion' : 'Answer'}</div>
+      <div class="answer-text">${q.answer}</div>
+      ${q.swag ? '<div class="swag-banner">🎁 This question is prize eligible!</div>' : ''}
+    </div>`;
+  } else {
+    const revClass = `reveal-${lc}`;
+    const btnLabel = q.open ? '▶ Open Discussion' : '▶ Reveal Answer';
+    answerHtml = `<button class="reveal-btn ${revClass}" onclick="revealAnswer()">${btnLabel}</button>`;
+  }
+
+  document.getElementById('question-area').innerHTML = `
+    <div class="q-header">${badgesHtml}</div>
+    <div class="q-text">${q.q}</div>
+    ${choicesHtml}
+    <div class="answer-section">${answerHtml}</div>
+  `;
+}
+
+renderSidebar();
+renderQuestion();
+</script>
+</body>
+</html>
