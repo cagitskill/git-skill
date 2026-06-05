@@ -135,7 +135,8 @@ svg.wires{position:absolute;inset:0;width:100%;height:100%}
 .dispatch{stroke:var(--warn);opacity:0}
 .ret{stroke:var(--success);opacity:0}
 .bgflow{stroke:var(--success);opacity:0}
-.tpwire{stroke:var(--fg-subtle);stroke-width:2;fill:none;stroke-dasharray:6 4;opacity:.45}
+.tpwire{stroke:var(--accent);stroke-width:2;fill:none;stroke-dasharray:6 4;opacity:.5;animation:tpflow 1.4s linear infinite}
+@keyframes tpflow{to{stroke-dashoffset:-20}}
 .section.active .feed1,.section.active .feed2{animation:dash 1.1s linear infinite}
 .section.active .dispatch{animation:dash 1.1s linear infinite,oDispatch var(--loop) ease-in-out infinite}
 .section.active .ret{animation:dashRev 1.1s linear infinite,oReturn var(--loop) ease-in-out infinite}
