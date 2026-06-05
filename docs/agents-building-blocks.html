@@ -176,13 +176,12 @@ svg.wires{position:absolute;inset:0;width:100%;height:100%}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes pActive{0%,14%{opacity:1}16%,52%{opacity:0}54%,100%{opacity:1}}
 @keyframes pWait{0%,15%{opacity:0}17%,51%{opacity:1}53%,100%{opacity:0}}
-.n-sub{border:1.5px dashed rgba(154,103,0,.5);background:rgba(245,158,11,.04);opacity:0}
-.section.active .n-sub{animation:subShow var(--loop) ease-in-out infinite}
-@keyframes subShow{0%,12%{opacity:0;transform:translate(-50%,-50%) scale(.9)}16%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1)}57%,100%{opacity:0;transform:translate(-50%,-50%) scale(.9)}}
+.n-sub{border:1.5px dashed rgba(154,103,0,.5);background:rgba(245,158,11,.04);opacity:1;transform:translate(-50%,-50%)}
 .n-sub .tile{background:rgba(245,158,11,.14)} .n-sub .tile svg{stroke:var(--warn)} .n-sub .chip{color:var(--warn);background:rgba(245,158,11,.10)}
 .runtag{display:inline-flex;align-items:center;gap:6px;font-size:9px;font-weight:700;color:var(--warn);text-transform:uppercase;letter-spacing:1px;margin-top:8px}
 .runtag .spin{width:11px;height:11px;border:1.5px solid rgba(245,158,11,.3);border-top-color:var(--warn);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.trigtag{font-size:8px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--fg-subtle);margin-bottom:6px;opacity:.8}
 .iso{position:absolute;top:8px;right:10px;font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--warn);opacity:.8}
 .section.active .n-bg{animation:bgGlow var(--loop) ease-in-out infinite}
 @keyframes bgGlow{0%,59%{border-color:var(--border)}62%{border-color:rgba(26,127,55,.45)}95%{border-color:rgba(26,127,55,.45)}98%,100%{border-color:var(--border)}}
@@ -201,10 +200,12 @@ svg.wires{position:absolute;inset:0;width:100%;height:100%}
 .section.active .cap2{animation:cap2 var(--loop) ease-in-out infinite}
 .section.active .cap3{animation:cap3 var(--loop) ease-in-out infinite}
 .section.active .cap4{animation:cap4 var(--loop) ease-in-out infinite}
-@keyframes cap1{0%{opacity:1}12%{opacity:1}16%,100%{opacity:0}}
-@keyframes cap2{0%,14%{opacity:0}18%{opacity:1}48%{opacity:1}52%,100%{opacity:0}}
-@keyframes cap3{0%,50%{opacity:0}54%{opacity:1}59%{opacity:1}63%,100%{opacity:0}}
-@keyframes cap4{0%,61%{opacity:0}65%{opacity:1}94%{opacity:1}98%,100%{opacity:0}}
+.section.active .cap5{animation:cap5 var(--loop) ease-in-out infinite}
+@keyframes cap1{0%{opacity:1}10%{opacity:1}14%,100%{opacity:0}}
+@keyframes cap2{0%,12%{opacity:0}16%{opacity:1}38%{opacity:1}42%,100%{opacity:0}}
+@keyframes cap3{0%,40%{opacity:0}44%{opacity:1}52%{opacity:1}56%,100%{opacity:0}}
+@keyframes cap4{0%,54%{opacity:0}58%{opacity:1}74%{opacity:1}78%,100%{opacity:0}}
+@keyframes cap5{0%,76%{opacity:0}80%{opacity:1}94%{opacity:1}98%,100%{opacity:0}}
 .legend{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;padding:6px 0 4px}
 .legend div{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--fg-muted)}
 .legend i{width:18px;height:3px;border-radius:3px;display:inline-block}
@@ -264,13 +265,13 @@ const SECTIONS = [
   },
   { id:'s2', type:'ce-cards', eyebrow:'', title:'Context Engineering for Agents', lede:'// the three pieces every agent prompt needs',
     cards: [
-      { cls:'c-plan', lbl:'Piece 1', name:'Concise Plan', def:'Defines the task, output format, and constraints.',
+      { cls:'c-plan', lbl:'Plan', name:'Concise Plan', def:'Defines the task, output format, and constraints.',
         ex:'Generate a 5-step work instruction in markdown. One action per step. Maximum 12 words per step. Include a safety note above any step that involves moving parts or chemicals.',
         skip:'output format drifts, steps balloon.', wIt:'every run produces the same shape.' },
-      { cls:'c-resp', lbl:'Piece 2', name:'Responsibilities', def:"Establishes the AI's expert persona and target audience.",
+      { cls:'c-resp', lbl:'Role', name:'Responsibilities', def:"Establishes the AI's expert persona and target audience.",
         ex:'You are an industrial safety engineer with 20 years on the floor. You are writing for new line workers who have basic safety training but have not done this specific procedure.',
         skip:"tone is off, vocabulary doesn't land.", wIt:'depth and language match the reader.' },
-      { cls:'c-result', lbl:'Piece 3', name:'Expected Results', def:'Sets success criteria and the final goal.',
+      { cls:'c-result', lbl:'Done Criteria', name:'Expected Results', def:'Sets success criteria and the final goal.',
         ex:'Output is complete when each step is independently testable, a peer can run the procedure without asking questions, and the acceptance check confirms equipment is ready for the next shift.',
         skip:"agent has no idea when it's done well.", wIt:'the agent self-corrects toward criteria.' }
     ],
@@ -278,26 +279,32 @@ const SECTIONS = [
   },
   { id:'s3', type:'typed-code', eyebrow:'', title:'Repository-wide Copilot Custom Instructions', lede:'// standing rules applied to every chat request in this repo',
     file:'.github/copilot-instructions.md', copyId:'copilot',
-    why:'<b>Why this exists:</b> one file, repo-wide coverage. Every chat request in this repo gets these rules loaded automatically — no YAML frontmatter, no path matching, no overhead. Put your code style, review priorities, and conventions here once and Copilot applies them every time.',
+    why:'<b>Triggered:</b> automatically — loaded for every chat request in this repo, no action needed.<br><br><b>Why this exists:</b> one file, repo-wide coverage. Every chat request in this repo gets these rules loaded automatically — no YAML frontmatter, no path matching, no overhead. Put your code style, review priorities, and conventions here once and Copilot applies them every time.<br><br>Instructions shape what Copilot generates — enforcement still lives in your linters (tools that automatically check code against rules) and Actions workflows.',
     code: [
       '<span class="h1c"># Copilot Instructions</span>',
       ' ',
+      '<span class="h2c">## Stack</span>',
+      '- TypeScript. No JavaScript files in src/.',
+      '- Node 20+.',
+      '- Prefer named exports over default exports.',
+      ' ',
       '<span class="h2c">## Code style</span>',
-      '- Match the existing style.',
-      '- Prefer clear names over short ones.',
-      "- Add comments only when intent isn't obvious.",
+      '- Match the existing patterns in the codebase.',
+      '- Clear names over short ones.',
+      "- Comments only when intent isn't obvious from the code.",
       ' ',
       '<span class="h2c">## Reviews</span>',
-      '- Flag anything that looks unsafe.',
-      '- Suggest tests for uncovered functions.',
+      '- Flag anything that touches auth, secrets, or user data.',
+      '- Suggest a test for any function that has no coverage.',
       ' ',
       '<span class="h2c">## Communication</span>',
-      '- Be concise. Skip preamble.'
+      "- Lead with the answer. Skip the preamble.",
+      "- If you're unsure, say so — don't guess."
     ]
   },
   { id:'s3b', type:'typed-code', eyebrow:'', title:'Path-specific Copilot Custom Instructions', lede:'// scoped instructions for monorepos and multi-language codebases',
     file:'.github/instructions/frontend.instructions.md', copyId:'pathinstr',
-    why:'<b>Why this exists:</b> repo-wide instructions apply to everything, which is fine for single-stack repos. In a monorepo with multiple languages or teams, you want different rules for different parts of the codebase. Path-specific files let you do that — but they come with overhead: you\'re now managing multiple instruction files in different locations. Use them when the tradeoff is worth it.',
+    why:'<b>Triggered:</b> automatically — by the file path you\'re working on. If the file matches the <code>applyTo:</code> glob, the instruction loads.<br><br><b>Why this exists:</b> repo-wide instructions apply to everything, which is fine for single-stack repos. In a monorepo with multiple languages or teams, you want different rules for different parts of the codebase. Path-specific files let you do that — but they come with overhead: you\'re now managing multiple instruction files in different locations. Use them when the tradeoff is worth it.',
     code: [
       '<span class="cm">---</span>',
       '<span class="k-i">applyTo:</span> <span class="s">\'src/frontend/**\'</span>',
@@ -307,21 +314,26 @@ const SECTIONS = [
       ' ',
       '<span class="h2c">## Stack</span>',
       '- React with TypeScript. No class components.',
-      '- Use Tailwind for styling.',
+      '- Tailwind for styling. No inline styles.',
+      '- Avoid third-party UI libraries unless already in package.json.',
       ' ',
       '<span class="h2c">## Conventions</span>',
-      '- Components in PascalCase.',
-      '- Hooks prefixed with use.',
-      '- Co-locate tests with components.'
+      '- Components in PascalCase, one per file.',
+      '- Keep components small — if it\'s getting long, split it.',
+      '- Co-locate tests with the component they cover.',
+      ' ',
+      '<span class="h2c">## Accessibility</span>',
+      '- Every interactive element needs an aria-label.',
+      '- No color-only indicators — always pair with text or icon.'
     ]
   },
   { id:'s4', type:'static-then-typed', cls:'skills', eyebrow:'', title:'Custom Skills', lede:'// on-demand context, loaded only when the task fits',
     file:'.github/skills/work-instructions/SKILL.md', copyId:'skill',
-    why:'Reusable capability packs made of instructions, scripts, and resources for a specific task. Loaded only when relevant — not always-on like repo-wide instructions. Think of them as a playbook or recipe, not a standalone worker.<br><br>Agents decide <b>who</b> does the work. Skills define <b>how</b> a specific task is done. A custom agent can use multiple skills, but a skill doesn\'t replace an agent\'s role or permissions.<br><br><b>Best practices:</b> don\'t overdo it. Every skill description adds tokens. Avoid skills for things the model already does well — they add cost without adding value. And maintain them — as models improve, some skills become unnecessary.',
+    why:'<b>Triggered:</b> by the model — in Copilot agent mode in VS Code, the skill description is offered to the model. When it detects a matching task, it loads the skill file and any associated scripts or resources. No user action needed.<br><br>Reusable capability packs made of instructions, scripts, and resources for a specific task. Loaded only when relevant — not always-on like repo-wide instructions. Think of them as a playbook or recipe, not a standalone worker.<br><br>Agents decide <b>who</b> does the work. Skills define <b>how</b> a specific task is done. A custom agent can use multiple skills, but a skill doesn\'t replace an agent\'s role or permissions.<br><br><b>Best practices:</b> don\'t overdo it. Every skill description adds tokens. Avoid skills for things the model already does well — they add cost without adding value. And maintain them — as models improve, some skills become unnecessary.',
     code: [
       '<span class="cm">---</span>',
       '<span class="k-p">name:</span> work-instructions',
-      '<span class="k-p">description:</span> Use when writing a work instruction.',
+      '<span class="k-p">description:</span> Use when writing a work instruction or standard operating procedure.',
       '<span class="cm">---</span>',
       ' ',
       '<span class="h1c"># Work Instructions</span>',
@@ -340,12 +352,13 @@ const SECTIONS = [
   },
   { id:'s5', type:'typed-code', eyebrow:'', title:'Custom Agents', lede:'// same shape as a skill, plus tools and a prompt',
     file:'.github/agents/work-instruction-writer.md', copyId:'agent',
-    why:'<b>Why this exists:</b> skills are knowledge, agents are workers. Same file shape, different role — a skill describes what a thing is, an agent describes what to do and how to act. The <code>name:</code> is what shows in the picker; the filename is what other agents reference when they hand off work.<br><br><b>Two things to be intentional about:</b> First, the <code>tools:</code> list — only give the agent the tools it actually needs. Every unnecessary tool takes up space in the context window and increases the chances of the agent doing something it shouldn\'t. Second, the model — if you designate one, make sure the task actually warrants it. Not every agent needs an expensive reasoning model.',
+    why:'<b>Triggered:</b> two ways — picked from the agent picker in VS Code or GitHub (Copilot), or called automatically by a parent agent via <code>#runSubagent</code> or a handoff in its prompt (code).<br><br><b>Why this exists:</b> skills are knowledge, agents are workers. Same file shape, different role — a skill describes what a thing is, an agent describes what to do and how to act. The <code>name:</code> is what shows in the picker; the filename is what other agents reference when they hand off work.<br><br><b>Two things to be intentional about:</b> First, the <code>tools:</code> list — only give the agent the tools it actually needs. Every unnecessary tool takes up space in the context window and increases the chances of the agent doing something it shouldn\'t. Second, the model — if you designate one, make sure the task actually warrants it. Not every agent needs an expensive reasoning model.',
     code: [
       '<span class="cm">---</span>',
       '<span class="k-i">name:</span> Work Instruction Writer',
       '<span class="k-i">description:</span> Drafts a standardized work instruction.',
       '<span class="k-i">tools:</span> [<span class="s">\'search\'</span>]',
+      '<span class="cm"># model: omit to let Copilot pick, or set explicitly if the task needs it</span>',
       '<span class="cm">---</span>',
       ' ',
       'You are the <span class="ag">WORK INSTRUCTION WRITER</span> agent.',
@@ -363,7 +376,7 @@ const SECTIONS = [
   },
   { id:'s6', type:'typed-code', eyebrow:'', title:'Subagents', lede:'// same file shape, new lines for delegating',
     file:'.github/agents/sop-review-orchestrator.md', copyId:'sub',
-    why:'<p><b>Why this exists:</b> a subagent is an agent you run from inside another agent. Same file shape, same <code>.github/agents/</code> folder. The difference is how it runs: a subagent gets its own isolated context, does its work, and returns only the result. The parent agent waits, then continues with whatever came back.</p><p><b>How it\'s called:</b> the parent lists the subagent in its <code>agents:</code> array and adds <code>runSubagent</code> to its <code>tools:</code>. Then in the prompt, the parent uses <code>#runSubagent</code> to hand off. The highlighted lines below are the only difference from a regular agent — everything else looks the same.</p>',
+    why:'<p><b>Triggered:</b> agent-initiated — a parent agent running in VS Code or Copilot agent mode calls <code>#runSubagent</code> in its prompt. No user action needed — one agent hands off to another in code.</p><p><b>Why this exists:</b> a subagent is an agent you run from inside another agent. Same file shape, same <code>.github/agents/</code> folder. The difference is how it runs: a subagent gets its own isolated context, does its work, and returns only the result. The parent agent waits, then continues with whatever came back.</p><p><b>How it\'s called:</b> the parent lists the subagent in its <code>agents:</code> array and adds <code>runSubagent</code> to its <code>tools:</code>. Then in the prompt, the parent uses <code>#runSubagent</code> to hand off. The highlighted lines below are the only difference from a regular agent — everything else looks the same.</p>',
     code: [
       { html:'<span class="cm">---</span>' },
       { html:'<span class="k-i">name:</span> SOP Review Orchestrator' },
@@ -373,7 +386,7 @@ const SECTIONS = [
       { html:'<span class="k-a">handoffs:</span>', hl:true },
       { html:'  - label: Review document', hl:true },
       { html:'    agent: Reviewer', hl:true },
-      { html:'    prompt: <span class="s">"Check this WI"</span>', hl:true },
+      { html:'    prompt: <span class="s">"Review this work instruction for clarity, safety gaps, and step completeness."</span>', hl:true },
       { html:'<span class="cm">---</span>' },
       { html:' ' },
       { html:'You are the <span class="ag">SOP REVIEW ORCHESTRATOR</span>.' },
@@ -386,7 +399,7 @@ const SECTIONS = [
   },
   { id:'s7', type:'typed-code', eyebrow:'', title:'Background Agents', lede:"// work continues in parallel, you don't wait",
     file:'.github/agents/feature-implementer.md', copyId:'bg',
-    why:'<p><b>Why this exists:</b> a background agent runs alongside the main session instead of inside it. You kick it off and keep working. It does its job in parallel and posts the result, typically as a pull request, when it\'s done. Subagents block the parent and return; background agents never block, never return. They just deliver.</p><p><b>How it\'s called:</b> not from a prompt. You start a background session from a supported surface. Most commonly that\'s assigning a GitHub issue to @copilot, but VS Code, the agents dashboard, a failing Actions run, GitHub Mobile, and integrations like Slack or Jira all work too. Once started, the session runs autonomously and posts a PR when done.</p>',
+    why:'<p><b>Triggered:</b> user-assigned — you explicitly hand work to it. Assign a GitHub issue to @copilot, delegate from VS Code, or trigger from a failing Actions run.</p><p><b>Why this exists:</b> a background agent runs alongside the main session instead of inside it. You kick it off and keep working. It does its job in parallel and posts the result, typically as a pull request, when it\'s done. Subagents block the parent and return; background agents never block, never return. They just deliver.</p><p><b>How it\'s called:</b> not from a prompt. You start a background session from a supported surface. Most commonly that\'s assigning a GitHub issue to @copilot, but VS Code, the agents dashboard, a failing Actions run, GitHub Mobile, and integrations like Slack or Jira all work too. Once started, the session runs autonomously and posts a PR when done.</p>',
     code: [
       '<span class="cm">---</span>',
       '<span class="k-t">name:</span> Feature Implementer',
@@ -395,16 +408,16 @@ const SECTIONS = [
       '<span class="cm">---</span>',
       ' ',
       'You are the FEATURE IMPLEMENTER agent.',
+      '<span class="cm"># Runs as a background agent — started by assigning a GitHub issue to @copilot.</span>',
       ' ',
-      'You run in the background after',
-      'being assigned to a GitHub issue.',
+      'Read the issue carefully.',
+      'Ask no questions — work with what\'s there.',
+      'Plan the change, implement it, run the tests.',
       ' ',
-      'Read the issue. Plan the change.',
-      'Implement it. Run the tests.',
-      ' ',
-      'Open a pull request with a summary,',
-      'a link to the issue, and notes on',
-      "anything you couldn't do."
+      'Open a pull request with:',
+      '- A summary of what changed and why',
+      '- A link back to the issue',
+      '- Any blockers or skipped items with a reason'
     ]
   },
   { id:'s8', type:'third-party', eyebrow:'', title:'Third-Party Agents', lede:'// enabled outside your repo, available inside Copilot',
@@ -483,18 +496,19 @@ function renderArchitecture(s){
       <line class="flow ret" x1="450" y1="240" x2="620" y2="150"/>
       <line class="flow bgflow" x1="450" y1="240" x2="684" y2="365"/>
     </svg>
-    <div class="node n-3p"><div class="tile"><svg viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M21 3l-7 7"/><path d="M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></div><h3>Third-Party Agent</h3><div class="k">External, authorized</div><span class="chip">plug in</span></div>
-    <div class="node n-instr"><div class="tile"><svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M14 3v5h5"/><path d="M8 12h8M8 16h6"/></svg></div><h3>Copilot Instructions</h3><div class="k">Standing rules and style</div><span class="chip">copilot-instructions.md</span></div>
-    <div class="node n-skills"><div class="tile"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h9v15H6a2 2 0 0 0-2 2z"/><path d="M15 3l4 2v13l-4-2"/></svg></div><h3>Custom Skills</h3><div class="k">Loaded when relevant</div><span class="chip">SKILL.md</span></div>
-    <div class="node n-main"><div class="tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></div><h3>Custom Agent</h3><div class="pillwrap"><span class="pill p-active"><span class="pdot"></span>Active</span><span class="pill p-wait"><span class="pdot"></span>Waiting</span></div></div>
-    <div class="node n-sub"><span class="iso">isolated context</span><div class="tile"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M6 8.4v2a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2M12 12.4v3.2"/></svg></div><h3>Subagent</h3><div class="runtag"><span class="spin"></span>running</div><span class="chip">#runSubagent</span></div>
-    <div class="node n-bg"><div class="tile"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v4h-4"/><path d="M12 8v4l3 2"/></svg></div><h3>Background Agent</h3><div class="prog"><i></i></div><span class="paralleltag">running in parallel</span></div>
+    <div class="node n-3p"><div class="trigtag">user-selected</div><div class="tile"><svg viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M21 3l-7 7"/><path d="M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></div><h3>Third-Party Agent</h3><div class="k">External, authorized</div><span class="chip">plug in</span></div>
+    <div class="node n-instr"><div class="trigtag">automatic</div><div class="tile"><svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M14 3v5h5"/><path d="M8 12h8M8 16h6"/></svg></div><h3>Copilot Instructions</h3><div class="k">Standing rules and style</div><span class="chip">copilot-instructions.md</span></div>
+    <div class="node n-skills"><div class="trigtag">model-triggered</div><div class="tile"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h9v15H6a2 2 0 0 0-2 2z"/><path d="M15 3l4 2v13l-4-2"/></svg></div><h3>Custom Skills</h3><div class="k">Loaded when relevant</div><span class="chip">SKILL.md</span></div>
+    <div class="node n-main"><div class="trigtag">picker or agent-initiated</div><div class="tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></div><h3>Custom Agent</h3><div class="pillwrap"><span class="pill p-active"><span class="pdot"></span>Active</span><span class="pill p-wait"><span class="pdot"></span>Waiting</span></div></div>
+    <div class="node n-sub"><span class="iso">isolated context</span><div class="tile"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M6 8.4v2a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2M12 12.4v3.2"/></svg></div><h3>Subagent</h3><div class="runtag"><span class="spin"></span>running</div><span class="chip">#runSubagent</span><div class="trigtag" style="color:var(--warn);margin-top:6px">agent-initiated</div></div>
+    <div class="node n-bg"><div class="trigtag" style="color:var(--success)">user-assigned</div><div class="tile"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v4h-4"/><path d="M12 8v4l3 2"/></svg></div><h3>Background Agent</h3><div class="prog"><i></i></div><span class="paralleltag">running in parallel</span></div>
   </div></div>
   <div class="caption">
     <p class="cap1">Instructions and skills feed <b>context</b> into the custom agent.</p>
     <p class="cap2">A <b>subagent</b> runs in isolated context. The custom agent <b>waits</b>.</p>
     <p class="cap3">Only the <b>result</b> returns. The custom agent resumes.</p>
     <p class="cap4">A <b>background agent</b> runs in parallel. The custom agent keeps working.</p>
+    <p class="cap5"><b>Third-party agents</b> are user-selected — enabled in settings, then picked from the agent picker in VS Code or GitHub.</p>
   </div>
   <div class="legend">
     <div><i style="background:var(--accent)"></i>Context feed</div>
