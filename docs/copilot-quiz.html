@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GitHub Copilot Quiz</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Inter:wght@400;500&display=swap');
+  
 
   :root {
     --warm: #E8A020;
@@ -37,7 +37,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
@@ -59,7 +59,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-family: 'Syne', sans-serif;
+    font-family: Arial, sans-serif;
     font-weight: 700;
     font-size: 18px;
     color: var(--text);
@@ -77,7 +77,7 @@
     border: 1px solid;
     cursor: pointer;
     transition: all 0.15s;
-    font-family: 'Inter', sans-serif;
+    font-family: Arial, sans-serif;
   }
   .pill-warm { border-color: var(--warm); color: var(--warm); }
   .pill-warm.active { background: var(--warm); color: #fff; }
@@ -213,7 +213,7 @@
   }
 
   .q-text {
-    font-family: 'Syne', sans-serif;
+    font-family: Arial, sans-serif;
     font-size: clamp(20px, 2.8vw, 32px);
     font-weight: 600;
     line-height: 1.35;
@@ -258,7 +258,7 @@
     cursor: pointer;
     border: 1.5px solid;
     transition: all 0.15s;
-    font-family: 'Inter', sans-serif;
+    font-family: Arial, sans-serif;
   }
   .reveal-warm { border-color: var(--warm); color: var(--warm); background: transparent; }
   .reveal-warm:hover { background: var(--warm); color: #fff; }
@@ -338,7 +338,7 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 0.15s;
-    font-family: 'Inter', sans-serif;
+    font-family: Arial, sans-serif;
   }
   .nav-btn:hover:not(:disabled) { border-color: rgba(255,255,255,0.3); background: #2a2a2a; }
   .nav-btn:disabled { opacity: 0.3; cursor: default; }
@@ -373,7 +373,7 @@
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
-    font-family: 'Inter', sans-serif;
+    font-family: Arial, sans-serif;
     transition: all 0.15s;
     letter-spacing: 0.02em;
   }
@@ -436,28 +436,28 @@ const questions = {
     {
       q: "First person to share — how are you using Copilot today?",
       mc: false,
-      swag: true,
+      swag: false,
       open: true,
       answer: "No wrong answer here! Whether it's code completions, chat, PR reviews, CLI, or you're just getting started — every use case counts. This is about learning from each other."
     },
     {
       q: "Which AI model are you running in Copilot, and why did you pick it?",
       mc: false,
-      swag: true,
+      swag: false,
       open: true,
       answer: "GitHub Copilot supports multiple models including GPT-4o, Claude Sonnet, Gemini, and others depending on your plan. There's no single right answer — the best model depends on your workflow, language, and what feels most natural to you."
     },
     {
       q: "If Copilot were a person, where would they work — and what would their job title be?",
       mc: false,
-      swag: true,
+      swag: false,
       open: true,
       answer: "Totally open! Some say 'the colleague who never sleeps,' others say 'staff engineer at every company simultaneously.' The fun is in how you see it — Copilot is whatever kind of teammate you need it to be."
     },
     {
       q: "Does Copilot wear glasses?",
       mc: true,
-      swag: true,
+      swag: false,
       open: true,
       choices: ["A. Obviously yes — the smart ones always do", "B. No — too cool for that", "C. It sees all code with perfect clarity, glasses optional", "D. Depends on the model"],
       answer: "All answers are correct. This is a vibe check, not a technical question. Though D is arguably the most accurate — different models, different aesthetics."
@@ -465,28 +465,28 @@ const questions = {
     {
       q: "One word to describe your Copilot experience so far. Go.",
       mc: false,
-      swag: true,
+      swag: false,
       open: true,
       answer: "No wrong answers. Common ones: fast, magical, surprising, frustrating, game-changing, weird, helpful, wild. Whatever your one word is — it's valid, and it's the start of a good conversation."
     },
     {
       q: "What's the first thing you'd teach a brand new developer about Copilot?",
       mc: false,
-      swag: true,
+      swag: false,
       open: true,
       answer: "Open floor! Great answers range from 'always review what it gives you' to 'write better comments and you'll get better suggestions' to 'just start using it and you'll figure it out.' Everyone's first lesson is different."
     },
     {
       q: "Has Copilot ever surprised you — in a good way or a bad way? Tell us.",
       mc: false,
-      swag: true,
+      swag: false,
       open: true,
       answer: "This one's all yours. The surprises people share — good and bad — usually teach the room more than any slide deck. No wrong answer."
     },
     {
       q: "If you had to give Copilot a performance review today, what rating would you give it?",
       mc: true,
-      swag: true,
+      swag: false,
       open: true,
       choices: ["A. Exceeds expectations — already getting a raise", "B. Meets expectations — solid teammate, room to grow", "C. Needs improvement — promising but inconsistent", "D. It reviewed me first and honestly I'm still processing it"],
       answer: "All valid — and D is a real phenomenon. The point is to talk about where it's delivering and where it's falling short for your team. That conversation is worth more than the rating."
@@ -494,7 +494,7 @@ const questions = {
     {
       q: "What would Copilot's LinkedIn headline say?",
       mc: false,
-      swag: true,
+      swag: false,
       open: true,
       answer: "Completely open. Past answers have included: 'AI pair programmer | 500M+ lines suggested | Open to all repos,' 'Helping developers ship faster | Not a replacement, a teammate,' and 'Currently: everywhere at once.' What would yours say?"
     }
@@ -565,7 +565,7 @@ const questions = {
     {
       q: "What is the difference between Copilot Free and a paid Copilot plan?",
       mc: true,
-      swag: false,
+      swag: true,
       choices: ["A. Free has no chat, paid unlocks chat", "B. Free has monthly limits on completions and chat; paid plans offer more usage and features", "C. Free only works in VS Code", "D. There is no free tier — Copilot requires a subscription"],
       answer: "B — GitHub Copilot Free includes a limited number of code completions and chat messages per month. Paid plans (Pro, Business, Enterprise) remove or raise those limits and unlock additional features like policy controls and audit logs."
     },
@@ -662,13 +662,13 @@ const questions = {
     {
       q: "What is the '.github/copilot-instructions.md' file and who benefits from using it?",
       mc: false,
-      swag: false,
+      swag: true,
       answer: "This file lets teams define repository-level instructions for Copilot — things like preferred libraries, coding conventions, and naming standards. Every contributor automatically gets Copilot suggestions aligned to those team norms without having to configure anything individually."
     },
     {
       q: "How does Copilot handle multiple open files in your editor?",
       mc: true,
-      swag: true,
+      swag: false,
       choices: ["A. It only reads the file you are actively editing", "B. It uses open tabs as additional context to improve suggestions", "C. It scans your entire repository in the background", "D. It ignores all files except the one you prompt it about"],
       answer: "B — Copilot uses open editor tabs as context clues. Having related files open — like a type definition alongside the file you're editing — improves suggestion quality because the model has more relevant information to work with."
     },
@@ -687,7 +687,7 @@ const questions = {
     {
       q: "What is the Copilot trust boundary and why does it matter for enterprise customers?",
       mc: false,
-      swag: false,
+      swag: true,
       answer: "The trust boundary defines what code and context Copilot can access and what stays private. For enterprise customers, this matters because content exclusion rules, data retention policies, and model training opt-outs all operate at this boundary — determining what Copilot sees and what it cannot."
     }
   ],
@@ -784,7 +784,7 @@ const questions = {
     {
       q: "How does the new Azure Agent Mesh announced at BUILD 2026 relate to GitHub Copilot workflows?",
       mc: false,
-      swag: false,
+      swag: true,
       answer: "Azure Agent Mesh is a control plane that federates agent execution across on-premises servers, cloud PCs, and edge devices. It integrates with the GitHub Copilot SDK, meaning teams can compose Copilot agents alongside agents from Azure OpenAI, Anthropic, and other providers in a single pipeline — routing each task to the best available resource regardless of where it runs."
     }
   ]

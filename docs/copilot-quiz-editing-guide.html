@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Copilot Quiz — Editing Guide</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f9f9f9;
+    color: #1a1a1a;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    line-height: 1.6;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    color: #6e40c9;
+    margin-bottom: 4px;
+  }
+
+  .subtitle {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 40px;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+    color: #333;
+    border-bottom: 2px solid #e0d4f7;
+    padding-bottom: 6px;
+    margin-top: 40px;
+    margin-bottom: 16px;
+  }
+
+  p { margin-bottom: 12px; }
+
+  .card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #444;
+  }
+
+  code {
+    background: #f0eafa;
+    color: #5a2ea6;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+  }
+
+  pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 18px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    margin: 12px 0 20px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-right: 6px;
+  }
+
+  .tag-prize { background: #faeee7; color: #c0401a; }
+  .tag-no-prize { background: #f0f0f0; color: #666; }
+  .tag-warmup { background: #fdf3dc; color: #a06010; }
+  .tag-beg { background: #e1f5ee; color: #0f6e56; }
+  .tag-int { background: #e6f1fb; color: #185fa5; }
+  .tag-adv { background: #eeedfe; color: #534ab7; }
+
+  .tip {
+    background: #f0eafa;
+    border-left: 4px solid #7f60d4;
+    padding: 12px 16px;
+    border-radius: 0 6px 6px 0;
+    margin: 12px 0;
+    font-size: 0.93rem;
+  }
+
+  .rule-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 20px;
+    font-size: 0.93rem;
+  }
+
+  .rule-table th {
+    background: #f0eafa;
+    color: #5a2ea6;
+    text-align: left;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+  }
+
+  .rule-table td {
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    vertical-align: top;
+  }
+
+  .rule-table tr:nth-child(even) td { background: #fafafa; }
+</style>
+</head>
+<body>
+
+<h1>Copilot Quiz — Editing Guide</h1>
+<p class="subtitle">A reference for anyone updating questions, answers, or prize eligibility in <strong>copilot-quiz.html</strong></p>
+
+<h2>Where to find everything</h2>
+<p>All quiz content lives in a single JavaScript object near the top of the file. Open <code>copilot-quiz.html</code> in any text editor and search for <code>warmup: [</code> — that's the start of the question data. The four sections appear in this order:</p>
+
+<table class="rule-table">
+  <tr>
+    <th>Section</th>
+    <th>Search for</th>
+    <th>Prize eligible?</th>
+  </tr>
+  <tr><td><span class="tag tag-warmup">Warm Up</span></td><td><code>warmup: [</code></td><td>Never</td></tr>
+  <tr><td><span class="tag tag-beg">Beginner</span></td><td><code>beginner: [</code></td><td>Every other question</td></tr>
+  <tr><td><span class="tag tag-int">Intermediate</span></td><td><code>intermediate: [</code></td><td>Every other question</td></tr>
+  <tr><td><span class="tag tag-adv">Advanced</span></td><td><code>advanced: [</code></td><td>Every other question</td></tr>
+</table>
+
+<h2>What a question looks like</h2>
+
+<div class="card">
+  <div class="card-title">Open-ended question (no choices)</div>
+<pre>{
+  q: "What is GitHub Copilot?",
+  mc: false,
+  swag: true,
+  answer: "GitHub Copilot is an AI-powered coding assistant..."
+},</pre>
+</div>
+
+<div class="card">
+  <div class="card-title">Multiple choice question</div>
+<pre>{
+  q: "Which of the following best describes how Copilot generates suggestions?",
+  mc: true,
+  swag: false,
+  choices: [
+    "A. It searches Stack Overflow in real time",
+    "B. It uses an AI model trained on publicly available code",
+    "C. It copies code from your current repo",
+    "D. It runs a local model on your machine"
+  ],
+  answer: "B — It uses an AI model trained on publicly available code."
+},</pre>
+</div>
+
+<h2>Editing questions</h2>
+<p>Find the question you want to change, then update the text inside the quotes after <code>q:</code>. Keep the surrounding quotes and trailing comma intact.</p>
+
+<div class="tip">
+  Don't change the structure — just swap the text. If the original ends with a <code>?</code>, your replacement should too.
+</div>
+
+<h2>Editing answers</h2>
+<p>The answer text appears after <code>answer:</code>. You can make it as long or short as needed. Answers are revealed when the host clicks the card during the session — participants don't see them automatically.</p>
+
+<h2>Editing multiple choice options</h2>
+<p>Choices are listed inside square brackets <code>[ ]</code>, each option in quotes, separated by commas. Keep the <code>A.</code> <code>B.</code> <code>C.</code> <code>D.</code> labels — they display as-is in the quiz.</p>
+
+<div class="tip">
+  If you remove a choice, make sure to remove the trailing comma on the line before it. If you add a choice, add a comma after the previous last item.
+</div>
+
+<h2>Editing prize eligibility</h2>
+<p>Each question has a <code>swag:</code> field set to either <code>true</code> or <code>false</code>.</p>
+
+<table class="rule-table">
+  <tr>
+    <th>Value</th>
+    <th>What it does</th>
+  </tr>
+  <tr>
+    <td><code>swag: true</code></td>
+    <td><span class="tag tag-prize">🎁 Prize eligible</span> badge appears on the card</td>
+  </tr>
+  <tr>
+    <td><code>swag: false</code></td>
+    <td><span class="tag tag-no-prize">No badge</span> — question is not prize eligible</td>
+  </tr>
+</table>
+
+<p>Current rules baked into the file:</p>
+<ul style="margin: 8px 0 16px 20px;">
+  <li><strong>Warm Up:</strong> all set to <code>false</code> — these are icebreakers, not prize questions</li>
+  <li><strong>Beginner, Intermediate, Advanced:</strong> every other question is <code>true</code>, starting with the first</li>
+</ul>
+
+<div class="tip">
+  To make a specific question prize eligible, change its <code>swag: false</code> to <code>swag: true</code>. To remove eligibility, do the reverse. Warm Up questions should stay <code>false</code>.
+</div>
+
+<h2>Adding a new question</h2>
+<p>Copy an existing question block (everything from <code>{</code> to <code>},</code>), paste it where you want it in the list, and update the fields. Make sure every question in the list except the last one ends with a comma after the closing <code>}</code>.</p>
+
+<h2>Removing a question</h2>
+<p>Delete the entire block from the opening <code>{</code> to the closing <code>},</code> including the comma. Then check that the question now above where it was doesn't have a trailing comma if it's the last item in the section.</p>
+
+<h2>Quick reference</h2>
+<table class="rule-table">
+  <tr>
+    <th>Field</th>
+    <th>What it controls</th>
+    <th>Values</th>
+  </tr>
+  <tr><td><code>q</code></td><td>The question text shown on the card</td><td>Any text string</td></tr>
+  <tr><td><code>mc</code></td><td>Whether it's multiple choice</td><td><code>true</code> or <code>false</code></td></tr>
+  <tr><td><code>choices</code></td><td>The A/B/C/D options (only if mc is true)</td><td>Array of strings</td></tr>
+  <tr><td><code>swag</code></td><td>Prize eligibility badge</td><td><code>true</code> or <code>false</code></td></tr>
+  <tr><td><code>answer</code></td><td>The revealed answer text</td><td>Any text string</td></tr>
+  <tr><td><code>open</code></td><td>Marks warm-up questions as open-ended (no wrong answer)</td><td><code>true</code> — leave as-is</td></tr>
+</table>
+
+</body>
+</html>
