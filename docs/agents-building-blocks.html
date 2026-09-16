@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Building Agents That Work — Copilot Training</title>
+<meta name="description" content="An interactive walkthrough of the building blocks for GitHub Copilot agents: custom instructions, skills, custom agents, subagents, background agents, and third-party agents — plus how to write the prompt that makes them work.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Building Agents That Work — Copilot Training">
+<meta property="og:description" content="The pieces, the prompt, and the architecture behind GitHub Copilot agents.">
+<meta name="twitter:card" content="summary">
 <link href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -226,7 +231,39 @@ svg.wires{position:absolute;inset:0;width:100%;height:100%}
 .q-ext{--ac:var(--fg-subtle);--acbg:rgba(129,139,152,.08);--acsoft:rgba(129,139,152,.25)}
 
 @media (max-width:680px){header{padding:30px 20px 22px}.section{padding:30px 20px 20px}.nav-bar{padding:12px 20px}.nav-dots{padding:14px 20px}}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001s!important}
+  /* keep typed code fully visible */
+  .section.active .row .line{width:auto!important;animation:none!important}
+  /* the rotating captions are opacity:0 by default and only revealed mid-animation —
+     without motion, stack and show them all so the explanation is still readable */
+  .caption{height:auto}
+  .caption p{position:static;opacity:1!important;animation:none!important;margin-bottom:8px}
+  /* settle toggling states on a single, sensible frame */
+  .p-active{opacity:1!important;animation:none!important}
+  .p-wait{opacity:0!important;animation:none!important}
+  .phase-label{height:auto}
+  .phase-label .ph.build-ph{opacity:1!important;animation:none!important}
+  .phase-label .ph.static-ph{opacity:0!important;animation:none!important}
+}
+
+/* Screen-reader-only utility */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Print / PDF export — reveal every slide as a stacked handout */
+@media print{
+  .back-to-demos,.nav-dots,.nav-bar{display:none!important}
+  body{padding-bottom:0}
+  .section{display:block!important;page-break-inside:avoid;break-inside:avoid;padding:24px 0;border-bottom:1px solid var(--border-soft);max-width:none}
+  .section .row .line{width:auto!important;animation:none!important}
+  .caption{height:auto}
+  .caption p{position:static;opacity:1!important;animation:none!important;margin-bottom:6px}
+  .skills .view{position:static}
+  .skills .static-view{display:none}
+  .skills .typing-view{opacity:1!important}
+  .phase-label{display:none}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
 </style>
 </head>
 <body>
@@ -244,6 +281,7 @@ svg.wires{position:absolute;inset:0;width:100%;height:100%}
 <div class="nav-dots" id="navDots"></div>
 
 <main id="sections"></main>
+<div id="slideAnnounce" class="sr-only" aria-live="polite" role="status"></div>
 
 <div class="nav-bar">
   <button class="nbtn" id="prevBtn" onclick="navigate(-1)" disabled>← Prev</button>
@@ -353,7 +391,7 @@ const SECTIONS = [
   },
   { id:'s5', type:'typed-code', eyebrow:'', title:'Custom Agents', lede:'// same shape as a skill, plus tools and a prompt',
     file:'.github/agents/work-instruction-writer.md', copyId:'agent',
-    why:'<b>Triggered:</b> two ways — picked from the agent picker in VS Code or GitHub (Copilot), or called automatically by a parent agent via <code>#runSubagent</code> or a handoff in its prompt (code).<br><br><b>Why this exists:</b> skills are knowledge, agents are workers. Same file shape, different role — a skill describes what a thing is, an agent describes what to do and how to act. The <code>name:</code> is what shows in the picker; the filename is what other agents reference when they hand off work.<br><br><b>Two things to be intentional about:</b> First, the <code>tools:</code> list — only give the agent the tools it actually needs. Every unnecessary tool takes up space in the context window and increases the chances of the agent doing something it shouldn\'t. Second, the model — if you designate one, make sure the task actually warrants it. Not every agent needs an expensive reasoning model.',
+    why:'<b>Triggered:</b> two ways — picked from the agent picker in VS Code or GitHub (Copilot), or invoked automatically by the runtime as a subagent when part of a task matches its <code>description</code> (next slide).<br><br><b>Why this exists:</b> skills are knowledge, agents are workers. Same file shape, different role — a skill describes what a thing is, an agent describes what to do and how to act. The <code>name:</code> is what shows in the picker; the <code>description:</code> is what the runtime matches against when it delegates automatically.<br><br><b>Two things to be intentional about:</b> First, the <code>tools:</code> list — only give the agent the tools it actually needs. Every unnecessary tool takes up space in the context window and increases the chances of the agent doing something it shouldn\'t. Second, the model — if you designate one, make sure the task actually warrants it. Not every agent needs an expensive reasoning model.',
     code: [
       '<span class="cm">---</span>',
       '<span class="k-i">name:</span> Work Instruction Writer',
@@ -375,27 +413,22 @@ const SECTIONS = [
       'one action per numbered step.'
     ]
   },
-  { id:'s6', type:'typed-code', eyebrow:'', title:'Subagents', lede:'// same file shape, new lines for delegating',
-    file:'.github/agents/sop-review-orchestrator.md', copyId:'sub',
-    why:'<p><b>Triggered:</b> agent-initiated — a parent agent running in VS Code or Copilot agent mode calls <code>#runSubagent</code> in its prompt. No user action needed — one agent hands off to another in code.</p><p><b>Why this exists:</b> a subagent is an agent you run from inside another agent. Same file shape, same <code>.github/agents/</code> folder. The difference is how it runs: a subagent gets its own isolated context, does its work, and returns only the result. The parent agent waits, then continues with whatever came back.</p><p><b>How it\'s called:</b> the parent lists the subagent in its <code>agents:</code> array and adds <code>runSubagent</code> to its <code>tools:</code>. Then in the prompt, the parent uses <code>#runSubagent</code> to hand off. The highlighted lines below are the only difference from a regular agent — everything else looks the same.</p>',
+  { id:'s6', type:'typed-code', eyebrow:'', title:'Subagents', lede:'// no new syntax — the runtime delegates for you',
+    file:'.github/agents/work-instruction-reviewer.md', copyId:'sub',
+    why:'<p><b>Triggered:</b> automatically by the runtime. When part of a task matches a custom agent\'s <code>description</code>, Copilot delegates that part to it as a subagent — running in an isolated context and returning only the result. No user action, and no special call in a prompt.</p><p><b>Why this exists:</b> a subagent isn\'t a different kind of file — it\'s any custom agent, invoked by the runtime instead of picked by you. Same file shape, same <code>.github/agents/</code> folder as the previous slide. The difference is purely how it runs: it gets its own context window, does its work, and hands back just the result — keeping the main agent\'s context clean.</p><p><b>How it\'s chosen:</b> there is no <code>handoffs:</code> block, no <code>agents:</code> array, and no <code>#runSubagent</code> directive to write. What makes a subagent get used is a clear, specific <code>description</code> — that\'s the signal the runtime matches against. The highlighted line does the routing; sharpen it and you control when this agent gets pulled in.</p>',
     code: [
       { html:'<span class="cm">---</span>' },
-      { html:'<span class="k-i">name:</span> SOP Review Orchestrator' },
-      { html:'<span class="k-i">description:</span> Reviews a batch of work instructions.' },
-      { html:'<span class="k-a">tools:</span> [<span class="s">\'runSubagent\'</span>, <span class="s">\'search\'</span>]', hl:true },
-      { html:'<span class="k-a">agents:</span> [<span class="s">"Reviewer"</span>]', hl:true },
-      { html:'<span class="k-a">handoffs:</span>', hl:true },
-      { html:'  - label: Review document', hl:true },
-      { html:'    agent: Reviewer', hl:true },
-      { html:'    prompt: <span class="s">"Review this work instruction for clarity, safety gaps, and step completeness."</span>', hl:true },
+      { html:'<span class="k-i">name:</span> Work Instruction Reviewer' },
+      { html:'<span class="k-a">description:</span> Reviews a work instruction for clarity, safety gaps, and step completeness.', hl:true },
+      { html:'<span class="k-i">tools:</span> [<span class="s">\'search\'</span>]' },
       { html:'<span class="cm">---</span>' },
       { html:' ' },
-      { html:'You are the <span class="ag">SOP REVIEW ORCHESTRATOR</span>.' },
+      { html:'You are the <span class="ag">WORK INSTRUCTION REVIEWER</span>.' },
       { html:' ' },
-      { html:'For each WI in the folder:' },
-      { html:'  - Hand off to Reviewer with', hl:true },
-      { html:'    <span class="call">#runSubagent</span>', hl:true },
-      { html:'Consolidate findings into a report.' }
+      { html:'Given a single work instruction:' },
+      { html:'  - Flag unclear, missing, or out-of-order steps' },
+      { html:'  - Call out safety gaps and undefined terms' },
+      { html:'Return a short findings report — nothing else.' }
     ]
   },
   { id:'s7', type:'typed-code', eyebrow:'', title:'Background Agents', lede:"// work continues in parallel, you don't wait",
@@ -437,7 +470,7 @@ const SECTIONS = [
       { cls:'q-i',  lbl:'Standing setup',    name:'Copilot Instructions', desc:'Rules and style applied to every chat request, set once.', chip:'.github/copilot-instructions.md' },
       { cls:'q-p',  lbl:'Reusable know-how', name:'Custom Skills',       desc:'A folder Copilot loads when the task fits.',               chip:'SKILL.md' },
       { cls:'q-i2', lbl:'Your agent',        name:'Custom Agents',        desc:'Prompt, tools, and MCP servers, defined in markdown.',     chip:'.github/agents/*.md' },
-      { cls:'q-a',  lbl:'Isolated, blocks',  name:'Subagents',            desc:'Runs in its own context. Returns only the result.',        chip:'#runSubagent' },
+      { cls:'q-a',  lbl:'Isolated, blocks',  name:'Subagents',            desc:'A custom agent the runtime delegates to by description. Runs in its own context, returns only the result.', chip:'.github/agents/*.md' },
       { cls:'q-t',  lbl:'Async, parallel',   name:'Background Agents',    desc:'Runs autonomously while you keep working.',                chip:'opens a PR when done' },
       { cls:'q-ext', lbl:'External, authorized', name:'Third-Party Agents',   desc:'Claude, Codex, and partner agents. Authorized in settings, not authored.',  chip:'agent picker' }
     ]
@@ -500,8 +533,8 @@ function renderArchitecture(s){
     <div class="node n-3p"><div class="trigtag">user-selected</div><div class="tile"><svg viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M21 3l-7 7"/><path d="M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/></svg></div><h3>Third-Party Agent</h3><div class="k">External, authorized</div><span class="chip">plug in</span></div>
     <div class="node n-instr"><div class="trigtag">automatic</div><div class="tile"><svg viewBox="0 0 24 24"><path d="M5 3h10l4 4v14H5z"/><path d="M14 3v5h5"/><path d="M8 12h8M8 16h6"/></svg></div><h3>Copilot Instructions</h3><div class="k">Standing rules and style</div><span class="chip">copilot-instructions.md</span></div>
     <div class="node n-skills"><div class="trigtag">model-triggered</div><div class="tile"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h9v15H6a2 2 0 0 0-2 2z"/><path d="M15 3l4 2v13l-4-2"/></svg></div><h3>Custom Skills</h3><div class="k">Loaded when relevant</div><span class="chip">SKILL.md</span></div>
-    <div class="node n-main"><div class="trigtag">picker or agent-initiated</div><div class="tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></div><h3>Custom Agent</h3><div class="pillwrap"><span class="pill p-active"><span class="pdot"></span>Active</span><span class="pill p-wait"><span class="pdot"></span>Waiting</span></div></div>
-    <div class="node n-sub"><span class="iso">isolated context</span><div class="tile"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M6 8.4v2a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2M12 12.4v3.2"/></svg></div><h3>Subagent</h3><div class="runtag"><span class="spin"></span>running</div><span class="chip">#runSubagent</span><div class="trigtag" style="color:var(--warn);margin-top:6px">agent-initiated</div></div>
+    <div class="node n-main"><div class="trigtag">picker or runtime-delegated</div><div class="tile"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></div><h3>Custom Agent</h3><div class="pillwrap"><span class="pill p-active"><span class="pdot"></span>Active</span><span class="pill p-wait"><span class="pdot"></span>Waiting</span></div></div>
+    <div class="node n-sub"><span class="iso">isolated context</span><div class="tile"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M6 8.4v2a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2M12 12.4v3.2"/></svg></div><h3>Subagent</h3><div class="runtag"><span class="spin"></span>running</div><span class="chip">auto-delegated</span><div class="trigtag" style="color:var(--warn);margin-top:6px">runtime-delegated</div></div>
     <div class="node n-bg"><div class="trigtag" style="color:var(--success)">user-assigned</div><div class="tile"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v4h-4"/><path d="M12 8v4l3 2"/></svg></div><h3>Background Agent</h3><div class="prog"><i></i></div><span class="paralleltag">running in parallel</span></div>
   </div></div>
   <div class="caption">
@@ -560,6 +593,8 @@ function goTo(i){
   document.getElementById(SECTIONS[cur].id).classList.add('active');
   document.querySelectorAll('.nav-dot')[cur].classList.add('active');
   document.getElementById('curSlide').textContent=cur+1;
+  document.getElementById('slideAnnounce').textContent='Slide '+(cur+1)+' of '+total+': '+SECTIONS[cur].title;
+  history.replaceState(null,'','#'+SECTIONS[cur].id);
   document.getElementById('prevBtn').disabled=cur===0;
   const nb=document.getElementById('nextBtn');
   nb.disabled=false;
@@ -594,8 +629,31 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();navigate(-1)}
 });
 
+// Touch/swipe navigation
+let touchX=null,touchY=null;
+document.addEventListener('touchstart',e=>{
+  const t=e.changedTouches[0];touchX=t.clientX;touchY=t.clientY;
+},{passive:true});
+document.addEventListener('touchend',e=>{
+  if(touchX===null) return;
+  const t=e.changedTouches[0];
+  const dx=t.clientX-touchX, dy=t.clientY-touchY;
+  if(Math.abs(dx)>50 && Math.abs(dx)>Math.abs(dy)) navigate(dx<0?1:-1);
+  touchX=null;touchY=null;
+},{passive:true});
+
 build();
 setupCopy();
+
+// Deep-linking: open the slide named in the URL hash, and follow manual hash changes
+function initFromHash(){
+  const h=location.hash.replace('#','');
+  if(!h) return;
+  const idx=SECTIONS.findIndex(s=>s.id===h);
+  if(idx>=0) goTo(idx);
+}
+initFromHash();
+window.addEventListener('hashchange',initFromHash);
 </script>
 
 </body>
