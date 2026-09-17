@@ -553,11 +553,7 @@ function renderArchitecture(s){
 }
 function renderRecap(s){
   const cards=s.cards.map(c=>`<div class="qr-card ${c.cls}"><div class="lbl">${c.lbl}</div><h4>${c.name}</h4><p>${c.desc}</p><span class="chip">${c.chip}</span></div>`).join('');
-  return `${header(s)}<div class="qr-grid">${cards}</div>
-  <div style="margin-top:24px;margin-bottom:32px;padding-top:18px;border-top:1px solid var(--border-soft);font-family:var(--mono);font-size:12px;color:var(--fg-muted);">
-    <span style="margin-right:18px;">Further reading:</span>
-    <a href="https://cagitskill.github.io/git-skill/github-doc-links.html" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub Agent Docs ↗</a>
-  </div>`;
+  return `${header(s)}<div class="qr-grid">${cards}</div>`;
 }
 
 const RENDERERS={'intro':renderIntro,'ce-cards':renderCeCards,'typed-code':renderTypedCode,'static-then-typed':renderStaticThenTyped,'third-party':renderThirdParty,'architecture':renderArchitecture,'recap':renderRecap};
